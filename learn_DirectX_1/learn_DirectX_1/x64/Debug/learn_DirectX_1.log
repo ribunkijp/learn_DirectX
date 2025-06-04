@@ -1,0 +1,5 @@
+﻿  main.cpp
+C:\code\learn_DirectX\learn_DirectX_1\main.cpp(32,13): warning C4100: 'lpCmdLine': 参照されないパラメーター
+C:\code\learn_DirectX\learn_DirectX_1\main.cpp(84,1): warning C4702: 制御が渡らないコードです。
+C:\code\learn_DirectX\learn_DirectX_1\main.cpp(95,1): warning C4702: 制御が渡らないコードです。
+  learn_DirectX_1.vcxproj -> C:\code\learn_DirectX\learn_DirectX_1\x64\Debug\learn_DirectX_1.exe
