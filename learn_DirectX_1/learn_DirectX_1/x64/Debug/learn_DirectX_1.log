@@ -1,5 +1,5 @@
-﻿  main.cpp
-C:\code\learn_DirectX\learn_DirectX_1\main.cpp(29,13): warning C4100: 'lpCmdLine': 参照されないパラメーター
-C:\code\learn_DirectX\learn_DirectX_1\main.cpp(62,12): warning C4189: 'WINDOW_HEIGHT': ローカル変数が初期化されましたが、参照されていません
-C:\code\learn_DirectX\learn_DirectX_1\main.cpp(61,12): warning C4189: 'WINDOW_WIDTH': ローカル変数が初期化されましたが、参照されていません
+﻿  game_window.cpp
+  main.cpp
+  コードを生成中...
+C:\code\learn_DirectX\learn_DirectX_1\main.cpp(24,13): warning C4100: 'lpCmdLine': 参照されないパラメーター
   learn_DirectX_1.vcxproj -> C:\code\learn_DirectX\learn_DirectX_1\x64\Debug\learn_DirectX_1.exe
