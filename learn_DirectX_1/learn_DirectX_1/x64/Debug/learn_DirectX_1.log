@@ -1,31 +1,3 @@
-﻿  debug_ostream.cpp
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(20,8): warning C4625: 'hal::debugbuf': コピー コンストラクターは暗黙的に削除済みとして定義されました
-  (ソース ファイル 'debug_ostream.cpp' をコンパイルしています)
+﻿FXC : error X3501: 'main': entrypoint not found
   
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(20,8): warning C4626: 'hal::debugbuf': 代入演算子は暗黙的に削除済みとして定義されました
-  (ソース ファイル 'debug_ostream.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(34,8): warning C4625: 'hal::debug_ostream': コピー コンストラクターは暗黙的に削除済みとして定義されました
-  (ソース ファイル 'debug_ostream.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(34,8): warning C4626: 'hal::debug_ostream': 代入演算子は暗黙的に削除済みとして定義されました
-  (ソース ファイル 'debug_ostream.cpp' をコンパイルしています)
-  
-  direct3d.cpp
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(20,8): warning C4625: 'hal::debugbuf': コピー コンストラクターは暗黙的に削除済みとして定義されました
-  (ソース ファイル 'direct3d.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(20,8): warning C4626: 'hal::debugbuf': 代入演算子は暗黙的に削除済みとして定義されました
-  (ソース ファイル 'direct3d.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(34,8): warning C4625: 'hal::debug_ostream': コピー コンストラクターは暗黙的に削除済みとして定義されました
-  (ソース ファイル 'direct3d.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DirectX_1\debug_ostream.h(34,8): warning C4626: 'hal::debug_ostream': 代入演算子は暗黙的に削除済みとして定義されました
-  (ソース ファイル 'direct3d.cpp' をコンパイルしています)
-  
-  game_window.cpp
-  main.cpp
-C:\code\learn_DirectX\learn_DirectX_1\main.cpp(24,13): warning C4100: 'lpCmdLine': 参照されないパラメーター
-  コードを生成中...
-  learn_DirectX_1.vcxproj -> C:\code\learn_DirectX\learn_DirectX_1\x64\Debug\learn_DirectX_1.exe
+  compilation failed; no code produced

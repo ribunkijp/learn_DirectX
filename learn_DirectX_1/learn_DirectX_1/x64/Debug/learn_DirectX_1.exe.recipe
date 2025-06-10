@@ -5,7 +5,14 @@
       <FullPath>C:\code\learn_DirectX\learn_DirectX_1\x64\Debug\learn_DirectX_1.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\code\learn_DirectX\learn_DirectX_1\x64\Debug\shader_pixel_2d.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\code\learn_DirectX\learn_DirectX_1\x64\Debug\shader_vertex_2d.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

@@ -1,8 +1,8 @@
 /*==============================================================================
 
-   ƒVƒF[ƒ_[ [shader.cpp]
-														 Author : Youhei Sato
-														 Date   : 2025/05/15
+   ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ [shader.cpp]
+														  Author : Youhei Sato
+														  Date   : 2025/05/15
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
@@ -19,85 +19,85 @@ static ID3D11InputLayout* g_pInputLayout = nullptr;
 static ID3D11Buffer* g_pVSConstantBuffer = nullptr;
 static ID3D11PixelShader* g_pPixelShader = nullptr;
 
-// ’ˆÓI‰Šú‰»‚ÅŠO•”‚©‚çİ’è‚³‚ê‚é‚à‚ÌBRelease•s—vB
+// è§£æ”¾ï¼æœ€å¾Œã«å¿…ãšå‘¼ã³å‡ºã•ã‚Œã‚‹ã¹ã—ã€‚Release ã—å¿˜ã‚Œé˜²æ­¢ã€‚
 static ID3D11Device* g_pDevice = nullptr;
 static ID3D11DeviceContext* g_pContext = nullptr;
 
 
 bool Shader_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	HRESULT hr; // –ß‚è’lŠi”[—p
+	HRESULT hr; // æˆ»ã‚Šå€¤ç”¨
 
-	// ƒfƒoƒCƒX‚ÆƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒ`ƒFƒbƒN
+	// ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒã‚§ãƒƒã‚¯
 	if (!pDevice || !pContext) {
-		hal::dout << "Shader_Initialize() : —^‚¦‚ç‚ê‚½ƒfƒoƒCƒX‚©ƒRƒ“ƒeƒLƒXƒg‚ª•s³‚Å‚·" << std::endl;
+		hal::dout << "Shader_Initialize() : æ¸¡ã•ã‚ŒãŸãƒ‡ãƒã‚¤ã‚¹ã‹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãŒç„¡åŠ¹ã§ã™" << std::endl;
 		return false;
 	}
 
-	// ƒfƒoƒCƒX‚ÆƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ì•Û‘¶
+	// ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ä¿æŒ
 	g_pDevice = pDevice;
 	g_pContext = pContext;
 
 
-	// –‘OƒRƒ“ƒpƒCƒ‹Ï‚İ’¸“_ƒVƒF[ƒ_[‚Ì“Ç‚İ‚İ
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ãƒã‚¤ãƒŠãƒªèª­ã¿è¾¼ã¿
 	std::ifstream ifs_vs("shader_vertex_2d.cso", std::ios::binary);
 
 	if (!ifs_vs) {
-		MessageBox(nullptr, "’¸“_ƒVƒF[ƒ_[‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½\n\nshader_vertex_2d.cso", "ƒGƒ‰[", MB_OK);
+		MessageBox(nullptr, "é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n\nshader_vertex_2d.cso", "ã‚¨ãƒ©ãƒ¼", MB_OK);
 		return false;
 	}
 
-	// ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğæ“¾
-	ifs_vs.seekg(0, std::ios::end); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğ––”ö‚ÉˆÚ“®
-	std::streamsize filesize = ifs_vs.tellg(); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚ğæ“¾i‚Â‚Ü‚èƒtƒ@ƒCƒ‹ƒTƒCƒYj
-	ifs_vs.seekg(0, std::ios::beg); // ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğæ“ª‚É–ß‚·
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºå–å¾—
+	ifs_vs.seekg(0, std::ios::end);
+	std::streamsize filesize = ifs_vs.tellg();
+	ifs_vs.seekg(0, std::ios::beg);
 
-	// ƒoƒCƒiƒŠƒf[ƒ^‚ğŠi”[‚·‚é‚½‚ß‚Ìƒoƒbƒtƒ@‚ğŠm•Û
+	// ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã®ãŸã‚ã®ãƒãƒƒãƒ•ã‚¡ç¢ºä¿
 	unsigned char* vsbinary_pointer = new unsigned char[filesize];
-	
-	ifs_vs.read((char*)vsbinary_pointer, filesize); // ƒoƒCƒiƒŠƒf[ƒ^‚ğ“Ç‚İ‚Ş
-	ifs_vs.close(); // ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
 
-	// ’¸“_ƒVƒF[ƒ_[‚Ìì¬
+	ifs_vs.read((char*)vsbinary_pointer, filesize);
+	ifs_vs.close();
+
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 	hr = g_pDevice->CreateVertexShader(vsbinary_pointer, filesize, nullptr, &g_pVertexShader);
 
 	if (FAILED(hr)) {
-		hal::dout << "Shader_Initialize() : ’¸“_ƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½" << std::endl;
-		delete[] vsbinary_pointer; // ƒƒ‚ƒŠƒŠ[ƒN‚µ‚È‚¢‚æ‚¤‚ÉƒoƒCƒiƒŠƒf[ƒ^‚Ìƒoƒbƒtƒ@‚ğ‰ğ•ú
+		hal::dout << "Shader_Initialize() : é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ" << std::endl;
+		delete[] vsbinary_pointer;
 		return false;
 	}
 
 
-	// ’¸“_ƒŒƒCƒAƒEƒg‚Ì’è‹`
+	// å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®å®šç¾©
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	UINT num_elements = ARRAYSIZE(layout); // ”z—ñ‚Ì—v‘f”‚ğæ“¾
+	UINT num_elements = ARRAYSIZE(layout);
 
-	// ’¸“_ƒŒƒCƒAƒEƒg‚Ìì¬
+	// å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®ä½œæˆ
 	hr = g_pDevice->CreateInputLayout(layout, num_elements, vsbinary_pointer, filesize, &g_pInputLayout);
 
-	delete[] vsbinary_pointer; // ƒoƒCƒiƒŠƒf[ƒ^‚Ìƒoƒbƒtƒ@‚ğ‰ğ•ú
+	delete[] vsbinary_pointer;
 
 	if (FAILED(hr)) {
-		hal::dout << "Shader_Initialize() : ’¸“_ƒŒƒCƒAƒEƒg‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½" << std::endl;
+		hal::dout << "Shader_Initialize() : å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ" << std::endl;
 		return false;
 	}
 
 
-	// ’¸“_ƒVƒF[ƒ_[—p’è”ƒoƒbƒtƒ@‚Ìì¬
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ
 	D3D11_BUFFER_DESC buffer_desc{};
-	buffer_desc.ByteWidth = sizeof(XMFLOAT4X4); // ƒoƒbƒtƒ@‚ÌƒTƒCƒY
-	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // ƒoƒCƒ“ƒhƒtƒ‰ƒO
+	buffer_desc.ByteWidth = sizeof(XMFLOAT4X4);
+	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	g_pDevice->CreateBuffer(&buffer_desc, nullptr, &g_pVSConstantBuffer);
 
 
-	// –‘OƒRƒ“ƒpƒCƒ‹Ï‚İƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚Ì“Ç‚İ‚İ
+	// ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ãƒã‚¤ãƒŠãƒªèª­ã¿è¾¼ã¿
 	std::ifstream ifs_ps("shader_pixel_2d.cso", std::ios::binary);
 	if (!ifs_ps) {
-		MessageBox(nullptr, "ƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½\n\nshader_pixel_2d.cso", "ƒGƒ‰[", MB_OK);
+		MessageBox(nullptr, "ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n\nshader_pixel_2d.cso", "ã‚¨ãƒ©ãƒ¼", MB_OK);
 		return false;
 	}
 
@@ -109,13 +109,13 @@ bool Shader_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	ifs_ps.read((char*)psbinary_pointer, filesize);
 	ifs_ps.close();
 
-	// ƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚Ìì¬
+	// ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 	hr = g_pDevice->CreatePixelShader(psbinary_pointer, filesize, nullptr, &g_pPixelShader);
 
-	delete[] psbinary_pointer; // ƒoƒCƒiƒŠƒf[ƒ^‚Ìƒoƒbƒtƒ@‚ğ‰ğ•ú
+	delete[] psbinary_pointer;
 
 	if (FAILED(hr)) {
-		hal::dout << "Shader_Initialize() : ƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½" << std::endl;
+		hal::dout << "Shader_Initialize() : ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ" << std::endl;
 		return false;
 	}
 
@@ -132,25 +132,25 @@ void Shader_Finalize()
 
 void Shader_SetMatrix(const DirectX::XMMATRIX& matrix)
 {
-	// ’è”ƒoƒbƒtƒ@Ši”[—ps—ñ‚Ì\‘¢‘Ì‚ğ’è‹`
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã«è»¢é€ã™ã‚‹ãŸã‚ã®æº–å‚™
 	XMFLOAT4X4 transpose;
 
-	// s—ñ‚ğ“]’u‚µ‚Ä’è”ƒoƒbƒtƒ@Ši”[—ps—ñ‚É•ÏŠ·
+	// è¡Œåˆ—ã‚’è»¢ç½®ã—ã¦å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ã«å¤‰æ›
 	XMStoreFloat4x4(&transpose, XMMatrixTranspose(matrix));
 
-	// ’è”ƒoƒbƒtƒ@‚És—ñ‚ğƒZƒbƒg
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã«æ›´æ–°
 	g_pContext->UpdateSubresource(g_pVSConstantBuffer, 0, nullptr, &transpose, 0, 0);
 }
 
 void Shader_Begin()
 {
-	// ’¸“_ƒVƒF[ƒ_[‚ÆƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã¨ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 	g_pContext->VSSetShader(g_pVertexShader, nullptr, 0);
 	g_pContext->PSSetShader(g_pPixelShader, nullptr, 0);
 
-	// ’¸“_ƒŒƒCƒAƒEƒg‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+	// å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 	g_pContext->IASetInputLayout(g_pInputLayout);
 
-	// ’è”ƒoƒbƒtƒ@‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 	g_pContext->VSSetConstantBuffers(0, 1, &g_pVSConstantBuffer);
 }

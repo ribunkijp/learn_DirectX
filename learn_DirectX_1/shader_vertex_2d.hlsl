@@ -1,20 +1,31 @@
 /*==============================================================================
 
-   2D•`‰æ—p’¸“_ƒVƒF[ƒ_[ [shader_vertex_2d.hlsl]
-														 Author : Youhei Sato
-														 Date   : 2025/05/15
+   2Dæç”»ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ [shader_vertex_2d.hlsl]
+                                                          Author : Youhei Sato
+                                                          Date   : 2025/05/15
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
 
-// ’è”ƒoƒbƒtƒ@
+// å®šæ•°ãƒãƒƒãƒ•ã‚¡
 float4x4 mtx;
 
-
-//=============================================================================
-// ’¸“_ƒVƒF[ƒ_
-//=============================================================================
-float4 main(in float4 posL : POSITION0 ) : SV_POSITION
+struct VS_IN
 {
-	return mul(posL, mtx);
+    float3 pos : POSITION;
+    float4 col : COLOR;
+};
+
+struct VS_OUT
+{
+    float4 pos : SV_POSITION;
+    float4 col : COLOR;
+};
+
+VS_OUT VS_Main(VS_IN input)
+{
+    VS_OUT output;
+    output.pos = mul(float4(input.pos, 1.0f), g_WorldViewProj); // çŸ©é˜µä¹˜æ³•
+    output.col = input.col;
+    return output;
 }

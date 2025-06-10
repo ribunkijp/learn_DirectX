@@ -1,8 +1,8 @@
 /*==============================================================================
 
-   ƒ|ƒŠƒSƒ“•`‰æ [polygon.cpp]
-														 Author : Youhei Sato
-														 Date   : 2025/05/15
+   ãƒãƒªã‚´ãƒ³æç”» [polygon.cpp]
+														  Author : Youhei Sato
+														  Date   : 2025/05/15
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
@@ -14,36 +14,37 @@ using namespace DirectX;
 #include "debug_ostream.h"
 
 
-static constexpr int NUM_VERTEX = 2; // ’¸“_”
+static constexpr int NUM_VERTEX = 15; // é ‚ç‚¹æ•°
 
 
-static ID3D11Buffer* g_pVertexBuffer = nullptr; // ’¸“_ƒoƒbƒtƒ@
+static ID3D11Buffer* g_pVertexBuffer = nullptr; // é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 
-// ’ˆÓI‰Šú‰»‚ÅŠO•”‚©‚çİ’è‚³‚ê‚é‚à‚ÌBRelease•s—vB
+// å‚ç…§ã‚«ã‚¦ãƒ³ã‚¿ã®ç®¡ç†ã®ãŸã‚Releaseç”¨
 static ID3D11Device* g_pDevice = nullptr;
 static ID3D11DeviceContext* g_pContext = nullptr;
 
 
-// ’¸“_\‘¢‘Ì
+// é ‚ç‚¹æ§‹é€ ä½“
 struct Vertex
 {
-	XMFLOAT3 position; // ’¸“_À•W
+	XMFLOAT3 position; // é ‚ç‚¹åº§æ¨™
+	XMFLOAT4 color;
 };
 
 
 void Polygon_Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	// ƒfƒoƒCƒX‚ÆƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒ`ƒFƒbƒN
+	// ãƒ‡ãƒã‚¤ã‚¹ã¨ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒã‚§ãƒƒã‚¯
 	if (!pDevice || !pContext) {
-		hal::dout << "Polygon_Initialize() : —^‚¦‚ç‚ê‚½ƒfƒoƒCƒX‚©ƒRƒ“ƒeƒLƒXƒg‚ª•s³‚Å‚·" << std::endl;
+		hal::dout << "Polygon_Initialize() : ç„¡åŠ¹ãªãƒ‡ãƒã‚¤ã‚¹ã¾ãŸã¯ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãŒæ¸¡ã•ã‚Œã¾ã—ãŸ" << std::endl;
 		return;
 	}
 
-	// ƒfƒoƒCƒX‚ÆƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ì•Û‘¶
+	// ãƒ‡ãƒã‚¤ã‚¹ã¨ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ä¿å­˜
 	g_pDevice = pDevice;
 	g_pContext = pContext;
 
-	// ’¸“_ƒoƒbƒtƒ@¶¬
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ
 	D3D11_BUFFER_DESC bd = {};
 	bd.Usage = D3D11_USAGE_DYNAMIC;
 	bd.ByteWidth = sizeof(Vertex) * NUM_VERTEX;
@@ -60,38 +61,75 @@ void Polygon_Finalize(void)
 
 void Polygon_Draw(void)
 {
-	// ƒVƒF[ƒ_[‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é–‹å§‹
 	Shader_Begin();
 
-	// ’¸“_ƒoƒbƒtƒ@‚ğƒƒbƒN‚·‚é
-	D3D11_MAPPED_SUBRESOURCE msr;
-	g_pContext->Map(g_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚»ãƒƒãƒˆ
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
 
-	// ’¸“_ƒoƒbƒtƒ@‚Ö‚Ì‰¼‘zƒ|ƒCƒ“ƒ^‚ğæ“¾
-	Vertex* v = (Vertex*)msr.pData;
-
-	// ’¸“_î•ñ‚ğ‘‚«‚İ
+	// ç”»é¢ã‚µã‚¤ã‚ºå–å¾—
 	const float SCREEN_WIDTH = (float)Direct3D_GetBackBufferWidth();
 	const float SCREEN_HEIGHT = (float)Direct3D_GetBackBufferHeight();
 
-	// ‰æ–Ê‚Ì¶ã‚©‚ç‰E‰º‚ÉŒü‚©‚¤ü•ª‚ğ•`‰æ‚·‚é
-	v[0].position = { 0.0f, 0.0f, 0.0f };
-	v[1].position = { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f };
-
-	// ’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN‚ğ‰ğœ
-	g_pContext->Unmap(g_pVertexBuffer, 0);
-
-	// ’¸“_ƒoƒbƒtƒ@‚ğ•`‰æƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	g_pContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
-
-	// ’¸“_ƒVƒF[ƒ_[‚É•ÏŠ·s—ñ‚ğİ’è
+	// ç›´äº¤å°„å½±è¡Œåˆ—ã‚»ãƒƒãƒˆ
 	Shader_SetMatrix(XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));
 
-	// ƒvƒŠƒ~ƒeƒBƒuƒgƒ|ƒƒWİ’è
-	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,                           D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(XMFLOAT3),        D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
 
-	// ƒ|ƒŠƒSƒ“•`‰æ–½—ß”­s
-	g_pContext->Draw(NUM_VERTEX, 0);
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒãƒƒãƒ”ãƒ³ã‚°
+	D3D11_MAPPED_SUBRESOURCE msr;
+	Vertex* v;
+
+
+	// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ãƒˆãƒãƒ­ã‚¸è¨­å®šï¼ˆãƒ©ã‚¤ãƒ³ãƒªã‚¹ãƒˆï¼‰
+	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	g_pContext->Map(g_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
+
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒã‚¤ãƒ³ã‚¿å–å¾—
+	v = (Vertex*)msr.pData;
+
+	// é ‚ç‚¹åº§æ¨™è¨­å®šï¼ˆç”»é¢å…¨ä½“ã®ãƒ©ã‚¤ãƒ³ï¼‰
+	v[0].position = { SCREEN_WIDTH * 0.1f, SCREEN_HEIGHT * 0.1F, 0.0f };v[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[1].position = { SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.1f, 0.0f }; v[1].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[2].position = { SCREEN_WIDTH * 0.1f, SCREEN_HEIGHT * 0.3F, 0.0f }; v[2].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[3].position = { SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.3F, 0.0f }; v[3].color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+	v[4].position = { SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT * 0.6F, 0.0f }; v[4].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[5].position = { SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.6f, 0.0f }; v[5].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[6].position = { SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT * 0.8F, 0.0f }; v[6].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[7].position = { SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.8F, 0.0f }; v[7].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+	v[8].position = { SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT * 0.3f, 0.0f }; v[8].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[9].position = { SCREEN_WIDTH * 0.7f, SCREEN_HEIGHT * 0.1F, 0.0f }; v[9].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[10].position = { SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.3F, 0.0f }; v[10].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+	v[11].position = { SCREEN_WIDTH * 0.2f, SCREEN_HEIGHT * 0.6f, 0.0f }; v[11].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[12].position = { SCREEN_WIDTH * 0.4f, SCREEN_HEIGHT * 0.6F, 0.0f }; v[12].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[13].position = { SCREEN_WIDTH * 0.1f, SCREEN_HEIGHT * 0.8F, 0.0f }; v[13].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	v[14].position = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.8F, 0.0f }; v[14].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	
+	// ã‚¢ãƒ³ãƒãƒƒãƒ—
+	g_pContext->Unmap(g_pVertexBuffer, 0);
+
+	//
+	g_pContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+
+	// æç”»
+	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	g_pContext->Draw(4, 0);
+
+	g_pContext->Draw(4, 4);
+
+	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	g_pContext->Draw(3, 8);
+
+	g_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	g_pContext->Draw(4, 11);
 }

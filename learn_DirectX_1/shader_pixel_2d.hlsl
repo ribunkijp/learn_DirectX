@@ -1,12 +1,27 @@
 /*==============================================================================
 
-   2D•`‰æ—pƒsƒNƒZƒ‹ƒVƒF[ƒ_[ [shader_pixel_2d.hlsl]
-														 Author : Youhei Sato
-														 Date   : 2025/05/15
+   2Dæç”»ç”¨ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ [shader_pixel_2d.hlsl]
+                                                          Author : Youhei Sato
+                                                          Date   : 2025/05/15
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
-float4 main() : SV_TARGET
+// å®šæ•°ãƒãƒƒãƒ•ã‚¡
+cbuffer cb : register(b0)
 {
-    return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float4x4 mtx;
+};
+
+struct VS_OUT
+{
+    float4 pos : SV_POSITION;
+    float4 col : COLOR;
+};
+
+VS_OUT VS_Main(float4 posL : POSITION, float4 color : COLOR)
+{
+    VS_OUT output;
+    output.pos = mul(mtx, posL); // æ­£ã—ã„é †ç•ªï¼
+    output.col = color;
+    return output;
 }
