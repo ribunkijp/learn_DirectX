@@ -19,4 +19,8 @@ void Shader_SetMatrix(const DirectX::XMMATRIX& matrix);
 
 void Shader_Begin();
 
+// InputLayout作成のために、コンパイル済みの頂点シェーダーの
+// バイナリデータ(Blob)を取得する関数を追加します。
+ID3DBlob* Shader_GetVertexShaderBlob(void);
+
 #endif // SHADER_H

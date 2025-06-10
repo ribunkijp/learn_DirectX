@@ -6,22 +6,21 @@
 --------------------------------------------------------------------------------
 
 ==============================================================================*/
-// 定数バッファ
-cbuffer cb : register(b0)
-{
-    float4x4 mtx;
-};
-
-struct VS_OUT
+// 頂点シェーダーからの入力構造体
+// 頂点シェーダーの VS_OUT 構造体と一致させる必要がある
+struct PS_IN
 {
     float4 pos : SV_POSITION;
     float4 col : COLOR;
 };
 
-VS_OUT VS_Main(float4 posL : POSITION, float4 color : COLOR)
+// ピクセルシェーダーのメイン関数
+// 1ピクセル分のデータ(PS_IN)を受け取り、
+// そのピクセルの最終的な色(float4)を返す。
+// 返り値には SV_TARGET セマンティクスを指定する。
+float4 PS_Main(PS_IN input) : SV_TARGET
 {
-    VS_OUT output;
-    output.pos = mul(mtx, posL); // 正しい順番！
-    output.col = color;
-    return output;
+    // 頂点シェーダーから渡された（ラスタライザで補間された）色を
+    // そのままピクセルの色として出力する
+    return input.col;
 }
