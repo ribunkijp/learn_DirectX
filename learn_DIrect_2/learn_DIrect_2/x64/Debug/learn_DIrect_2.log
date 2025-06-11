@@ -1,4 +1,2 @@
 ﻿  main.cpp
-C:\code\learn_DirectX\learn_DIrect_2\main.cpp(9,73): warning C4100: 'pCmdLine': 参照されないパラメーター
-C:\code\learn_DirectX\learn_DIrect_2\main.cpp(9,52): warning C4100: 'hPrevInstance': 参照されないパラメーター
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe
