@@ -78,7 +78,10 @@ int WINAPI wWinMain(
         WS_OVERLAPPEDWINDOW,            // Window style
 
         // Size and position
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        CW_USEDEFAULT, 
+        CW_USEDEFAULT, 
+        CW_USEDEFAULT, 
+        CW_USEDEFAULT,
 
         NULL,       // Parent window    
         NULL,       // Menu
