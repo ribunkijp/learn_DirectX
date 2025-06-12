@@ -26,6 +26,12 @@ WinMain（アプリの開始点）
 
 
 
+struct ConstantBuffer {
+    float screenSize[2]; // 屏幕宽高
+    float padding[2];    // 保持16字节对齐
+};
+
+
 // 管理 Direct3D11 渲染状态的结构体
 struct StateInfo {
     // 设备对象：用于创建资源和着色器
@@ -51,6 +57,9 @@ struct StateInfo {
 
     // 顶点缓冲区：存储用于绘制的顶点数据的缓冲区
     ID3D11Buffer* vertexBuffer = nullptr;
+
+    //
+    ID3D11Buffer* constantBuffer = nullptr;
 
 };
 
@@ -163,15 +172,15 @@ LRESULT CALLBACK WindowProc(
     }
 
     switch (uMsg) {
-    case WM_CLOSE:
-        if (MessageBox(hwnd, L"really quit？", L"cancel", MB_OKCANCEL) == IDOK) {
-            DestroyWindow(hwnd);
-        }
-        return 0;
+        case WM_CLOSE:
+            if (MessageBox(hwnd, L"really quit？", L"cancel", MB_OKCANCEL) == IDOK) {
+                DestroyWindow(hwnd);
+            }
+            return 0;
 
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        return 0;
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
 
         case WM_PAINT:
         {
@@ -181,6 +190,25 @@ LRESULT CALLBACK WindowProc(
             (void)hdc;
 
             pState = GetAppState(hwnd);
+
+            // 取得最新窗口大小（防止窗口大小变化不更新）
+            RECT rect;
+            GetClientRect(hwnd, &rect);
+            float width = static_cast<float>(rect.right - rect.left);
+            float height = static_cast<float>(rect.bottom - rect.top);
+
+            // Map 常量缓冲区，更新 screenSize
+            D3D11_MAPPED_SUBRESOURCE mapped = {};
+            if (SUCCEEDED(pState->context->Map(pState->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped))) {
+                ConstantBuffer* pCb = (ConstantBuffer*)mapped.pData;
+                pCb->screenSize[0] = width;
+                pCb->screenSize[1] = height;
+                pState->context->Unmap(pState->constantBuffer, 0);
+            }
+
+            // 绑定常量缓冲区给顶点着色器
+            pState->context->VSSetConstantBuffers(0, 1, &pState->constantBuffer);
+
 
 
             // 清除背景色
@@ -199,6 +227,9 @@ LRESULT CALLBACK WindowProc(
 
             // 设置图元类型为三角形列表
             pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+
 
             // 绘制3个顶点
             pState->context->Draw(3, 0);
@@ -363,6 +394,22 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     if (FAILED(hr)) return false;
 
 
+
+
+    D3D11_BUFFER_DESC cbd = {};
+    cbd.Usage = D3D11_USAGE_DYNAMIC;               
+    cbd.ByteWidth = sizeof(ConstantBuffer);
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;  
+    cbd.MiscFlags = 0;
+    cbd.StructureByteStride = 0;
+
+    hr = state->device->CreateBuffer(&cbd, nullptr, &state->constantBuffer);
+    if (FAILED(hr)) return false;
+
+
+
+
     // 4. 创建顶点缓冲区（向GPU传递三角形顶点数据）
     struct Vertex {
         float pos[3];    // 位置（x, y, z）
@@ -370,9 +417,9 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     };
 
     Vertex vertices[] = {
-     { {  0.0f,  0.5f, 0.0f }, {1, 0, 0, 1} },   // 顶点：红色
-     { {  0.5f, -0.5f, 0.0f }, {0, 1, 0, 1} },   // 右下：绿色
-     { { -0.5f, -0.5f, 0.0f }, {0, 0, 1, 1} }    // 左下：蓝色
+     { {  500.0f,  100.0f, 0.0f }, {1, 0, 0, 1} },   // 顶点：红色
+     { {  700.0f, 600.0f, 0.0f }, {0, 1, 0, 1} },   // 右下：绿色
+     { {  300.0f, 600.0f, 0.0f }, {0, 0, 1, 1} }    // 左下：蓝色
     };
 
     // 缓冲区描述设置
