@@ -36,6 +36,7 @@ struct GameObject {
 
 
 struct ConstantBuffer {
+    DirectX::XMMATRIX worldMatrix;  // 64 字节 (4x4 float)
     float screenSize[2]; // 屏幕宽高
     float padding[2];    // 保持16字节对齐
 };
@@ -82,6 +83,8 @@ bool InitD3D(HWND hwnd, StateInfo* state);
 ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device);
 
 ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device);
+
+void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix);
 
 std::vector<GameObject> sceneObjects;
 
@@ -261,17 +264,25 @@ LRESULT CALLBACK WindowProc(
             UINT stride = sizeof(float) * 7; // 3个坐标 + 4个颜色
             //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
             UINT offset = 0;
-            pState->context->IASetVertexBuffers(0, 1, &pState->vertexBuffer, &stride, &offset);
-            // 绑定索引缓冲区
-            pState->context->IASetIndexBuffer(pState->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
             // 作用是告诉 GPU 如何把顶点组织成图元来绘制。设置图元类型为三角形列表:D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
             pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+            for (auto& obj : sceneObjects)
+            {
+                ID3D11Buffer* vertexBuffers[] = { obj.vertexBuffer };
+                // 设置顶点缓冲区
+                pState->context->IASetVertexBuffers(0, 1, vertexBuffers, &stride, &offset);
+                // 设置索引缓冲区
+                pState->context->IASetIndexBuffer(obj.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+                // 设置常量缓冲区，传入 obj.worldMatrix
+                UpdateConstantBuffer(pState->context, pState->constantBuffer, obj.worldMatrix);
+
+                // 绘制调用
+                pState->context->DrawIndexed(obj.indexCount, 0, 0);
+            }
 
 
-            // 绘制6个索引，绘制矩形
-            pState->context->DrawIndexed(6, 0, 0);
 
             // 交换前后台缓冲区
             pState->swapChain->Present(1, 0);
@@ -474,28 +485,28 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     //const UINT quadVertexCount = 4;  // 4个顶点
     const UINT quadIndexCount = 6;   // 6个索引（三角形2个，每个3个顶点
 
-    GameObject cube1;
+    GameObject quad1;
     // 假设你有一个函数用来创建2D矩形顶点缓冲区
-    cube1.vertexBuffer = CreateQuadVertexBuffer(state->device);
+    quad1.vertexBuffer = CreateQuadVertexBuffer(state->device);
     // 创建索引缓冲区
-    cube1.indexBuffer = CreateQuadIndexBuffer(state->device);
-    cube1.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
+    quad1.indexBuffer = CreateQuadIndexBuffer(state->device);
+    quad1.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     // worldMatrix 2D平移矩阵，Z轴一般为0
-    cube1.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    quad1.worldMatrix = DirectX::XMMatrixTranslation(100.0f, 0.0f, 0.0f);
 
 
-    GameObject cube2;
+    GameObject quad2;
     // 假设你有一个函数用来创建2D矩形顶点缓冲区
-    cube2.vertexBuffer = CreateQuadVertexBuffer(state->device);
+    quad2.vertexBuffer = CreateQuadVertexBuffer(state->device);
     // 创建索引缓冲区
-    cube2.indexBuffer = CreateQuadIndexBuffer(state->device);
-    cube2.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
+    quad2.indexBuffer = CreateQuadIndexBuffer(state->device);
+    quad2.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     // worldMatrix 2D平移矩阵，Z轴一般为0
-    cube2.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    quad2.worldMatrix = DirectX::XMMatrixTranslation(800.0f, 300.0f, 0.0f);
     
 
-    sceneObjects.push_back(cube1);
-    sceneObjects.push_back(cube2);
+    sceneObjects.push_back(quad1);
+    sceneObjects.push_back(quad2);
 
 
 
@@ -572,7 +583,31 @@ ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device)
     return indexBuffer;
 }
 
+// 更新常量缓冲区的函数
+void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix)
+{
+    // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）
+    DirectX::XMMATRIX transposed = DirectX::XMMatrixTranspose(worldMatrix);
 
+    ConstantBuffer cb = {};
+    cb.worldMatrix = transposed;
+    cb.screenSize[0] = (FLOAT)screenWidth;
+    cb.screenSize[1] = (FLOAT)screenHeight;
+    cb.padding[0] = 0.0f;
+    cb.padding[1] = 0.0f;
+
+    // 映射缓冲区写入数据
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT hr = context->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    if (FAILED(hr))
+    {
+        // 失败处理
+        return;
+    }
+
+    memcpy(mappedResource.pData, &cb, sizeof(ConstantBuffer));
+    context->Unmap(constantBuffer, 0);
+}
 /*
 +------------------+        +-----------------+        +------------------+
 |   顶点缓冲区     | -----> | 顶点着色器 VS   | -----> | 光栅化（生成像素） |
