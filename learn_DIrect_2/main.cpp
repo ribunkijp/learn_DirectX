@@ -69,7 +69,7 @@ bool InitD3D(HWND hwnd, StateInfo* state);
 
 // 窗口过程函数
 LRESULT CALLBACK WindowProc(
-    HWND hwnd,
+    HWND hwnd,//窗口句柄 一个具体窗口的“身份证”
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam
@@ -81,7 +81,7 @@ unsigned screenHeight = (unsigned)GetSystemMetrics(SM_CYSCREEN);
 
 // 程序入口
 int WINAPI wWinMain(
-    _In_ HINSTANCE hInstance,
+    _In_ HINSTANCE hInstance, //实例句柄 应用本身的“身份证”
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ PWSTR pCmdLine,
     _In_ int nCmdShow
@@ -93,6 +93,7 @@ int WINAPI wWinMain(
     const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
     WNDCLASS wc = { };
+    //设置窗口消息处理函数
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = CLASS_NAME;
@@ -419,7 +420,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     Vertex vertices[] = {
      { {  500.0f,  100.0f, 0.0f }, {1, 0, 0, 1} },   // 顶点：红色
      { {  700.0f, 600.0f, 0.0f }, {0, 1, 0, 1} },   // 右下：绿色
-     { {  300.0f, 600.0f, 0.0f }, {0, 0, 1, 1} }    // 左下：蓝色
+     { {  300.0f, 600.0f, 0.0f }, {0, 0, 1, 1} }  // 左下：蓝色
     };
 
     // 缓冲区描述设置

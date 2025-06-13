@@ -2,6 +2,9 @@
 cbuffer ConstantBuffer : register(b0)
 {
     float2 screenSize;
+    float4x4 worldMatrices[100]; // 预留100个世界矩阵（每个对应一个图形）
+    float4 colors[100]; // 对应颜色数组
+    int objectCount;
 };
 
 struct VS_INPUT
