@@ -35,9 +35,9 @@ struct ConstantBuffer {
 // 管理 Direct3D11 渲染状态的结构体
 struct StateInfo {
     // 设备对象：用于创建资源和着色器
-    ID3D11Device* device = nullptr;
+    ID3D11Device* device = nullptr; //ID3D11Device（显卡接口）
 
-    // 设备上下文：用于发出绘制命令和绑定资源
+    // 设备上下文：用于发出绘制命令和绑定资源 //D3D11DeviceContext（命令接口）
     ID3D11DeviceContext* context = nullptr;
 
     // 交换链：管理后台缓冲区与前台缓冲区的交换（用于屏幕显示）
@@ -82,22 +82,26 @@ unsigned screenHeight = (unsigned)GetSystemMetrics(SM_CYSCREEN);
 // 程序入口
 int WINAPI wWinMain(
     _In_ HINSTANCE hInstance, //实例句柄 应用本身的“身份证”
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ PWSTR pCmdLine,
-    _In_ int nCmdShow
+    _In_opt_ HINSTANCE hPrevInstance,//Windows 95 时代遗留参数，总是为 NULL
+    _In_ PWSTR pCmdLine,//命令行参数字符串（不包含程序本身的路径）
+    _In_ int nCmdShow //窗口显示的方式
 ) {
     (void)hPrevInstance; // 虽然不使用，但为了消除警告而显式引用
     (void)pCmdLine;      // 同上
 
-    // 注册窗口类
-    const wchar_t CLASS_NAME[] = L"Sample Window Class";
+    // 自定义的字符串
+    const wchar_t CLASS_NAME[] = L"WIndow_1";
 
+    //wc代表你要注册的窗口类
     WNDCLASS wc = { };
     //设置窗口消息处理函数
     wc.lpfnWndProc = WindowProc;
+    //
     wc.hInstance = hInstance;
+    //// 这里设置窗口类名(自定义的字符串)
     wc.lpszClassName = CLASS_NAME;
 
+    // 注册窗口类
     RegisterClass(&wc);
 
     StateInfo* pState = new StateInfo();  // 用 new 进行初始化
@@ -192,12 +196,16 @@ LRESULT CALLBACK WindowProc(
 
             pState = GetAppState(hwnd);
 
+
+            /*
+                这段代码是为了实现动态更新GPU端的常量缓冲区，使着色器能够获取当前窗口大小，
+                保证渲染效果能正确适配窗口尺寸变化。
+            */
             // 取得最新窗口大小（防止窗口大小变化不更新）
             RECT rect;
             GetClientRect(hwnd, &rect);
             float width = static_cast<float>(rect.right - rect.left);
             float height = static_cast<float>(rect.bottom - rect.top);
-
             // Map 常量缓冲区，更新 screenSize
             D3D11_MAPPED_SUBRESOURCE mapped = {};
             if (SUCCEEDED(pState->context->Map(pState->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped))) {
@@ -217,16 +225,27 @@ LRESULT CALLBACK WindowProc(
             pState->context->ClearRenderTargetView(pState->rtv, clearColor);
 
             // 设置输入布局和着色器
+            /*
+                告诉GPU顶点数据长啥样，怎么读；
+
+                告诉GPU顶点数据如何被顶点着色器处理；
+
+                告诉GPU像素怎么被像素着色器处理。
+            */
+            //设置输入布局（Input Layout）
             pState->context->IASetInputLayout(pState->inputLayout);
+            //绑定顶点着色器（Vertex Shader）。
             pState->context->VSSetShader(pState->vertexShader, nullptr, 0);
+            //绑定像素着色器（Pixel Shader）
             pState->context->PSSetShader(pState->pixelShader, nullptr, 0);
 
             // 绑定顶点缓冲区
             UINT stride = sizeof(float) * 7; // 3个坐标 + 4个颜色
+            //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
             UINT offset = 0;
             pState->context->IASetVertexBuffers(0, 1, &pState->vertexBuffer, &stride, &offset);
 
-            // 设置图元类型为三角形列表
+            // 作用是告诉 GPU 如何把顶点组织成图元来绘制。设置图元类型为三角形列表:D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
             pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
@@ -255,8 +274,24 @@ inline StateInfo* GetAppState(HWND hwnd)
     return pState;
 }
 
+
 bool InitD3D(HWND hwnd, StateInfo* state) {
-    // 初始化交换链描述结构体
+    /*
+        // 初始化交换链描述结构体（DXGI_SWAP_CHAIN_DESC）
+        // 交换链（Swap Chain）是 DirectX 实现双缓冲或多缓冲的机制。
+        // 它包含一个或多个“后备缓冲区”（Back Buffers），渲染时画面先画到这些缓冲区，
+        // 然后调用 Present() 把当前缓冲区“交换”到前台显示。
+        
+        // DXGI_SWAP_CHAIN_DESC 是用来配置交换链的结构体，
+        // 包括：缓冲区数量、分辨率、格式、窗口句柄、全屏/窗口模式、抗锯齿等设置。
+        //
+        // 此结构体将作为参数传入 D3D11CreateDeviceAndSwapChain 函数，
+        // 同时创建以下关键对象：
+        // - ID3D11Device（显卡接口，资源创建用）
+        // - ID3D11DeviceContext（设备上下文，发命令用）
+        // - IDXGISwapChain（交换链接口，管理缓冲区显示）
+        //
+    */
     DXGI_SWAP_CHAIN_DESC scd = {};
 
     // 后备缓冲区数量（只使用1个）
@@ -281,7 +316,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     // 启用窗口模式（TRUE：非全屏）
     scd.Windowed = TRUE;
 
-    // 创建 Direct3D 设备和交换链
+    // 创建 Direct3D 设备和交换链和命令上下文
     if (FAILED(D3D11CreateDeviceAndSwapChain(
         nullptr,                        // 适配器（nullptr＝默认）
         D3D_DRIVER_TYPE_HARDWARE,      // 使用硬件
@@ -327,6 +362,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     ID3DBlob* vsBlob = nullptr;         // 顶点着色器二进制数据存储
     ID3DBlob* psBlob = nullptr;         // 像素着色器二进制数据存储
 
+    // 编译顶点着色器（VS)
     hr = D3DCompileFromFile(
         L"shader.hlsl",                 // HLSL文件路径
         nullptr, nullptr,              // 不使用宏和包含
@@ -335,7 +371,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
         &vsBlob, nullptr               // 存储编译结果（成功时）
     );
     if (FAILED(hr)) return false;      // 失败时退出
-
+    //编译像素着色器（PS）
     hr = D3DCompileFromFile(
         L"shader.hlsl",
         nullptr, nullptr,
@@ -385,26 +421,32 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     };
 
     hr = state->device->CreateInputLayout(
-        layout, 2,                    // 元素数组和元素数
-        vsBlob->GetBufferPointer(),
+        layout, 2,                          // 输入布局描述数组 + 数量
+        vsBlob->GetBufferPointer(),        // 编译后的顶点着色器代码（二进制）
         vsBlob->GetBufferSize(),
-        &state->inputLayout
+        &state->inputLayout                // 创建出的输入布局对象
     );
     vsBlob->Release();
     psBlob->Release();
     if (FAILED(hr)) return false;
 
 
-
-
+    // 常量缓冲区（Constant Buffer）
+    //初始化一个描述结构体，准备告诉 GPU 我们要创建一个什么样的缓冲区。
     D3D11_BUFFER_DESC cbd = {};
-    cbd.Usage = D3D11_USAGE_DYNAMIC;               
+    //设置这个缓冲区的“用途”DYNAMIC 表示：CPU 会频繁改数据（如每帧传入新的矩阵），GPU 会读取。
+    cbd.Usage = D3D11_USAGE_DYNAMIC;  
+    //缓冲区的大小（以字节为单位）
     cbd.ByteWidth = sizeof(ConstantBuffer);
+    //告诉 GPU：这个缓冲区是用作常量缓冲区，也就是要绑定到着色器里
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    //表示 CPU 可以写入这个缓冲区（比如更新变换矩阵）  这和 D3D11_USAGE_DYNAMIC 是配套的。只有 DYNAMIC 才能设置这个。
     cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;  
+    //高级功能（结构化缓冲区等）才用到这个。
     cbd.MiscFlags = 0;
+    //结构化缓冲区（Structured Buffer）才用
     cbd.StructureByteStride = 0;
-
+    //创建常量缓冲区（Constant Buffer）在渲染过程中将数据（比如变换矩阵）从 CPU 传给 GPU 的着色器。
     hr = state->device->CreateBuffer(&cbd, nullptr, &state->constantBuffer);
     if (FAILED(hr)) return false;
 
@@ -439,3 +481,32 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
     return true; // 成功时返回true
 }
+
+/*
++------------------+        +-----------------+        +------------------+
+|   顶点缓冲区     | -----> | 顶点着色器 VS   | -----> | 光栅化（生成像素） |
+| (Vertex Buffer)  |        |（处理位置等）   |        +------------------+
++------------------+                                   ↓
+           ↑
+           ❘
++------------------+        +-----------------+        ↓
+| 常量缓冲区       | -----> | 像素着色器 PS   | <------+
+| (ConstantBuffer) |        |（上色计算）     |
++------------------+        +-----------------+
+
+                     最终绘制到
+                     ↓
+
+           +--------------------------+
+           | 渲染目标视图 (RTV)        |
+           | (后备缓冲区的“视图”)      |
+           +--------------------------+
+                        ↓
+               Present（交换显示）
+
+           +--------------------------+
+           |   显示器/窗口            |
+           +--------------------------+
+
+
+*/
