@@ -1,2 +1,3 @@
 ﻿  main.cpp
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(33,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

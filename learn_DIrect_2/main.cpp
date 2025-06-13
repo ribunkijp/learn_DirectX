@@ -22,8 +22,17 @@ WinMain（アプリの開始点）
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#include <DirectXMath.h>
+#include <vector>
 
 
+struct GameObject {
+    ID3D11Buffer* vertexBuffer = nullptr;
+    ID3D11Buffer* indexBuffer = nullptr;
+    UINT vertexCount = 0;
+    UINT indexCount = 0;
+    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();//初期化//制每个物体的位置、旋转、缩放
+};
 
 
 struct ConstantBuffer {
@@ -58,6 +67,9 @@ struct StateInfo {
     // 顶点缓冲区：存储用于绘制的顶点数据的缓冲区
     ID3D11Buffer* vertexBuffer = nullptr;
 
+    // 顶点缓冲区：存储用于绘制的顶点数据的缓冲区
+    ID3D11Buffer* indexBuffer = nullptr;
+
     //
     ID3D11Buffer* constantBuffer = nullptr;
 
@@ -66,6 +78,12 @@ struct StateInfo {
 inline StateInfo* GetAppState(HWND hwnd);
 
 bool InitD3D(HWND hwnd, StateInfo* state);
+
+ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device);
+
+ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device);
+
+std::vector<GameObject> sceneObjects;
 
 // 窗口过程函数
 LRESULT CALLBACK WindowProc(
@@ -244,15 +262,16 @@ LRESULT CALLBACK WindowProc(
             //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
             UINT offset = 0;
             pState->context->IASetVertexBuffers(0, 1, &pState->vertexBuffer, &stride, &offset);
+            // 绑定索引缓冲区
+            pState->context->IASetIndexBuffer(pState->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
             // 作用是告诉 GPU 如何把顶点组织成图元来绘制。设置图元类型为三角形列表:D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
             pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
 
-
-            // 绘制3个顶点
-            pState->context->Draw(3, 0);
+            // 绘制6个索引，绘制矩形
+            pState->context->DrawIndexed(6, 0, 0);
 
             // 交换前后台缓冲区
             pState->swapChain->Present(1, 0);
@@ -329,6 +348,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
         nullptr,                     // 不需要实际功能级别，传nullptr
         &state->context)))            // 接收设备上下文
         return false; // 失败返回false
+
 
     // 获取后备缓冲区的纹理（绘制目标）
     ID3D11Texture2D* backBuffer = nullptr;
@@ -451,36 +471,107 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     if (FAILED(hr)) return false;
 
 
+    //const UINT quadVertexCount = 4;  // 4个顶点
+    const UINT quadIndexCount = 6;   // 6个索引（三角形2个，每个3个顶点
+
+    GameObject cube1;
+    // 假设你有一个函数用来创建2D矩形顶点缓冲区
+    cube1.vertexBuffer = CreateQuadVertexBuffer(state->device);
+    // 创建索引缓冲区
+    cube1.indexBuffer = CreateQuadIndexBuffer(state->device);
+    cube1.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
+    // worldMatrix 2D平移矩阵，Z轴一般为0
+    cube1.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
 
-    // 4. 创建顶点缓冲区（向GPU传递三角形顶点数据）
-    struct Vertex {
-        float pos[3];    // 位置（x, y, z）
-        float color[4];  // 颜色（r, g, b, a）
-    };
+    GameObject cube2;
+    // 假设你有一个函数用来创建2D矩形顶点缓冲区
+    cube2.vertexBuffer = CreateQuadVertexBuffer(state->device);
+    // 创建索引缓冲区
+    cube2.indexBuffer = CreateQuadIndexBuffer(state->device);
+    cube2.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
+    // worldMatrix 2D平移矩阵，Z轴一般为0
+    cube2.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    
 
-    Vertex vertices[] = {
-     { {  500.0f,  100.0f, 0.0f }, {1, 0, 0, 1} },   // 顶点：红色
-     { {  700.0f, 600.0f, 0.0f }, {0, 1, 0, 1} },   // 右下：绿色
-     { {  300.0f, 600.0f, 0.0f }, {0, 0, 1, 1} }  // 左下：蓝色
-    };
+    sceneObjects.push_back(cube1);
+    sceneObjects.push_back(cube2);
 
-    // 缓冲区描述设置
-    D3D11_BUFFER_DESC bd = {};
-    bd.Usage = D3D11_USAGE_DEFAULT;           // 常规使用
-    bd.ByteWidth = sizeof(vertices);          // 缓冲区大小（字节）
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;  // 作为顶点缓冲区使用
 
-    // 初始数据设置
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = vertices;              // 顶点数据指针
 
-    // 创建缓冲区
-    hr = state->device->CreateBuffer(&bd, &initData, &state->vertexBuffer);
-    if (FAILED(hr)) return false;
+    // 2. 创建顶点缓冲区（你可能有 CreateQuadVertexBuffer）
+    state->vertexBuffer = CreateQuadVertexBuffer(state->device);
+
+    // 3. 创建索引缓冲区
+    state->indexBuffer = CreateQuadIndexBuffer(state->device);
+
+
 
     return true; // 成功时返回true
 }
+
+ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device) {
+    struct Vertex {
+        DirectX::XMFLOAT3 position;  // 位置
+        DirectX::XMFLOAT4 color;     // 颜色
+    };
+    Vertex vertices[] = {
+        { { 200.0f, 100.0f, 0.0f }, {1, 0, 0, 1} },   // 左上：红色
+        { { 500.0f, 100.0f, 0.0f }, {0, 1, 0, 1} },   // 右上：绿色
+        { { 500.0f, 600.0f, 0.0f }, {0, 0, 1, 1} },   // 右下：蓝色
+        { { 200.0f, 600.0f, 0.0f }, {1, 1, 0, 1} }    // 左下：黄色（或者你想要的颜色）
+    };
+
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(vertices);
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = vertices;
+
+    //定义一个指向 Direct3D 11 顶点缓冲区的指针，初始值设为 nullptr（空指针）
+    ID3D11Buffer* vertexBuffer = nullptr;
+    //创建一个 GPU 上的缓冲区。
+    HRESULT hr = device->CreateBuffer(&bd, &initData, &vertexBuffer);
+    if (FAILED(hr)) {
+        // 错误处理
+        return nullptr;
+    }
+    return vertexBuffer;
+}
+ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device)
+{
+    // 定义矩形的索引数组，共6个索引，绘制两个三角形组成一个矩形
+    // 三角形1顶点索引: 0, 1, 2
+    // 三角形2顶点索引: 0, 2, 3
+    UINT indices[6] = { 0, 1, 2, 0, 2, 3 };
+
+    // 初始化缓冲区描述结构体
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;                // 默认使用方式，GPU可读写，CPU不可访问
+    bd.ByteWidth = sizeof(UINT) * 6;               // 缓冲区大小，6个索引，每个索引是UINT类型
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;        // 绑定标志，表示该缓冲区是索引缓冲区
+
+    // 定义初始化数据结构，告诉D3D缓冲区初始化时使用哪个内存的数据
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = indices;                     // 指向索引数组的指针
+
+    // 创建索引缓冲区指针，初始值为空
+    ID3D11Buffer* indexBuffer = nullptr;
+
+    // 调用设备接口，创建索引缓冲区
+    HRESULT hr = device->CreateBuffer(&bd, &initData, &indexBuffer);
+    if (FAILED(hr))
+    {
+        // 创建失败，返回nullptr，可以在调用处检测失败并处理
+        return nullptr;
+    }
+
+    // 创建成功，返回索引缓冲区指针
+    return indexBuffer;
+}
+
 
 /*
 +------------------+        +-----------------+        +------------------+
