@@ -1,4 +1,10 @@
 /*
+    main.cpp
+
+*/
+
+
+/*
 
 WinMain（アプリの開始点）
 └─ RegisterClass（ウィンドウクラスを登録）
@@ -18,25 +24,28 @@ WinMain（アプリの開始点）
 
 #include <windows.h>
 #include <new>
-#include <d3d11.h>
+#include <d3d11.h>//ID3D11Device
 #include <d3dcompiler.h>
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "d3d11.lib")//链接Direct3D 11 的静态链接库
+#pragma comment(lib, "d3dcompiler.lib")//链接D3DCompiler API 的静态链接库
 #include <DirectXMath.h>
 #include <vector>
 
-
+//
 struct GameObject {
-    ID3D11Buffer* vertexBuffer = nullptr;
-    ID3D11Buffer* indexBuffer = nullptr;
-    UINT vertexCount = 0;
-    UINT indexCount = 0;
-    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();//初期化//制每个物体的位置、旋转、缩放
+    ID3D11Buffer* vertexBuffer = nullptr;  // 顶点缓冲区指针，存储物体的顶点数据（位置、颜色等）
+    ID3D11Buffer* indexBuffer = nullptr;   // 索引缓冲区指针，用于顶点的索引绘制，减少顶点重复
+    UINT vertexCount = 0;                   // 顶点数量，用于绘制调用时指定绘制的顶点个数
+    UINT indexCount = 0;                    // 索引数量，用于绘制调用时指定绘制的索引个数
+    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();  // 世界矩阵，表示物体的位置、旋转、缩放（默认单位矩阵）
 };
 
 
+//定义了将数据作为常量缓冲区传递给 GPU shaders 的布局
 struct ConstantBuffer {
+    //世界变换矩阵。这将按物体进行更新并发送到顶点着色器
     DirectX::XMMATRIX worldMatrix;  // 64 字节 (4x4 float)
+    //一个数组，用于存储屏幕的宽度和高度。这在 shader 中用于将像素坐标转换为 Normalized Device Coordinates (NDC)。
     float screenSize[2]; // 屏幕宽高
     float padding[2];    // 保持16字节对齐
 };
@@ -48,9 +57,13 @@ struct StateInfo {
     ID3D11Device* device = nullptr; //ID3D11Device（显卡接口）
 
     // 设备上下文：用于发出绘制命令和绑定资源 //D3D11DeviceContext（命令接口）
-    ID3D11DeviceContext* context = nullptr;
+    ID3D11DeviceContext* context = nullptr;//渲染管线
 
-    // 交换链：管理后台缓冲区与前台缓冲区的交换（用于屏幕显示）
+    
+    /*
+        交换链：管理后台缓冲区与前台缓冲区的交换（用于屏幕显示）通常包含一个或多个后备缓冲区 (Back Buffers)，
+        渲染时画面首先绘制到这些缓冲区，然后调用 Present() 将当前缓冲区“交换”到前台显示。
+    */
     IDXGISwapChain* swapChain = nullptr;
 
     // 渲染目标视图：指定绘制目标缓冲区的视图
@@ -68,10 +81,10 @@ struct StateInfo {
     // 顶点缓冲区：存储用于绘制的顶点数据的缓冲区
     ID3D11Buffer* vertexBuffer = nullptr;
 
-    // 顶点缓冲区：存储用于绘制的顶点数据的缓冲区
+    // 存储索引数组
     ID3D11Buffer* indexBuffer = nullptr;
 
-    //
+    //常量缓冲区 该数据传递给 shaders
     ID3D11Buffer* constantBuffer = nullptr;
 
 };
@@ -102,7 +115,7 @@ unsigned screenHeight = (unsigned)GetSystemMetrics(SM_CYSCREEN);
 
 // 程序入口
 int WINAPI wWinMain(
-    _In_ HINSTANCE hInstance, //实例句柄 应用本身的“身份证”
+    _In_ HINSTANCE hInstance, //实例句柄 应用本身的“身份证”代表当前运行的应用程序实例,即你这个程序在内存中的一个副本
     _In_opt_ HINSTANCE hPrevInstance,//Windows 95 时代遗留参数，总是为 NULL
     _In_ PWSTR pCmdLine,//命令行参数字符串（不包含程序本身的路径）
     _In_ int nCmdShow //窗口显示的方式
@@ -113,11 +126,11 @@ int WINAPI wWinMain(
     // 自定义的字符串
     const wchar_t CLASS_NAME[] = L"WIndow_1";
 
-    //wc代表你要注册的窗口类
+    //wc代表你要注册的窗口类 
     WNDCLASS wc = { };
     //设置窗口消息处理函数
     wc.lpfnWndProc = WindowProc;
-    //
+    //// 设置窗口所属的应用实例
     wc.hInstance = hInstance;
     //// 这里设置窗口类名(自定义的字符串)
     wc.lpszClassName = CLASS_NAME;
@@ -125,6 +138,7 @@ int WINAPI wWinMain(
     // 注册窗口类
     RegisterClass(&wc);
 
+    //pState 指针将保存所有 Direct3D rendering state
     StateInfo* pState = new StateInfo();  // 用 new 进行初始化
 
     if (pState == NULL)
@@ -168,7 +182,9 @@ int WINAPI wWinMain(
     MSG msg = { };
     while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
+        //将虚拟键消息转换为字符消息。这对于键盘输入很重要。
         TranslateMessage(&msg);
+        // 将消息分派到与目标窗口 (msg.hwnd) 关联的窗口过程 (WindowProc)。
         DispatchMessage(&msg);
     }
 
@@ -180,7 +196,7 @@ LRESULT CALLBACK WindowProc(
     HWND hwnd,
     UINT uMsg,
     WPARAM wParam, // 无符号整数类型
-    LPARAM lParam  // 有符号整数类型
+    LPARAM lParam  // 有符号整数或指针
 ) {
     // 保存 StateInfo 结构体的指针（结构体 = 数据的集合）
     StateInfo* pState = nullptr;
@@ -224,15 +240,30 @@ LRESULT CALLBACK WindowProc(
             */
             // 取得最新窗口大小（防止窗口大小变化不更新）
             RECT rect;
+            //检索窗口客户区 (可绘制区域，不包括边框和标题栏) 的尺寸
             GetClientRect(hwnd, &rect);
             float width = static_cast<float>(rect.right - rect.left);
             float height = static_cast<float>(rect.bottom - rect.top);
-            // Map 常量缓冲区，更新 screenSize
+            
+           /*
+            pState->context->Map(...): 这是一个关键的 Direct3D call。它将 GPU resource (在此例中为 pState->constantBuffer) 
+            映射到 CPU-accessible memory。这允许 CPU 直接写入 GPU 将读取的 buffer 中的数据
+           */
             D3D11_MAPPED_SUBRESOURCE mapped = {};
-            if (SUCCEEDED(pState->context->Map(pState->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped))) {
-                ConstantBuffer* pCb = (ConstantBuffer*)mapped.pData;
+            if (SUCCEEDED(pState->context->Map(
+                pState->constantBuffer,  // 要写入的缓冲区
+                0,                        // 子资源索引（通常为0）
+                //写入模式动态 buffers 的常见映射标志。它指示 CPU 将覆盖整个 buffer，并且 GPU 可以丢弃先前的内容。
+                // 这对于频繁更新很高效
+                D3D11_MAP_WRITE_DISCARD,
+                0,                        // 保留，设为0
+                &mapped                  // 输出映射信息
+            ))) {
+                ConstantBuffer* pCb = (ConstantBuffer*)mapped.pData;//把 mapped.pData 转换成你定义的结构体 ConstantBuffer* 指针
+                //当前窗口尺寸写入到映射的 constant buffer 内的 screenSize 数组中
                 pCb->screenSize[0] = width;
                 pCb->screenSize[1] = height;
+                //取消映射 buffer，使其再次可供 GPU 使用。写入后取消映射至关重要，以确保 GPU 可以访问更新的数据。
                 pState->context->Unmap(pState->constantBuffer, 0);
             }
 
@@ -255,9 +286,9 @@ LRESULT CALLBACK WindowProc(
             */
             //设置输入布局（Input Layout）
             pState->context->IASetInputLayout(pState->inputLayout);
-            //绑定顶点着色器（Vertex Shader）。
+            //绑定顶点着色器（Vertex Shader）到管线
             pState->context->VSSetShader(pState->vertexShader, nullptr, 0);
-            //绑定像素着色器（Pixel Shader）
+            //绑定像素着色器（Pixel Shader）到管线
             pState->context->PSSetShader(pState->pixelShader, nullptr, 0);
 
             // 绑定顶点缓冲区
@@ -273,7 +304,7 @@ LRESULT CALLBACK WindowProc(
                 ID3D11Buffer* vertexBuffers[] = { obj.vertexBuffer };
                 // 设置顶点缓冲区
                 pState->context->IASetVertexBuffers(0, 1, vertexBuffers, &stride, &offset);
-                // 设置索引缓冲区
+                // 设置索引缓冲区 指定每个索引是一个 32 位无符号整数
                 pState->context->IASetIndexBuffer(obj.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
                 // 设置常量缓冲区，传入 obj.worldMatrix
                 UpdateConstantBuffer(pState->context, pState->constantBuffer, obj.worldMatrix);
@@ -284,14 +315,14 @@ LRESULT CALLBACK WindowProc(
 
 
 
-            // 交换前后台缓冲区
+            // 将后备缓冲区 (已完成渲染的缓冲区) 与前台缓冲区 (当前显示在屏幕上的缓冲区) 交换
             pState->swapChain->Present(1, 0);
 
             EndPaint(hwnd, &ps);
             return 0;
         }
     }
-
+    //switch 语句中未明确处理的任何消息，此行调用默认窗口过程
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
@@ -299,6 +330,7 @@ LRESULT CALLBACK WindowProc(
 
 inline StateInfo* GetAppState(HWND hwnd)
 {
+    //从指定窗口（hwnd）中取出你之前用 SetWindowLongPtr 存进去的自定义指针或数据。
     LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
     StateInfo* pState = reinterpret_cast<StateInfo*>(ptr);
     return pState;
@@ -334,7 +366,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     // 缓冲区的颜色格式（RGBA，每个8位的标准格式）
     scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-    // 缓冲区的用途（作为渲染目标使用）
+    // 缓冲区的用途（作为渲染目标使用）缓冲区将作为渲染目标绑定到渲染管线中
     scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
     // 输出目标的窗口句柄
@@ -363,6 +395,12 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
     // 获取后备缓冲区的纹理（绘制目标）
     ID3D11Texture2D* backBuffer = nullptr;
+    /*
+        第一个参数0 表示缓冲区索引 第一个缓冲区;
+        第二个参数 uuidof(ID3D11Texture2D) 指明你想得到的接口类型是 ID3D11Texture2D，也就是2D纹理;
+        第三个参数(void**)&backBuffer 是输出指针，GetBuffer 会把后备缓冲区纹理的接口指针写进这里
+        需要拿到它的纹理接口，后续才能创建渲染目标视图（Render Target View）绑定到它，从而告诉GPU“这就是我们渲染的目标”。
+    */
     HRESULT hr = state->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
     if (FAILED(hr) || backBuffer == nullptr) {
         return false; // 失败时中断初始化
@@ -388,7 +426,9 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     vp.MaxDepth = 1.0f;                  // 最大深度（深度缓冲区最大值）
     state->context->RSSetViewports(1, &vp); // 设置光栅化阶段的视口
 
-
+    /*
+            把 .hlsl 源代码编译成 GPU 可以执行的二进制字节码（Bytecode）。
+    */
     // 1. 编译顶点着色器和像素着色器
     ID3DBlob* vsBlob = nullptr;         // 顶点着色器二进制数据存储
     ID3DBlob* psBlob = nullptr;         // 像素着色器二进制数据存储
@@ -414,7 +454,6 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
         vsBlob->Release();             // 释放资源
         return false;
     }
-
 
     // 2. 创建着色器对象（转换为GPU可用的着色器）
     hr = state->device->CreateVertexShader(
@@ -442,7 +481,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     }
 
 
-    // 3. 创建输入布局（指定顶点缓冲区格式）
+    // 3. 创建输入布局（顶点缓冲区中的数据如何映射到顶点着色器的输入)
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         // POSITION: 3个float（x, y, z）
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -452,10 +491,11 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     };
 
     hr = state->device->CreateInputLayout(
-        layout, 2,                          // 输入布局描述数组 + 数量
-        vsBlob->GetBufferPointer(),        // 编译后的顶点着色器代码（二进制）
+        layout,      // 布局数组
+        2,           // 数组长度
+        vsBlob->GetBufferPointer(), // 用来检查布局是否匹配 VS
         vsBlob->GetBufferSize(),
-        &state->inputLayout                // 创建出的输入布局对象
+        &state->inputLayout         // 输出结果（用于绑定到渲染管线）
     );
     vsBlob->Release();
     psBlob->Release();
@@ -467,7 +507,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     D3D11_BUFFER_DESC cbd = {};
     //设置这个缓冲区的“用途”DYNAMIC 表示：CPU 会频繁改数据（如每帧传入新的矩阵），GPU 会读取。
     cbd.Usage = D3D11_USAGE_DYNAMIC;  
-    //缓冲区的大小（以字节为单位）
+    //将缓冲区的大小 (以字节为单位) 设置为与你的 ConstantBuffer struct 匹配
     cbd.ByteWidth = sizeof(ConstantBuffer);
     //告诉 GPU：这个缓冲区是用作常量缓冲区，也就是要绑定到着色器里
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -510,14 +550,6 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
 
 
-    // 2. 创建顶点缓冲区（你可能有 CreateQuadVertexBuffer）
-    state->vertexBuffer = CreateQuadVertexBuffer(state->device);
-
-    // 3. 创建索引缓冲区
-    state->indexBuffer = CreateQuadIndexBuffer(state->device);
-
-
-
     return true; // 成功时返回true
 }
 
@@ -533,13 +565,13 @@ ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device) {
         { { 200.0f, 600.0f, 0.0f }, {1, 1, 0, 1} }    // 左下：黄色（或者你想要的颜色）
     };
 
-    D3D11_BUFFER_DESC bd = {};
-    bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(vertices);
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    D3D11_BUFFER_DESC bd = {};// Direct3D 11 用来描述缓冲区属性的结构体
+    bd.Usage = D3D11_USAGE_DEFAULT;              // 指示缓冲区将由 GPU 读取和写入。创建后不允许 CPU 直接访问。
+    bd.ByteWidth = sizeof(vertices);             // 缓冲区大小 = 顶点总大小
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;     // 用作顶点缓冲区
 
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = vertices;
+    D3D11_SUBRESOURCE_DATA initData = {};//D3D11_SUBRESOURCE_DATA 是用来初始化缓冲区数据的结构体。
+    initData.pSysMem = vertices;// 提供用于在 GPU 上填充缓冲区的初始数据。
 
     //定义一个指向 Direct3D 11 顶点缓冲区的指针，初始值设为 nullptr（空指针）
     ID3D11Buffer* vertexBuffer = nullptr;
@@ -589,14 +621,16 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
     // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）
     DirectX::XMMATRIX transposed = DirectX::XMMatrixTranspose(worldMatrix);
 
+    // 准备常量缓冲区数据结构（这里假设 ConstantBuffer 定义了相应成员）
     ConstantBuffer cb = {};
-    cb.worldMatrix = transposed;
-    cb.screenSize[0] = (FLOAT)screenWidth;
-    cb.screenSize[1] = (FLOAT)screenHeight;
-    cb.padding[0] = 0.0f;
+    cb.worldMatrix = transposed;              // 设置变换矩阵
+    cb.screenSize[0] = (FLOAT)screenWidth;    // 屏幕宽度
+    cb.screenSize[1] = (FLOAT)screenHeight;   // 屏幕高度
+    cb.padding[0] = 0.0f;                      // 补齐数据，保证结构对齐
     cb.padding[1] = 0.0f;
 
-    // 映射缓冲区写入数据
+
+    //将 GPU 的 constantBuffer 映射到 CPU-accessible memory。
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT hr = context->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     if (FAILED(hr))
@@ -604,8 +638,9 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
         // 失败处理
         return;
     }
-
+    // 将数据从 CPU 端的 cb struct 复制到映射的 GPU memory
     memcpy(mappedResource.pData, &cb, sizeof(ConstantBuffer));
+    //取消映射 buffer，使更新后的数据可供 GPU 使用。
     context->Unmap(constantBuffer, 0);
 }
 /*
