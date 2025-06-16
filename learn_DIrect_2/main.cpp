@@ -32,12 +32,12 @@ WinMain（アプリの開始点）
 #include <vector>
 
 //
-struct GameObject {
+struct alignas(16) GameObject {
+    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();  // 世界矩阵，表示物体的位置、旋转、缩放（默认单位矩阵）
     ID3D11Buffer* vertexBuffer = nullptr;  // 顶点缓冲区指针，存储物体的顶点数据（位置、颜色等）
     ID3D11Buffer* indexBuffer = nullptr;   // 索引缓冲区指针，用于顶点的索引绘制，减少顶点重复
     UINT vertexCount = 0;                   // 顶点数量，用于绘制调用时指定绘制的顶点个数
     UINT indexCount = 0;                    // 索引数量，用于绘制调用时指定绘制的索引个数
-    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();  // 世界矩阵，表示物体的位置、旋转、缩放（默认单位矩阵）
 };
 
 
