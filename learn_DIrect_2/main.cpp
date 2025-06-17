@@ -101,7 +101,7 @@ struct StateInfo {
     ID3D11BlendState* blendState = nullptr;
     // 用于透明物体的深度状态
     ID3D11DepthStencilState* depthStencilStateTransparent = nullptr; 
-    //
+    //深度/模板缓冲区视图 的接口指针  GPU 用来访问和操作深度/模板缓冲区的接口
     ID3D11DepthStencilView* depthStencilView = nullptr;
 
 };
@@ -269,36 +269,23 @@ LRESULT CALLBACK WindowProc(
             float width = static_cast<float>(rect.right - rect.left);
             float height = static_cast<float>(rect.bottom - rect.top);
             
-           ///*
-           // pState->context->Map(...): 这是一个关键的 Direct3D call。它将 GPU resource (在此例中为 pState->constantBuffer) 
-           // 映射到 CPU-accessible memory。这允许 CPU 直接写入 GPU 将读取的 buffer 中的数据
-           //*/
-           // D3D11_MAPPED_SUBRESOURCE mapped = {};
-           // if (SUCCEEDED(pState->context->Map(
-           //     pState->constantBuffer,  // 要写入的缓冲区
-           //     0,                        // 子资源索引（通常为0）
-           //     //写入模式动态 buffers 的常见映射标志。它指示 CPU 将覆盖整个 buffer，并且 GPU 可以丢弃先前的内容。
-           //     // 这对于频繁更新很高效
-           //     D3D11_MAP_WRITE_DISCARD,
-           //     0,                        // 保留，设为0
-           //     &mapped                  // 输出映射信息
-           // ))) {
-           //     ConstantBuffer* pCb = (ConstantBuffer*)mapped.pData;//把 mapped.pData 转换成你定义的结构体 ConstantBuffer* 指针
-           //     //当前窗口尺寸写入到映射的 constant buffer 内的 screenSize 数组中
-           //     pCb->screenSize[0] = width;
-           //     pCb->screenSize[1] = height;
-           //     //取消映射 buffer，使其再次可供 GPU 使用。写入后取消映射至关重要，以确保 GPU 可以访问更新的数据。
-           //     pState->context->Unmap(pState->constantBuffer, 0);
-           // }
+        
+            
 
-            // 绑定常量缓冲区给顶点着色器
-            pState->context->VSSetConstantBuffers(0, 1, &pState->constantBuffer);
 
+            // 绑定渲染目标视图和深度/模板视图
+            pState->context->OMSetRenderTargets(1, &pState->rtv, pState->depthStencilView);
 
 
             // 清除背景色
             float clearColor[4] = { 0.0f, 0.3f, 0.0f, 1.0f };
             pState->context->ClearRenderTargetView(pState->rtv, clearColor);
+
+            //清除深度和模板缓冲区。1.0f是深度的默认最远值。
+            pState->context->ClearDepthStencilView(pState->depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+            // 绑定渲染目标
+            pState->context->OMSetRenderTargets(1, &pState->rtv, pState->depthStencilView);
 
             // 设置输入布局和着色器
             /*
@@ -314,13 +301,21 @@ LRESULT CALLBACK WindowProc(
             pState->context->VSSetShader(pState->vertexShader, nullptr, 0);
             //绑定像素着色器（Pixel Shader）到管线
             pState->context->PSSetShader(pState->pixelShader, nullptr, 0);
-
+            //
+            pState->context->VSSetConstantBuffers(0, 1, &pState->constantBuffer);
+            // 作用是告诉 GPU 如何把顶点组织成图元来绘制。设置图元类型为三角形列表:D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+            pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             // --- 绑定混合状态 ---
            // 第二个参数是一个常数数组，用于那些在混合描述中设置为 D3D11_BLEND_BLEND_FACTOR 或 D3D11_BLEND_INV_BLEND_FACTOR 的混合模式。
            // 如果你的混合因子是基于源 Alpha 的，这里通常用 nullptr 或全为1的数组。
            // 第三个参数是样本遮罩，通常为 0xffffffff。
             pState->context->OMSetBlendState(pState->blendState, nullptr, 0xffffffff);
+
+            //设置用于透明的深度模板状态！这是关键！
+            // 第二个参数(StencilRef)在这里不重要，设为0即可。
+            pState->context->OMSetDepthStencilState(pState->depthStencilStateTransparent, 0);
+
 
             
             // 更新顶点缓冲区步幅 (stride)
@@ -329,8 +324,7 @@ LRESULT CALLBACK WindowProc(
             //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
             UINT offset = 0;
 
-            // 作用是告诉 GPU 如何把顶点组织成图元来绘制。设置图元类型为三角形列表:D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
-            pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+           
 
             for (auto& obj : sceneObjects)
             {
@@ -690,7 +684,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     OutputDebugStringW(L"\n");
 
     // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
-    hr = LoadTextureAndCreateSRV(state->device, L"assets\\nin.dds", &quad1.textureSRV);
+    hr = LoadTextureAndCreateSRV(state->device, L"assets\\mario_resized.dds", &quad1.textureSRV);
     if (FAILED(hr)) {
 
         MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
@@ -713,7 +707,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     // worldMatrix 2D平移矩阵，Z轴一般为0
     quad2.worldMatrix = DirectX::XMMatrixTranslation(800.0f, 300.0f, 0.0f);
     // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
-    hr = LoadTextureAndCreateSRV(state->device, L"assets\\nin_kitsune.dds", &quad2.textureSRV);
+    hr = LoadTextureAndCreateSRV(state->device, L"assets\\mario_resized.dds", &quad2.textureSRV);
     if (FAILED(hr)) {
         MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
         return false;
@@ -788,13 +782,6 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
     // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）
     DirectX::XMMATRIX transposed = DirectX::XMMatrixTranspose(worldMatrix);
 
-    //// 准备常量缓冲区数据结构（这里假设 ConstantBuffer 定义了相应成员）
-    //ConstantBuffer cb = {};
-    //cb.worldMatrix = transposed;              // 设置变换矩阵
-    //cb.screenSize[0] = (FLOAT)screenWidth;    // 屏幕宽度
-    //cb.screenSize[1] = (FLOAT)screenHeight;   // 屏幕高度
-    //cb.padding[0] = 0.0f;                      // 补齐数据，保证结构对齐
-    //cb.padding[1] = 0.0f;
 
 
     //将 GPU 的 constantBuffer 映射到 CPU-accessible memory。

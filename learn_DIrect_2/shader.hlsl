@@ -65,6 +65,7 @@ float4 PSMain(PS_INPUT input) : SV_TARGET
     // 你可以选择如何混合纹理颜色和顶点颜色
     // 只使用纹理颜色：
     return textureColor;
+    //return float4(textureColor.a, textureColor.a, textureColor.a, 1.0f);
 
     // 纹理颜色与顶点颜色相乘（实现纹理的颜色着色）：
     // return textureColor * input.col;
