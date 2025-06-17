@@ -96,6 +96,13 @@ struct StateInfo {
 
     //用于纹理采样的采样器状态
     ID3D11SamplerState* samplerState = nullptr;
+    
+    // 用于透明混合
+    ID3D11BlendState* blendState = nullptr;
+    // 用于透明物体的深度状态
+    ID3D11DepthStencilState* depthStencilStateTransparent = nullptr; 
+    //
+    ID3D11DepthStencilView* depthStencilView = nullptr;
 
 };
 
@@ -308,6 +315,13 @@ LRESULT CALLBACK WindowProc(
             //绑定像素着色器（Pixel Shader）到管线
             pState->context->PSSetShader(pState->pixelShader, nullptr, 0);
 
+
+            // --- 绑定混合状态 ---
+           // 第二个参数是一个常数数组，用于那些在混合描述中设置为 D3D11_BLEND_BLEND_FACTOR 或 D3D11_BLEND_INV_BLEND_FACTOR 的混合模式。
+           // 如果你的混合因子是基于源 Alpha 的，这里通常用 nullptr 或全为1的数组。
+           // 第三个参数是样本遮罩，通常为 0xffffffff。
+            pState->context->OMSetBlendState(pState->blendState, nullptr, 0xffffffff);
+
             
             // 更新顶点缓冲区步幅 (stride)
             // 确保这里的 stride 与你的 Vertex 结构体大小一致
@@ -446,8 +460,49 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     // 释放后备缓冲区（视图已经创建完成）
     backBuffer->Release();
 
+
+
+
+    // !!! 新增: 创建深度/模板缓冲区 !!!
+    ID3D11Texture2D* depthStencilBuffer = nullptr;
+    D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+    depthBufferDesc.Width = screenWidth;
+    depthBufferDesc.Height = screenHeight;
+    depthBufferDesc.MipLevels = 1;
+    depthBufferDesc.ArraySize = 1;
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 24位深度 + 8位模板
+    depthBufferDesc.SampleDesc.Count = 1; // 与RTV的SampleDesc.Count一致
+    depthBufferDesc.SampleDesc.Quality = 0; // 与RTV的SampleDesc.Quality一致
+    depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; // 绑定为深度/模板缓冲区
+    depthBufferDesc.CPUAccessFlags = 0;
+    depthBufferDesc.MiscFlags = 0;
+
+    hr = state->device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
+    if (FAILED(hr)) {
+        MessageBox(hwnd, L"Failed to create depth stencil buffer.", L"Error", MB_OK);
+        return false;
+    }
+
+    // !!! 新增: 创建深度/模板视图 !!!
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 视图格式与缓冲区格式匹配
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D; // 2D 纹理的视图
+    dsvDesc.Texture2D.MipSlice = 0; // 只使用第一个 mipmap 级别
+
+    hr = state->device->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, &state->depthStencilView);
+    if (FAILED(hr)) {
+        MessageBox(hwnd, L"Failed to create depth stencil view.", L"Error", MB_OK);
+        if (depthStencilBuffer) depthStencilBuffer->Release(); // 创建视图失败也要释放缓冲区
+        return false;
+    }
+    if (depthStencilBuffer) depthStencilBuffer->Release(); // 视图创建成功后，缓冲区本身可以释放，视图会持有引用
+
+
+
+
     // 将创建的渲染目标视图设置到GPU（指定绘制目标）
-    state->context->OMSetRenderTargets(1, &state->rtv, nullptr);
+    state->context->OMSetRenderTargets(1, &state->rtv, state->depthStencilView);
 
     // 设置视口（绘制区域）
     D3D11_VIEWPORT vp = {};
@@ -570,6 +625,41 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
         return false;
     }
 
+    // --- 创建并设置透明混合状态 ---
+    D3D11_BLEND_DESC blendDesc = {};
+    // RenderTarget[0] 对应第一个渲染目标
+    blendDesc.RenderTarget[0].BlendEnable = TRUE; // 启用混合
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA; // 源混合因子：源像素的 alpha 值
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA; // 目标混合因子：1 - 源像素的 alpha 值
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD; // 混合操作：源 + 目标
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE; // Alpha 源混合因子 (通常为1)
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO; // Alpha 目标混合因子 (通常为0)
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD; // Alpha 混合操作 (通常为加法)
+    // D3D11_COLOR_WRITE_ENABLE_ALL 表示所有颜色通道 (RGBA) 都可以写入
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    hr = state->device->CreateBlendState(&blendDesc, &state->blendState);
+    if (FAILED(hr)) {
+        MessageBox(hwnd, L"Failed to create blend state.", L"Error", MB_OK);
+        return false;
+    }
+
+    // !!! 新增: 创建用于透明物体的深度/模板状态 !!! (你刚才问的第一段代码，这里是它的正确位置)
+    // 注意：这个状态是禁用深度写入的
+    D3D11_DEPTH_STENCIL_DESC transparentDepthStencilDesc = {};
+    transparentDepthStencilDesc.DepthEnable = TRUE; // 仍然启用深度测试 (与不透明物体比较)
+    transparentDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // **禁用深度写入**
+    transparentDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    transparentDepthStencilDesc.StencilEnable = FALSE;
+
+    hr = state->device->CreateDepthStencilState(&transparentDepthStencilDesc, &state->depthStencilStateTransparent);
+    if (FAILED(hr)) {
+        MessageBox(hwnd, L"Failed to create transparent depth stencil state.", L"Error", MB_OK);
+        return false;
+    }
+
+
+
 
 
     //const UINT quadVertexCount = 4;  // 4个顶点
@@ -591,8 +681,16 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     quad1.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     // worldMatrix 2D平移矩阵，Z轴一般为0
     quad1.worldMatrix = DirectX::XMMatrixTranslation(100.0f, 0.0f, 0.0f);
+
+    // 输出当前工作目录，帮助确认 DDS 路径问题
+    WCHAR cwd[MAX_PATH];
+    GetCurrentDirectoryW(MAX_PATH, cwd);
+    OutputDebugStringW(L"当前工作目录: ");
+    OutputDebugStringW(cwd);
+    OutputDebugStringW(L"\n");
+
     // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
-    hr = LoadTextureAndCreateSRV(state->device, L"nin.dds", &quad1.textureSRV);
+    hr = LoadTextureAndCreateSRV(state->device, L"assets\\nin.dds", &quad1.textureSRV);
     if (FAILED(hr)) {
 
         MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
@@ -615,7 +713,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     // worldMatrix 2D平移矩阵，Z轴一般为0
     quad2.worldMatrix = DirectX::XMMatrixTranslation(800.0f, 300.0f, 0.0f);
     // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
-    hr = LoadTextureAndCreateSRV(state->device, L"nin_kitsune.dds", &quad2.textureSRV);
+    hr = LoadTextureAndCreateSRV(state->device, L"assets\\nin_kitsune.dds", &quad2.textureSRV);
     if (FAILED(hr)) {
         MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
         return false;
@@ -789,6 +887,11 @@ void CleanupD3D(StateInfo* state) {
         state->rtv->Release();
         state->rtv = nullptr;
     }
+    if (state->blendState) { // 释放混合状态
+        state->blendState->Release();
+        state->blendState = nullptr;
+    }
+
 
     // 释放设备上下文和交换链之前，确保所有挂起的操作都已完成
     // 通常在释放设备之前，应该先释放上下文，并确保没有其他操作正在进行

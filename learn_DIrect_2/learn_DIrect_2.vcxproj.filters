@@ -23,7 +23,7 @@
     <Text Include="shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="dds\nin_kitsune.dds" />
-    <Image Include="dds\nin.dds" />
+    <Image Include="assets\nin.dds" />
+    <Image Include="assets\nin_kitsune.dds" />
   </ItemGroup>
 </Project>
