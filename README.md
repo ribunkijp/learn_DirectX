@@ -32,10 +32,10 @@ HWND hWnd
 
 
 
-### 
+### to .dds
 
 ```c++
-
+texconv -ft DDS -f BC3_UNORM texture.png
 ```
 
 

@@ -30,6 +30,7 @@ WinMain（アプリの開始点）
 #pragma comment(lib, "d3dcompiler.lib")//链接D3DCompiler API 的静态链接库
 #include <DirectXMath.h>
 #include <vector>
+#include <DirectXTex.h>
 
 //
 struct alignas(16) GameObject {
@@ -38,6 +39,7 @@ struct alignas(16) GameObject {
     ID3D11Buffer* indexBuffer = nullptr;   // 索引缓冲区指针，用于顶点的索引绘制，减少顶点重复
     UINT vertexCount = 0;                   // 顶点数量，用于绘制调用时指定绘制的顶点个数
     UINT indexCount = 0;                    // 索引数量，用于绘制调用时指定绘制的索引个数
+    ID3D11ShaderResourceView* textureSRV = nullptr;//用于存储此物体纹理的资源视图
 };
 
 
@@ -49,7 +51,12 @@ struct ConstantBuffer {
     float screenSize[2]; // 屏幕宽高
     float padding[2];    // 保持16字节对齐
 };
-
+//
+struct Vertex {
+    DirectX::XMFLOAT3 position;  // 位置
+    DirectX::XMFLOAT4 color;     // 颜色
+    DirectX::XMFLOAT2 texCoord;  // 新增：纹理坐标 (U, V)
+};
 
 // 管理 Direct3D11 渲染状态的结构体
 struct StateInfo {
@@ -87,19 +94,26 @@ struct StateInfo {
     //常量缓冲区 该数据传递给 shaders
     ID3D11Buffer* constantBuffer = nullptr;
 
+    //用于纹理采样的采样器状态
+    ID3D11SamplerState* samplerState = nullptr;
+
 };
 
 inline StateInfo* GetAppState(HWND hwnd);
 
 bool InitD3D(HWND hwnd, StateInfo* state);
 
-ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device);
+ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device, Vertex* vertices, unsigned vertices_count);
 
 ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device);
 
-void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix);
+void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix, float screenWidth, float screenHeight);
 
 std::vector<GameObject> sceneObjects;
+
+HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** srv);
+
+void CleanupD3D(StateInfo* state);
 
 // 窗口过程函数
 LRESULT CALLBACK WindowProc(
@@ -221,6 +235,9 @@ LRESULT CALLBACK WindowProc(
             return 0;
 
         case WM_DESTROY:
+            if (pState) { // 确保 pState 是有效的指针
+                CleanupD3D(pState);
+            }
             PostQuitMessage(0);
             return 0;
 
@@ -245,27 +262,27 @@ LRESULT CALLBACK WindowProc(
             float width = static_cast<float>(rect.right - rect.left);
             float height = static_cast<float>(rect.bottom - rect.top);
             
-           /*
-            pState->context->Map(...): 这是一个关键的 Direct3D call。它将 GPU resource (在此例中为 pState->constantBuffer) 
-            映射到 CPU-accessible memory。这允许 CPU 直接写入 GPU 将读取的 buffer 中的数据
-           */
-            D3D11_MAPPED_SUBRESOURCE mapped = {};
-            if (SUCCEEDED(pState->context->Map(
-                pState->constantBuffer,  // 要写入的缓冲区
-                0,                        // 子资源索引（通常为0）
-                //写入模式动态 buffers 的常见映射标志。它指示 CPU 将覆盖整个 buffer，并且 GPU 可以丢弃先前的内容。
-                // 这对于频繁更新很高效
-                D3D11_MAP_WRITE_DISCARD,
-                0,                        // 保留，设为0
-                &mapped                  // 输出映射信息
-            ))) {
-                ConstantBuffer* pCb = (ConstantBuffer*)mapped.pData;//把 mapped.pData 转换成你定义的结构体 ConstantBuffer* 指针
-                //当前窗口尺寸写入到映射的 constant buffer 内的 screenSize 数组中
-                pCb->screenSize[0] = width;
-                pCb->screenSize[1] = height;
-                //取消映射 buffer，使其再次可供 GPU 使用。写入后取消映射至关重要，以确保 GPU 可以访问更新的数据。
-                pState->context->Unmap(pState->constantBuffer, 0);
-            }
+           ///*
+           // pState->context->Map(...): 这是一个关键的 Direct3D call。它将 GPU resource (在此例中为 pState->constantBuffer) 
+           // 映射到 CPU-accessible memory。这允许 CPU 直接写入 GPU 将读取的 buffer 中的数据
+           //*/
+           // D3D11_MAPPED_SUBRESOURCE mapped = {};
+           // if (SUCCEEDED(pState->context->Map(
+           //     pState->constantBuffer,  // 要写入的缓冲区
+           //     0,                        // 子资源索引（通常为0）
+           //     //写入模式动态 buffers 的常见映射标志。它指示 CPU 将覆盖整个 buffer，并且 GPU 可以丢弃先前的内容。
+           //     // 这对于频繁更新很高效
+           //     D3D11_MAP_WRITE_DISCARD,
+           //     0,                        // 保留，设为0
+           //     &mapped                  // 输出映射信息
+           // ))) {
+           //     ConstantBuffer* pCb = (ConstantBuffer*)mapped.pData;//把 mapped.pData 转换成你定义的结构体 ConstantBuffer* 指针
+           //     //当前窗口尺寸写入到映射的 constant buffer 内的 screenSize 数组中
+           //     pCb->screenSize[0] = width;
+           //     pCb->screenSize[1] = height;
+           //     //取消映射 buffer，使其再次可供 GPU 使用。写入后取消映射至关重要，以确保 GPU 可以访问更新的数据。
+           //     pState->context->Unmap(pState->constantBuffer, 0);
+           // }
 
             // 绑定常量缓冲区给顶点着色器
             pState->context->VSSetConstantBuffers(0, 1, &pState->constantBuffer);
@@ -291,8 +308,10 @@ LRESULT CALLBACK WindowProc(
             //绑定像素着色器（Pixel Shader）到管线
             pState->context->PSSetShader(pState->pixelShader, nullptr, 0);
 
-            // 绑定顶点缓冲区
-            UINT stride = sizeof(float) * 7; // 3个坐标 + 4个颜色
+            
+            // 更新顶点缓冲区步幅 (stride)
+            // 确保这里的 stride 与你的 Vertex 结构体大小一致
+            UINT stride = sizeof(Vertex);
             //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
             UINT offset = 0;
 
@@ -306,8 +325,20 @@ LRESULT CALLBACK WindowProc(
                 pState->context->IASetVertexBuffers(0, 1, vertexBuffers, &stride, &offset);
                 // 设置索引缓冲区 指定每个索引是一个 32 位无符号整数
                 pState->context->IASetIndexBuffer(obj.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+
+                // --- 绑定纹理和采样器到像素着色器 ---
+                // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)
+                // t0 寄存器对应起始槽位 0
+                pState->context->PSSetShaderResources(0, 1, &obj.textureSRV);
+                // PSSetSamplers(起始槽位, 采样器数量, 采样器数组指针)
+                // s0 寄存器对应起始槽位 0
+                pState->context->PSSetSamplers(0, 1, &pState->samplerState);
+                // --- 绑定结束 ---
+                
+                
                 // 设置常量缓冲区，传入 obj.worldMatrix
-                UpdateConstantBuffer(pState->context, pState->constantBuffer, obj.worldMatrix);
+                UpdateConstantBuffer(pState->context, pState->constantBuffer, obj.worldMatrix, width, height);
 
                 // 绘制调用
                 pState->context->DrawIndexed(obj.indexCount, 0, 0);
@@ -487,12 +518,14 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
 
         // COLOR: 4个float（r, g, b, a）
-        {"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+        {"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0}  // 28是前3个float+前4个float的字节大小
     };
 
     hr = state->device->CreateInputLayout(
         layout,      // 布局数组
-        2,           // 数组长度
+        3,           // 数组长度
         vsBlob->GetBufferPointer(), // 用来检查布局是否匹配 VS
         vsBlob->GetBufferSize(),
         &state->inputLayout         // 输出结果（用于绑定到渲染管线）
@@ -522,27 +555,71 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     if (FAILED(hr)) return false;
 
 
+    // --- 创建纹理采样器状态 ---
+    D3D11_SAMPLER_DESC sampDesc = {};
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // 线性过滤，适用于大部分情况
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;     // U 坐标超出范围时重复纹理
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;     // V 坐标超出范围时重复纹理
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;     // W 坐标超出范围时重复纹理 (对2D纹理影响不大)
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = state->device->CreateSamplerState(&sampDesc, &state->samplerState);
+    if (FAILED(hr)) {
+        MessageBox(hwnd, L"Failed to create sampler state.", L"Error", MB_OK);
+        return false;
+    }
+
+
+
     //const UINT quadVertexCount = 4;  // 4个顶点
     const UINT quadIndexCount = 6;   // 6个索引（三角形2个，每个3个顶点
 
     GameObject quad1;
+
+    Vertex quad1_vertices[] = {
+        { { 200.0f, 100.0f, 0.0f }, {1, 0, 0, 1}, {0.0f, 0.0f} }, // 左上角
+        { { 500.0f, 100.0f, 0.0f }, {0, 1, 0, 1}, {1.0f, 0.0f} }, // 右上角
+        { { 500.0f, 600.0f, 0.0f }, {0, 0, 1, 1}, {1.0f, 1.0f} }, // 右下角
+        { { 200.0f, 600.0f, 0.0f }, {1, 1, 0, 1}, {0.0f, 1.0f} }  // 左下角
+    };
+
     // 假设你有一个函数用来创建2D矩形顶点缓冲区
-    quad1.vertexBuffer = CreateQuadVertexBuffer(state->device);
+    quad1.vertexBuffer = CreateQuadVertexBuffer(state->device, quad1_vertices, 4);
     // 创建索引缓冲区
     quad1.indexBuffer = CreateQuadIndexBuffer(state->device);
     quad1.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     // worldMatrix 2D平移矩阵，Z轴一般为0
     quad1.worldMatrix = DirectX::XMMatrixTranslation(100.0f, 0.0f, 0.0f);
+    // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
+    hr = LoadTextureAndCreateSRV(state->device, L"nin.dds", &quad1.textureSRV);
+    if (FAILED(hr)) {
+
+        MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
+        return false;
+    }
 
 
     GameObject quad2;
+    Vertex quad2_vertices[] = {
+       { { 200.0f, 100.0f, 0.0f }, {0, 0, 0, 1}, {0.0f, 0.0f} },
+       { { 500.0f, 100.0f, 0.0f }, {1, 1, 0, 1}, {1.0f, 0.0f} },
+       { { 500.0f, 600.0f, 0.0f }, {0, 0, 1, 1}, {1.0f, 1.0f} },
+       { { 200.0f, 600.0f, 0.0f }, {0, 1, 1, 1}, {0.0f, 1.0f} }
+    };
     // 假设你有一个函数用来创建2D矩形顶点缓冲区
-    quad2.vertexBuffer = CreateQuadVertexBuffer(state->device);
+    quad2.vertexBuffer = CreateQuadVertexBuffer(state->device, quad2_vertices, 4);
     // 创建索引缓冲区
     quad2.indexBuffer = CreateQuadIndexBuffer(state->device);
     quad2.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     // worldMatrix 2D平移矩阵，Z轴一般为0
     quad2.worldMatrix = DirectX::XMMatrixTranslation(800.0f, 300.0f, 0.0f);
+    // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
+    hr = LoadTextureAndCreateSRV(state->device, L"nin_kitsune.dds", &quad2.textureSRV);
+    if (FAILED(hr)) {
+        MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
+        return false;
+    }
     
 
     sceneObjects.push_back(quad1);
@@ -553,25 +630,17 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     return true; // 成功时返回true
 }
 
-ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device) {
-    struct Vertex {
-        DirectX::XMFLOAT3 position;  // 位置
-        DirectX::XMFLOAT4 color;     // 颜色
-    };
-    Vertex vertices[] = {
-        { { 200.0f, 100.0f, 0.0f }, {1, 0, 0, 1} },   // 左上：红色
-        { { 500.0f, 100.0f, 0.0f }, {0, 1, 0, 1} },   // 右上：绿色
-        { { 500.0f, 600.0f, 0.0f }, {0, 0, 1, 1} },   // 右下：蓝色
-        { { 200.0f, 600.0f, 0.0f }, {1, 1, 0, 1} }    // 左下：黄色（或者你想要的颜色）
-    };
+ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device, Vertex* vertices, unsigned vertices_count) {
+  
+    
 
     D3D11_BUFFER_DESC bd = {};// Direct3D 11 用来描述缓冲区属性的结构体
     bd.Usage = D3D11_USAGE_DEFAULT;              // 指示缓冲区将由 GPU 读取和写入。创建后不允许 CPU 直接访问。
-    bd.ByteWidth = sizeof(vertices);             // 缓冲区大小 = 顶点总大小
+    bd.ByteWidth = sizeof(Vertex) * vertices_count;             // 缓冲区大小 = 顶点总大小
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;     // 用作顶点缓冲区
 
     D3D11_SUBRESOURCE_DATA initData = {};//D3D11_SUBRESOURCE_DATA 是用来初始化缓冲区数据的结构体。
-    initData.pSysMem = vertices;// 提供用于在 GPU 上填充缓冲区的初始数据。
+    initData.pSysMem = vertices;// 提供用于在 GPU 上填充缓冲区的初始数据指针
 
     //定义一个指向 Direct3D 11 顶点缓冲区的指针，初始值设为 nullptr（空指针）
     ID3D11Buffer* vertexBuffer = nullptr;
@@ -616,18 +685,18 @@ ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device)
 }
 
 // 更新常量缓冲区的函数
-void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix)
+void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix, float screenWidth, float screenHeight)
 {
     // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）
     DirectX::XMMATRIX transposed = DirectX::XMMatrixTranspose(worldMatrix);
 
-    // 准备常量缓冲区数据结构（这里假设 ConstantBuffer 定义了相应成员）
-    ConstantBuffer cb = {};
-    cb.worldMatrix = transposed;              // 设置变换矩阵
-    cb.screenSize[0] = (FLOAT)screenWidth;    // 屏幕宽度
-    cb.screenSize[1] = (FLOAT)screenHeight;   // 屏幕高度
-    cb.padding[0] = 0.0f;                      // 补齐数据，保证结构对齐
-    cb.padding[1] = 0.0f;
+    //// 准备常量缓冲区数据结构（这里假设 ConstantBuffer 定义了相应成员）
+    //ConstantBuffer cb = {};
+    //cb.worldMatrix = transposed;              // 设置变换矩阵
+    //cb.screenSize[0] = (FLOAT)screenWidth;    // 屏幕宽度
+    //cb.screenSize[1] = (FLOAT)screenHeight;   // 屏幕高度
+    //cb.padding[0] = 0.0f;                      // 补齐数据，保证结构对齐
+    //cb.padding[1] = 0.0f;
 
 
     //将 GPU 的 constantBuffer 映射到 CPU-accessible memory。
@@ -638,10 +707,121 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
         // 失败处理
         return;
     }
-    // 将数据从 CPU 端的 cb struct 复制到映射的 GPU memory
-    memcpy(mappedResource.pData, &cb, sizeof(ConstantBuffer));
-    //取消映射 buffer，使更新后的数据可供 GPU 使用。
+    //// 将数据从 CPU 端的 cb struct 复制到映射的 GPU memory
+    //memcpy(mappedResource.pData, &cb, sizeof(ConstantBuffer));
+    ////取消映射 buffer，使更新后的数据可供 GPU 使用。
+
+    // 将数据拷贝到映射后的内存中
+        ConstantBuffer* pCb = (ConstantBuffer*)mappedResource.pData;
+        pCb->worldMatrix = transposed;           // 对象的变换矩阵
+        pCb->screenSize[0] = screenWidth;        // 当前窗口宽度
+        pCb->screenSize[1] = screenHeight;       // 当前窗口高度
     context->Unmap(constantBuffer, 0);
+}
+
+HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** srv) {
+    DirectX::TexMetadata metadata;
+    DirectX::ScratchImage scratchImage;
+    HRESULT hr;
+
+    // 尝试从 DDS 文件加载纹理
+    hr = DirectX::LoadFromDDSFile(filename, DirectX::DDS_FLAGS_NONE, &metadata, scratchImage);
+
+    if (FAILED(hr)) {
+        // 如果加载失败，通常是文件不存在或格式不正确
+        // 可以在这里添加 MessageBox 或日志输出，便于调试
+        // MessageBox(nullptr, L"Failed to load DDS texture.", filename, MB_OK);
+
+        return hr;
+    }
+
+    // 从加载的图片数据创建 Shader Resource View
+    // 这个函数会自动处理 mipmaps 和纹理格式转换
+    hr = DirectX::CreateShaderResourceView(device, scratchImage.GetImages(), scratchImage.GetImageCount(), metadata, srv);
+    return hr;
+}
+
+// 释放 Direct3D 资源的函数
+void CleanupD3D(StateInfo* state) {
+    // 确保所有资源在使用前已被释放（防止野指针操作）
+    // 通常按照创建的逆序释放是安全的，但关键是全部释放
+
+    // 1. 释放场景中的 GameObject 相关的资源
+    // 遍历 GameObject 列表，释放每个物体持有的 D3D 资源
+    for (auto& obj : sceneObjects) {
+        if (obj.vertexBuffer) {
+            obj.vertexBuffer->Release();
+            obj.vertexBuffer = nullptr; // 释放后置为nullptr是个好习惯
+        }
+        if (obj.indexBuffer) {
+            obj.indexBuffer->Release();
+            obj.indexBuffer = nullptr;
+        }
+        if (obj.textureSRV) { // 释放纹理资源视图
+            obj.textureSRV->Release();
+            obj.textureSRV = nullptr;
+        }
+    }
+    sceneObjects.clear(); // 清空存储 GameObject 的 vector
+
+    // 2. 释放 StateInfo 中全局持有的 D3D 资源
+    if (state->samplerState) { // 释放采样器状态
+        state->samplerState->Release();
+        state->samplerState = nullptr;
+    }
+    if (state->constantBuffer) { // 释放常量缓冲区
+        state->constantBuffer->Release();
+        state->constantBuffer = nullptr;
+    }
+    if (state->pixelShader) { // 释放像素着色器
+        state->pixelShader->Release();
+        state->pixelShader = nullptr;
+    }
+    if (state->vertexShader) { // 释放顶点着色器
+        state->vertexShader->Release();
+        state->vertexShader = nullptr;
+    }
+    if (state->inputLayout) { // 释放输入布局
+        state->inputLayout->Release();
+        state->inputLayout = nullptr;
+    }
+    if (state->rtv) { // 释放渲染目标视图
+        state->rtv->Release();
+        state->rtv = nullptr;
+    }
+
+    // 释放设备上下文和交换链之前，确保所有挂起的操作都已完成
+    // 通常在释放设备之前，应该先释放上下文，并确保没有其他操作正在进行
+    if (state->context) {
+        state->context->Release();
+        state->context = nullptr;
+    }
+
+    if (state->swapChain) {
+        state->swapChain->Release();
+        state->swapChain = nullptr;
+    }
+
+    // 最后释放设备对象
+    // 在调试模式下，可以检查是否有未释放的 COM 接口
+#ifdef _DEBUG
+    ID3D11Debug* debug = nullptr;
+    if (SUCCEEDED(state->device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug))) {
+        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+        debug->Release();
+    }
+#endif
+
+    if (state->device) {
+        state->device->Release();
+        state->device = nullptr;
+    }
+
+    // 最后释放 StateInfo 结构体本身（因为是用 new 分配的）
+    if (state) {
+        delete state;
+        state = nullptr;
+    }
 }
 /*
 +------------------+        +-----------------+        +------------------+

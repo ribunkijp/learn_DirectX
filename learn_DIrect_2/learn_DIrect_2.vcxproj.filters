@@ -22,4 +22,8 @@
   <ItemGroup>
     <Text Include="shader.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="dds\nin_kitsune.dds" />
+    <Image Include="dds\nin.dds" />
+  </ItemGroup>
 </Project>

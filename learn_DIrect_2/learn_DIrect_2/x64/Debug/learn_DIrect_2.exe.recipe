@@ -5,7 +5,14 @@
       <FullPath>C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\code\learn_DirectX\learn_DIrect_2\dds\nin.dds</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\code\learn_DirectX\learn_DIrect_2\dds\nin_kitsune.dds</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>
