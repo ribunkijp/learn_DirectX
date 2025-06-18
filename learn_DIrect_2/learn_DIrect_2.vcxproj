@@ -139,7 +139,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="d3dApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader.hlsl">
@@ -150,6 +152,11 @@
     <Image Include="assets\bg.dds" />
     <Image Include="assets\mario.dds" />
     <Image Include="assets\peach.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d3dApp.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="StateInfo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
