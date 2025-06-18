@@ -23,6 +23,8 @@
     <Text Include="shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\mario_resized.dds" />
+    <Image Include="assets\peach.dds" />
+    <Image Include="assets\mario.dds" />
+    <Image Include="assets\bg.dds" />
   </ItemGroup>
 </Project>

@@ -1,1 +1,8 @@
-﻿  learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe
+﻿  main.cpp
+C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(845,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(845,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(840) : 注: この行で比較を行ってインデックス 'hr' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(845,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(845) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
+  learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

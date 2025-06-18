@@ -105,7 +105,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <AdditionalOptions>/Wall /w44365 /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Wall /w44365 /utf-8 /Qspectre %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\DirectXTex\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <AdditionalOptions>/Wall /w44365 /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Wall /w44365 /utf-8 /Qspectre %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\DirectXTex\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -147,7 +147,9 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\mario_resized.dds" />
+    <Image Include="assets\bg.dds" />
+    <Image Include="assets\mario.dds" />
+    <Image Include="assets\peach.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

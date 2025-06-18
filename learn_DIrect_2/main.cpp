@@ -55,7 +55,7 @@ struct ConstantBuffer {
 struct Vertex {
     DirectX::XMFLOAT3 position;  // 位置
     DirectX::XMFLOAT4 color;     // 颜色
-    DirectX::XMFLOAT2 texCoord;  // 新增：纹理坐标 (U, V)
+    DirectX::XMFLOAT2 texCoord;  // 纹理坐标 (U, V)
 };
 
 // 管理 Direct3D11 渲染状态的结构体
@@ -654,18 +654,50 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
 
 
-
-
     //const UINT quadVertexCount = 4;  // 4个顶点
     const UINT quadIndexCount = 6;   // 6个索引（三角形2个，每个3个顶点
+
+    GameObject bg;
+
+    RECT clientRect = {};
+    GetClientRect(hwnd, &clientRect);
+
+    float width = static_cast<float>(clientRect.right - clientRect.left);
+    float height = static_cast<float>(clientRect.bottom - clientRect.top);
+
+    Vertex bg_vertices[] = {
+        { { 0.0f, 0.0f, 0.0f }, {1, 0, 0, 1}, {0.0f, 0.0f} }, // 左上角
+        { { width, 0.0f, 0.0f }, {0, 1, 0, 1}, {1.0f, 0.0f} }, // 右上角
+        { { width, height, 0.0f }, {0, 0, 1, 1}, {1.0f, 1.0f} }, // 右下角
+        { { 0.0f, height, 0.0f }, {1, 1, 0, 1}, {0.0f, 1.0f} }  // 左下角
+    };
+
+    // 假设你有一个函数用来创建2D矩形顶点缓冲区
+    bg.vertexBuffer = CreateQuadVertexBuffer(state->device, bg_vertices, 4);
+    // 创建索引缓冲区
+    bg.indexBuffer = CreateQuadIndexBuffer(state->device);
+    bg.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
+    // worldMatrix 2D平移矩阵，Z轴一般为0
+    bg.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+
+
+    // 加载纹理文件，请确保 'bg.dds' 存在于你的可执行文件同级目录
+    hr = LoadTextureAndCreateSRV(state->device, L"assets\\bg.dds", &bg.textureSRV);
+    if (FAILED(hr)) {
+
+        MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
+        return false;
+    }
+
+
 
     GameObject quad1;
 
     Vertex quad1_vertices[] = {
         { { 200.0f, 100.0f, 0.0f }, {1, 0, 0, 1}, {0.0f, 0.0f} }, // 左上角
         { { 500.0f, 100.0f, 0.0f }, {0, 1, 0, 1}, {1.0f, 0.0f} }, // 右上角
-        { { 500.0f, 600.0f, 0.0f }, {0, 0, 1, 1}, {1.0f, 1.0f} }, // 右下角
-        { { 200.0f, 600.0f, 0.0f }, {1, 1, 0, 1}, {0.0f, 1.0f} }  // 左下角
+        { { 500.0f, 400.0f, 0.0f }, {0, 0, 1, 1}, {1.0f, 1.0f} }, // 右下角
+        { { 200.0f, 400.0f, 0.0f }, {1, 1, 0, 1}, {0.0f, 1.0f} }  // 左下角
     };
 
     // 假设你有一个函数用来创建2D矩形顶点缓冲区
@@ -674,17 +706,10 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     quad1.indexBuffer = CreateQuadIndexBuffer(state->device);
     quad1.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     // worldMatrix 2D平移矩阵，Z轴一般为0
-    quad1.worldMatrix = DirectX::XMMatrixTranslation(100.0f, 0.0f, 0.0f);
-
-    // 输出当前工作目录，帮助确认 DDS 路径问题
-    WCHAR cwd[MAX_PATH];
-    GetCurrentDirectoryW(MAX_PATH, cwd);
-    OutputDebugStringW(L"当前工作目录: ");
-    OutputDebugStringW(cwd);
-    OutputDebugStringW(L"\n");
+    quad1.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
     // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
-    hr = LoadTextureAndCreateSRV(state->device, L"assets\\mario_resized.dds", &quad1.textureSRV);
+    hr = LoadTextureAndCreateSRV(state->device, L"assets\\mario.dds", &quad1.textureSRV);
     if (FAILED(hr)) {
 
         MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
@@ -694,10 +719,10 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
     GameObject quad2;
     Vertex quad2_vertices[] = {
-       { { 200.0f, 100.0f, 0.0f }, {0, 0, 0, 1}, {0.0f, 0.0f} },
-       { { 500.0f, 100.0f, 0.0f }, {1, 1, 0, 1}, {1.0f, 0.0f} },
-       { { 500.0f, 600.0f, 0.0f }, {0, 0, 1, 1}, {1.0f, 1.0f} },
-       { { 200.0f, 600.0f, 0.0f }, {0, 1, 1, 1}, {0.0f, 1.0f} }
+       { { 600.0f, 200.0f, 0.0f }, {0, 0, 0, 1}, {0.0f, 0.0f} },
+       { { 1020.0f, 200.0f, 0.0f }, {1, 1, 0, 1}, {1.0f, 0.0f} },
+       { { 1020.0f, 500.0f, 0.0f }, {0, 0, 1, 1}, {1.0f, 1.0f} },
+       { { 600.0f, 500.0f, 0.0f }, {0, 1, 1, 1}, {0.0f, 1.0f} }
     };
     // 假设你有一个函数用来创建2D矩形顶点缓冲区
     quad2.vertexBuffer = CreateQuadVertexBuffer(state->device, quad2_vertices, 4);
@@ -705,15 +730,15 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     quad2.indexBuffer = CreateQuadIndexBuffer(state->device);
     quad2.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     // worldMatrix 2D平移矩阵，Z轴一般为0
-    quad2.worldMatrix = DirectX::XMMatrixTranslation(800.0f, 300.0f, 0.0f);
+    quad2.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
     // 加载纹理文件，请确保 'texture1.dds' 存在于你的可执行文件同级目录
-    hr = LoadTextureAndCreateSRV(state->device, L"assets\\mario_resized.dds", &quad2.textureSRV);
+    hr = LoadTextureAndCreateSRV(state->device, L"assets\\peach.dds", &quad2.textureSRV);
     if (FAILED(hr)) {
         MessageBox(hwnd, L"Failed to load texture1.dds. Please check if the file exists and is a valid DDS.", L"Error", MB_OK);
         return false;
     }
     
-
+    sceneObjects.push_back(bg);
     sceneObjects.push_back(quad1);
     sceneObjects.push_back(quad2);
 
@@ -777,7 +802,7 @@ ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device)
 }
 
 // 更新常量缓冲区的函数
-void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix, float screenWidth, float screenHeight)
+void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix, float screen_width, float screen_height)
 {
     // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）
     DirectX::XMMATRIX transposed = DirectX::XMMatrixTranspose(worldMatrix);
@@ -799,8 +824,8 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
     // 将数据拷贝到映射后的内存中
         ConstantBuffer* pCb = (ConstantBuffer*)mappedResource.pData;
         pCb->worldMatrix = transposed;           // 对象的变换矩阵
-        pCb->screenSize[0] = screenWidth;        // 当前窗口宽度
-        pCb->screenSize[1] = screenHeight;       // 当前窗口高度
+        pCb->screenSize[0] = screen_width;        // 当前窗口宽度
+        pCb->screenSize[1] = screen_height;       // 当前窗口高度
     context->Unmap(constantBuffer, 0);
 }
 
