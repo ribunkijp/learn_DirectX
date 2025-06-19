@@ -581,9 +581,4 @@ void CleanupD3D(StateInfo* state) {
         state->device = nullptr;
     }
 
-    // 最后释放 StateInfo 结构体本身（因为是用 new 分配的）
-    if (state) {
-        delete state;
-        state = nullptr;
-    }
 }

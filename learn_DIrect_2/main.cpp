@@ -108,17 +108,20 @@ int WINAPI wWinMain(
     }
 
     // 消息循环
-    MSG msg = { };
-    while (GetMessage(&msg, NULL, 0, 0) > 0)
+    MSG msg = {};
+    while (true)
     {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+                return 0;
+
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        else {
-            // 没有消息时的逻辑，例如渲染一帧
-            RenderFrame(hwnd, pState);
-        }
+
+        // 如果没有消息，进行每一帧渲染
+        RenderFrame(hwnd, pState);
     }
 
     return 0;
