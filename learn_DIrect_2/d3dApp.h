@@ -34,6 +34,10 @@ struct ConstantBuffer {
     DirectX::XMMATRIX worldMatrix;  // 64 字节 (4x4 float)
     //一个数组，用于存储屏幕的宽度和高度。这在 shader 中用于将像素坐标转换为 Normalized Device Coordinates (NDC)。
     float screenSize[2]; // 屏幕宽高
+
+    float texOffset[2];   // 当前帧的偏移（{0.0f, 0.0f}, {0.125f, 0.0f}）
+    float texScale[2];    // 单帧的缩放（{1.0 / 8, 1.0}）
+
     float padding[2];    // 保持16字节对齐
 };
 //

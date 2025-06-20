@@ -36,6 +36,7 @@ HWND hWnd
 
 ```c++
 texconv -ft DDS -f BC3_UNORM texture.png
+texconv -f BC3_UNORM -o . 1.png
 ```
 
 

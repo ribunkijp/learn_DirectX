@@ -73,7 +73,7 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
 
 
 
-    //将 GPU 的 constantBuffer 映射到 CPU-accessible memory。
+    //将 GPU 的 constantBuffer 映射到 CPU-accessible memory, 可以写入新数据
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT hr = context->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     if (FAILED(hr))
@@ -81,14 +81,13 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
         // 失败处理
         return;
     }
-    //// 将数据从 CPU 端的 cb struct 复制到映射的 GPU memory
-    //memcpy(mappedResource.pData, &cb, sizeof(ConstantBuffer));
-    ////取消映射 buffer，使更新后的数据可供 GPU 使用。
+    
 
-    // 将数据拷贝到映射后的内存中
+    //取得映射后的内存指针，类型是定义的 ConstantBuffer 结构体
     ConstantBuffer* pCb = (ConstantBuffer*)mappedResource.pData;
     pCb->worldMatrix = transposed;           // 对象的变换矩阵
     pCb->screenSize[0] = screen_width;        // 当前窗口宽度
     pCb->screenSize[1] = screen_height;       // 当前窗口高度
+    ////取消映射 buffer，使更新后的数据可供 GPU 使用。
     context->Unmap(constantBuffer, 0);
 }
