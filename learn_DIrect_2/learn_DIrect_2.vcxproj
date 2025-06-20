@@ -145,6 +145,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="Update.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader.hlsl">
@@ -163,6 +164,7 @@
     <ClInclude Include="Render.h" />
     <ClInclude Include="StateInfo.h" />
     <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="Update.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
