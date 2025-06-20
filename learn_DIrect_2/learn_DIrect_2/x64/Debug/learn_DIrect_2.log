@@ -2,17 +2,13 @@
 C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-  ObjectFactory.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'ObjectFactory.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\d3dApp.h(42,19): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::constantBuffer' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-  main.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\d3dApp.h(45,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-  Render.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'Render.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\d3dApp.h(53,9): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::rows' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-  コードを生成中...
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

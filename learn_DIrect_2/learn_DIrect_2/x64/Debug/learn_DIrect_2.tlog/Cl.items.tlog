@@ -4,3 +4,5 @@ C:\code\learn_DirectX\learn_DIrect_2\ObjectFactory.cpp;C:\code\learn_DirectX\lea
 C:\code\learn_DirectX\learn_DIrect_2\main.cpp;C:\code\learn_DirectX\learn_DIrect_2\learn_DIrect_2\x64\Debug\main.obj
 C:\code\learn_DirectX\learn_DIrect_2\Render.cpp;C:\code\learn_DirectX\learn_DIrect_2\learn_DIrect_2\x64\Debug\Render.obj
 C:\code\learn_DirectX\learn_DIrect_2\TextureLoader.cpp;C:\code\learn_DirectX\learn_DIrect_2\learn_DIrect_2\x64\Debug\TextureLoader.obj
+C:\code\learn_DirectX\learn_DIrect_2\Timer.cpp;C:\code\learn_DirectX\learn_DIrect_2\learn_DIrect_2\x64\Debug\Timer.obj
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp;C:\code\learn_DirectX\learn_DIrect_2\learn_DIrect_2\x64\Debug\Update.obj

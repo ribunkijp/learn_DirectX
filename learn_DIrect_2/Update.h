@@ -4,6 +4,8 @@
 */
 #ifndef UPDATE_H
 #define UPDATE_H
+#include "StateInfo.h"
+#include "d3dApp.h"
 
 struct ConstantBuffer;
 
@@ -12,8 +14,9 @@ struct ConstantBuffer;
 
 
 // 更新动画帧索引 & UV 的函数
-void UpdateAnimation(ConstantBuffer* cb, float deltaTime, int totalFrames);
+void UpdateAnimation(GameObject& obj, float deltaTime, int columns, int rows);
 
-
+//
+void UpdateAllObjects(StateInfo* pState, float deltaTime, float width, float height);
 
 #endif 

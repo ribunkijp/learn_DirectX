@@ -36,6 +36,9 @@
     <ClCompile Include="Update.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shader.hlsl" />
@@ -44,6 +47,9 @@
     <Image Include="assets\peach.dds" />
     <Image Include="assets\mario.dds" />
     <Image Include="assets\bg.dds" />
+    <Image Include="assets\hk_walk.dds" />
+    <Image Include="assets\runningman000.dds" />
+    <Image Include="assets\runningman003.dds" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dApp.h">
@@ -65,6 +71,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Update.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

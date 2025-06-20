@@ -25,11 +25,15 @@ WinMain（アプリの開始点）
 #include <windows.h>
 #include "StateInfo.h"
 #include "d3dApp.h"
+#include "Timer.h"
+#include "Update.h"
 #include "Render.h"
 
 
 
 inline StateInfo* GetAppState(HWND hwnd);
+
+void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd);
 
 
 // 窗口过程函数
@@ -106,6 +110,9 @@ int WINAPI wWinMain(
         MessageBox(hwnd, L"初期化に失敗しました", L"エラー", MB_OK);
         return 0;
     }
+   
+    Timer timer;       // 计时器对象
+    timer.Reset();     // 程序启动时调用一次
 
     // 消息循环
     MSG msg = {};
@@ -119,6 +126,15 @@ int WINAPI wWinMain(
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
+        timer.Tick();    // 每帧调用
+        float deltaTime = timer.GetDeltaTime();  // 每帧耗时
+
+        // 更新所有对象的动画和常量缓冲区
+        UpdateAllObjects(pState, deltaTime, screenWidth, screenHeight);
+
+        //更新视口
+        UpdateViewport(pState->context, hwnd);
 
         // 如果没有消息，进行每一帧渲染
         RenderFrame(hwnd, pState);
@@ -177,6 +193,24 @@ inline StateInfo* GetAppState(HWND hwnd)
     return pState;
 }
 
+//
+void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd)
+{
+    RECT rect;
+    GetClientRect(hwnd, &rect);
+    float width = static_cast<float>(rect.right - rect.left);
+    float height = static_cast<float>(rect.bottom - rect.top);
+
+    D3D11_VIEWPORT vp = {};
+    vp.TopLeftX = 0.0f;
+    vp.TopLeftY = 0.0f;
+    vp.Width = width;
+    vp.Height = height;
+    vp.MinDepth = 0.0f;
+    vp.MaxDepth = 1.0f;
+
+    context->RSSetViewports(1, &vp);
+}
 
 
 

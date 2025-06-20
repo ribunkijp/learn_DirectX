@@ -66,10 +66,9 @@ ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device)
 }
 
 // 更新常量缓冲区的函数
-void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix, float screen_width, float screen_height)
+void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, const ConstantBuffer& cbData)
 {
-    // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）
-    DirectX::XMMATRIX transposed = DirectX::XMMatrixTranspose(worldMatrix);
+  
 
 
 
@@ -85,9 +84,21 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
 
     //取得映射后的内存指针，类型是定义的 ConstantBuffer 结构体
     ConstantBuffer* pCb = (ConstantBuffer*)mappedResource.pData;
-    pCb->worldMatrix = transposed;           // 对象的变换矩阵
-    pCb->screenSize[0] = screen_width;        // 当前窗口宽度
-    pCb->screenSize[1] = screen_height;       // 当前窗口高度
+
+    //
+    pCb->worldMatrix = DirectX::XMMatrixTranspose(cbData.worldMatrix);//  // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）  
+    
+    
+    
+    // 对象的变换矩阵
+    pCb->screenSize[0] = cbData.screenSize[0];        // 当前窗口宽度
+    pCb->screenSize[1] = cbData.screenSize[1];      // 当前窗口高度
+    
+    pCb->texOffset[0] = cbData.texOffset[0];
+    pCb->texOffset[1] = cbData.texOffset[1];
+    pCb->texScale[0] = cbData.texScale[0];
+    pCb->texScale[1] = cbData.texScale[1];
+
     ////取消映射 buffer，使更新后的数据可供 GPU 使用。
     context->Unmap(constantBuffer, 0);
 }

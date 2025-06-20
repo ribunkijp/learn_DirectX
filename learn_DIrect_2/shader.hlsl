@@ -7,9 +7,9 @@ cbuffer ConstantBuffer : register(b0)
 {
     matrix worldMatrix; // 4x4 矩阵
     float2 screenSize;
-    float4x4 worldMatrices[100]; // 预留100个世界矩阵（每个对应一个图形）实例化才需要目前没用
-    float4 colors[100]; // 对应颜色数组 实例化才需要目前没用
-    int objectCount;
+    float2 texOffset;
+    float2 texScale;
+    float2 padding; // 保持16字节对齐
     
 };
 // 声明一个纹理对象 (Texture2D) 和一个采样器 (SamplerState)
@@ -50,14 +50,13 @@ PS_INPUT VSMain(VS_INPUT input)
 
     output.pos = float4(x, y, worldPos.z, 1.0f);
     output.col = input.col;//将顶点颜色传递给像素着色器
-    output.tex = input.tex; //将纹理坐标传递给像素着色器
+    output.tex = input.tex * texScale + texOffset;
     //
     return output;
 }
 
 float4 PSMain(PS_INPUT input) : SV_TARGET
 {
-    
     
      // 使用采样器和插值后的纹理坐标从纹理中采样颜色
     float4 textureColor = shaderTexture.Sample(SamplerClamp, input.tex);

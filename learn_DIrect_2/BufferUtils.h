@@ -13,4 +13,4 @@ ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device, Vertex* vertices, uns
 
 ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device);
 
-void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, DirectX::XMMATRIX& worldMatrix, float screen_width, float screen_height);
+void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, const ConstantBuffer& cbData);

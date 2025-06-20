@@ -304,10 +304,25 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     float height = static_cast<float>(clientRect.bottom - clientRect.top);
 
 
-    sceneObjects.push_back(CreateTexture(state->device, L"assets\\bg.dds", 0.0f, 0.0f, width, height));
-    sceneObjects.push_back(CreateTexture(state->device, L"assets\\mario.dds", 200.0f, 100.0f, 500.0f, 400.0f));
-    sceneObjects.push_back(CreateTexture(state->device, L"assets\\peach.dds", 600.0f, 200.0f, 1020.0f, 500.0f));
-    
+    float offset[2] = { 0.0f, 0.0f };
+    float scale[2] = { 1.0f, 1.0f };
+    GameObject bg = CreateTexture(state->device, L"assets\\bg.dds", 0.0f, 0.0f, width, height, false, 1, offset, scale, 1, 1);
+    //bg.constantBufferData.worldMatrix = DirectX::XMMatrixTranslation(width / 2.0f, height / 2.0f, 0.0f);
+    sceneObjects.push_back(bg);
+    GameObject mario = CreateTexture(state->device, L"assets\\mario.dds", 200.0f, 100.0f, 500.0f, 400.0f, false, 1, offset, scale, 1, 1);
+    sceneObjects.push_back(mario);
+    GameObject peach = CreateTexture(state->device, L"assets\\peach.dds", 600.0f, 200.0f, 1020.0f, 500.0f, false, 1, offset, scale, 1, 1);
+    sceneObjects.push_back(peach);
+
+    scale[0] = 1.0f / 8.0f;
+    GameObject runningman000 = CreateTexture(state->device, L"assets\\runningman000.dds", 300.0f, 600.0f, 600.0f, 900.0f, true, 8, offset, scale, 8, 1);
+    sceneObjects.push_back(runningman000);
+
+
+    scale[0] = 1.0f / 10.0f;
+    scale[1] = 1.0f / 2.0f;
+    GameObject runningman003 = CreateTexture(state->device, L"assets\\runningman003.dds", 700.0f, 600.0f, 1000.0f, 900.0f, true, 10, offset, scale, 5, 2);
+    sceneObjects.push_back(runningman003);
    
 
 

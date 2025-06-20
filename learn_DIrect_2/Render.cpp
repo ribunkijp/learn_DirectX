@@ -5,7 +5,6 @@
 
 
 #include "Render.h"
-#include "BufferUtils.h"
 
 
 
@@ -20,18 +19,6 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
 
     (void)hdc;
 
-
-
-    /*
-        这段代码是为了实现动态更新GPU端的常量缓冲区，使着色器能够获取当前窗口大小，
-        保证渲染效果能正确适配窗口尺寸变化。
-    */
-    // 取得最新窗口大小（防止窗口大小变化不更新）
-    RECT rect;
-    //检索窗口客户区 (可绘制区域，不包括边框和标题栏) 的尺寸
-    GetClientRect(hwnd, &rect);
-    float width = static_cast<float>(rect.right - rect.left);
-    float height = static_cast<float>(rect.bottom - rect.top);
 
 
 
@@ -65,8 +52,7 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
     pState->context->VSSetShader(pState->vertexShader, nullptr, 0);
     //绑定像素着色器（Pixel Shader）到管线
     pState->context->PSSetShader(pState->pixelShader, nullptr, 0);
-    //
-    pState->context->VSSetConstantBuffers(0, 1, &pState->constantBuffer);
+
     // 作用是告诉 GPU 如何把顶点组织成图元来绘制。设置图元类型为三角形列表:D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
     pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -99,6 +85,10 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
         pState->context->IASetIndexBuffer(obj.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 
+        //
+        pState->context->VSSetConstantBuffers(0, 1, &obj.constantBuffer);
+
+
         // --- 绑定纹理和采样器到像素着色器 ---
         // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)
         // t0 寄存器对应起始槽位 0
@@ -107,10 +97,6 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
         // s0 寄存器对应起始槽位 0
         pState->context->PSSetSamplers(0, 1, &pState->samplerState);
         // --- 绑定结束 ---
-
-
-        // 设置常量缓冲区，传入 obj.worldMatrix
-        UpdateConstantBuffer(pState->context, pState->constantBuffer, obj.worldMatrix, width, height);
 
         // 绘制调用
         pState->context->DrawIndexed(obj.indexCount, 0, 0);
