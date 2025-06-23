@@ -15,7 +15,7 @@ void UpdateAnimation(GameObject& obj, float deltaTime, int columns, int rows) {
 
     obj.animationTimer += deltaTime; //deltaTime 每一帧与上一帧之间的耗时（单位是秒）
 
-    if (obj.animationTimer >= (1.0f / 8.0f)) { // 每秒8帧
+    if (obj.animationTimer >= (1.0f / obj.fps)) { // 每秒8帧
         obj.frameIndex = (obj.frameIndex + 1) % obj.totalFrames;
         obj.animationTimer = 0.0f;
 

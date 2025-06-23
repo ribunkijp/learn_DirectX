@@ -13,7 +13,7 @@
 
 
 
-GameObject CreateTexture(ID3D11Device* device, const wchar_t* texturePath,float left, float top, float right, float bottom, bool isAnimated, int totalFrames, float texOffset[2], float texScale[2], int columns, int rows) {
+GameObject CreateTexture(ID3D11Device* device, const wchar_t* texturePath,float left, float top, float right, float bottom, bool isAnimated, int totalFrames, float texOffset[2], float texScale[2], int columns, int rows, float fps) {
     
     GameObject obj;
 
@@ -44,6 +44,7 @@ GameObject CreateTexture(ID3D11Device* device, const wchar_t* texturePath,float 
     obj.totalFrames = totalFrames;
     obj.columns = columns;
     obj.rows = rows;
+    obj.fps = fps;
 
 
     //创建每个物体自己的 constant buffer

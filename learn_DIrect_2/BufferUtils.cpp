@@ -73,7 +73,7 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
 
 
     //将 GPU 的 constantBuffer 映射到 CPU-accessible memory, 可以写入新数据
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    D3D11_MAPPED_SUBRESOURCE mappedResource;//Direct3D 映射（Map）之后，提供给你的 一块可以写入的内存地址，类型是 void*（无类型指针)
     HRESULT hr = context->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     if (FAILED(hr))
     {
@@ -82,7 +82,7 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
     }
     
 
-    //取得映射后的内存指针，类型是定义的 ConstantBuffer 结构体
+    //取得映射后的内存指针，类型转换为定义的 ConstantBuffer 结构体
     ConstantBuffer* pCb = (ConstantBuffer*)mappedResource.pData;
 
     //

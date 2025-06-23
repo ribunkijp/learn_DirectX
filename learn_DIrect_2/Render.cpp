@@ -35,8 +35,6 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
     //清除深度和模板缓冲区。1.0f是深度的默认最远值。
     pState->context->ClearDepthStencilView(pState->depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // 绑定渲染目标
-    pState->context->OMSetRenderTargets(1, &pState->rtv, pState->depthStencilView);
 
     // 设置输入布局和着色器
     /*

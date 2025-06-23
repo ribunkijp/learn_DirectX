@@ -22,12 +22,12 @@
 //定义了将数据作为常量缓冲区传递给 GPU shaders 的布局
 struct ConstantBuffer {
     //世界变换矩阵。这将按物体进行更新并发送到顶点着色器
-    DirectX::XMMATRIX worldMatrix;  // 64 字节 (4x4 float)
+    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();  // 64 字节 (4x4 float)
     //一个数组，用于存储屏幕的宽度和高度。这在 shader 中用于将像素坐标转换为 Normalized Device Coordinates (NDC)。
     float screenSize[2] = { 0.0f, 0.0f }; // 屏幕宽高
 
-    float texOffset[2] = { 0.0f, 0.0f };   // 当前帧的偏移（{0.0f, 0.0f}, {0.125f, 0.0f}）
-    float texScale[2] = { 1.0f, 1.0f };    // 单帧的缩放（{1.0 / 8, 1.0}）
+    float texOffset[2] = { 0.0f, 0.0f };   // 表示从纹理的哪里开始采样 ,[0.0, 1.0] 范围内, {0.25, 0.0} 表示从纹理的横向 25% 开始采样
+    float texScale[2] = { 1.0f, 1.0f };    // 表示采样区域的大小。{0.125, 1.0} 表示只采整张图的 1/8 宽度，高度全用
 
     float padding[2] = { 0.0f, 0.0f };    // 保持16字节对齐
 };
@@ -51,6 +51,8 @@ struct alignas(16) GameObject {
     //
     int columns = 1;
     int rows = 1;
+    //
+    float fps = 8.0f;
 };
 
 
@@ -67,14 +69,21 @@ extern unsigned screenWidth;
 extern unsigned screenHeight;
 
 
-
+//
 bool InitD3D(HWND hwnd, StateInfo* state);
 
-
+//
 extern std::vector<GameObject> sceneObjects;
 
-HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** srv);
+//
+HRESULT LoadTextureAndCreateSRV(
+    ID3D11Device* device,                       // 用来创建资源的 D3D 设备
+    const wchar_t* filename,                   // 纹理文件路径（通常是 DDS、PNG、JPG）
+    ID3D11ShaderResourceView** srv             // 输出：创建好的 SRV 指针 返回给调用者
 
+);
+
+//
 void CleanupD3D(StateInfo* state);
 
 

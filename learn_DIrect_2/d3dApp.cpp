@@ -61,16 +61,17 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
     // 创建 Direct3D 设备和交换链和命令上下文
     if (FAILED(D3D11CreateDeviceAndSwapChain(
-        nullptr,                        // 适配器（nullptr＝默认）
-        D3D_DRIVER_TYPE_HARDWARE,      // 使用硬件
-        nullptr, 0,                    // 无软件设置
-        nullptr, 0,                    // 无功能级别设置（默认）
-        D3D11_SDK_VERSION,             // SDK版本
-        &scd,                         // 交换链设置
-        &state->swapChain,            // 接收交换链
-        &state->device,               // 接收设备
-        nullptr,                     // 不需要实际功能级别，传nullptr
-        &state->context)))            // 接收设备上下文
+        nullptr,                        // 使用默认显卡（适配器）
+        D3D_DRIVER_TYPE_HARDWARE,      // 使用硬件加速（最快，也是默认）
+        nullptr,                        // 无软件渲染 DLL（因为你用的是硬件驱动）
+        0,                              // 不设置 debug 标志（正式版设为 0）
+        nullptr, 0,                     // 不指定功能级别（会自动选择）
+        D3D11_SDK_VERSION,             // Direct3D SDK 的版本宏（必须这样写）
+        &scd,                          // 你准备好的交换链配置（DXGI_SWAP_CHAIN_DESC）
+        &state->swapChain,             // 输出：交换链接口指针
+        &state->device,                // 输出：设备指针（GPU 设备对象）
+        nullptr,                       // 不关心功能级别，传 nullptr 即可
+        &state->context)))            // // 输出：设备上下文（用于提交渲染命令）
         return false; // 失败返回false
 
 
@@ -87,7 +88,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
         return false; // 失败时中断初始化
     }
 
-    // 为后备缓冲区创建渲染目标视图
+    // 为后备缓冲区创建渲染目标视图 通过设置 RTV，把 GPU 的“绘画目标”指向后台缓冲区。
     hr = state->device->CreateRenderTargetView(backBuffer, nullptr, &state->rtv);
     if (FAILED(hr)) {
         return false; // 这里也要检查失败
@@ -95,6 +96,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
     // 释放后备缓冲区（视图已经创建完成）
     backBuffer->Release();
+
 
 
 
@@ -280,11 +282,11 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
         return false;
     }
 
-    // !!! 新增: 创建用于透明物体的深度/模板状态 !!! (你刚才问的第一段代码，这里是它的正确位置)
-    // 注意：这个状态是禁用深度写入的
+    // 创建用于透明物体的深度/模板状态 
     D3D11_DEPTH_STENCIL_DESC transparentDepthStencilDesc = {};
     transparentDepthStencilDesc.DepthEnable = TRUE; // 仍然启用深度测试 (与不透明物体比较)
-    transparentDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // **禁用深度写入**
+    //// **禁用深度写入**不让透明物体“覆盖”后面的物体的 Z 值，否则会挡住后面本该看到的东西
+    transparentDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; 
     transparentDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
     transparentDepthStencilDesc.StencilEnable = FALSE;
 
@@ -306,22 +308,22 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
     float offset[2] = { 0.0f, 0.0f };
     float scale[2] = { 1.0f, 1.0f };
-    GameObject bg = CreateTexture(state->device, L"assets\\bg.dds", 0.0f, 0.0f, width, height, false, 1, offset, scale, 1, 1);
+    GameObject bg = CreateTexture(state->device, L"assets\\bg.dds", 0.0f, 0.0f, width, height, false, 1, offset, scale, 1, 1, 8.0f);
     //bg.constantBufferData.worldMatrix = DirectX::XMMatrixTranslation(width / 2.0f, height / 2.0f, 0.0f);
     sceneObjects.push_back(bg);
-    GameObject mario = CreateTexture(state->device, L"assets\\mario.dds", 200.0f, 100.0f, 500.0f, 400.0f, false, 1, offset, scale, 1, 1);
+    GameObject mario = CreateTexture(state->device, L"assets\\mario.dds", 200.0f, 100.0f, 500.0f, 400.0f, false, 1, offset, scale, 1, 1, 8.0f);
     sceneObjects.push_back(mario);
-    GameObject peach = CreateTexture(state->device, L"assets\\peach.dds", 600.0f, 200.0f, 1020.0f, 500.0f, false, 1, offset, scale, 1, 1);
+    GameObject peach = CreateTexture(state->device, L"assets\\peach.dds", 600.0f, 200.0f, 1020.0f, 500.0f, false, 1, offset, scale, 1, 1, 8.0f);
     sceneObjects.push_back(peach);
 
     scale[0] = 1.0f / 8.0f;
-    GameObject runningman000 = CreateTexture(state->device, L"assets\\runningman000.dds", 300.0f, 600.0f, 600.0f, 900.0f, true, 8, offset, scale, 8, 1);
+    GameObject runningman000 = CreateTexture(state->device, L"assets\\runningman000.dds", 300.0f, 600.0f, 600.0f, 900.0f, true, 8, offset, scale, 8, 1, 8.0f);
     sceneObjects.push_back(runningman000);
 
 
     scale[0] = 1.0f / 10.0f;
     scale[1] = 1.0f / 2.0f;
-    GameObject runningman003 = CreateTexture(state->device, L"assets\\runningman003.dds", 700.0f, 600.0f, 1000.0f, 900.0f, true, 10, offset, scale, 5, 2);
+    GameObject runningman003 = CreateTexture(state->device, L"assets\\runningman003.dds", 700.0f, 600.0f, 1000.0f, 900.0f, true, 10, offset, scale, 5, 2, 8.0f);
     sceneObjects.push_back(runningman003);
    
 
