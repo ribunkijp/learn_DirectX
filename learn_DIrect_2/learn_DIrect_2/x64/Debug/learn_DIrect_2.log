@@ -1,38 +1,7 @@
-﻿  BufferUtils.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
-  
-  ObjectFactory.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'ObjectFactory.cpp' をコンパイルしています)
-  
-  Render.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'Render.cpp' をコンパイルしています)
-  
-  Update.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'Update.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(38,78): warning C4100: 'height': 参照されないパラメーター
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(38,65): warning C4100: 'width': 参照されないパラメーター
-  d3dApp.cpp
+﻿  d3dApp.cpp
 C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\d3dApp.cpp(523,99): warning C4244: '引数': 'UINT' から 'float' への変換です。データが失われる可能性があります。
-C:\code\learn_DirectX\learn_DIrect_2\d3dApp.cpp(523,92): warning C4244: '引数': 'UINT' から 'float' への変換です。データが失われる可能性があります。
-  main.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DIrect_2\main.cpp(194,24): warning C4456: 'pState' を宣言すると、以前のローカル宣言が隠蔽されます
-      C:\code\learn_DirectX\learn_DIrect_2\main.cpp(161,16):
-      'pState' の宣言を確認してください
-  
-C:\code\learn_DirectX\learn_DIrect_2\main.cpp(204,22): warning C4456: 'pState' を宣言すると、以前のローカル宣言が隠蔽されます
-      C:\code\learn_DirectX\learn_DIrect_2\main.cpp(194,24):
-      'pState' の宣言を確認してください
-  
-  コードを生成中...
+C:\code\learn_DirectX\learn_DIrect_2\d3dApp.cpp(535,99): warning C4244: '引数': 'UINT' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\d3dApp.cpp(535,92): warning C4244: '引数': 'UINT' から 'float' への変換です。データが失われる可能性があります。
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

@@ -83,7 +83,7 @@ void CleanupD3D(StateInfo* state);
 
 
 //
-void OnResize(StateInfo* state, UINT width, UINT height);
+void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height);
 
 
 #endif 

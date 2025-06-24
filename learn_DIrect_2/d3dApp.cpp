@@ -364,15 +364,15 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     scale[1] = 1.0f / 2.0f;
     GameObject runningman003 = CreateTexture(
         state->device, 
-        L"assets\\runningman003.dds", 
+        L"assets\\run_robot.dds", 
         700.0f, 600.0f, 1000.0f, 900.0f, 
         true, 
         10, 
         offset, 
         scale, 
-        5, 
-        2, 
-        8.0f,
+        9, 
+        1, 
+        30.0f,
         view, projection);
     sceneObjects.push_back(runningman003);
    
@@ -467,7 +467,7 @@ void CleanupD3D(StateInfo* state) {
 
 
 
-void OnResize(StateInfo* state, UINT width, UINT height)
+void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
 {
     if (!state || !state->swapChain || !state->device || !state->context) return;
 
@@ -480,9 +480,15 @@ void OnResize(StateInfo* state, UINT width, UINT height)
 
     // 获取新的 back buffer
     ID3D11Texture2D* backBuffer = nullptr;
-    state->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-    state->device->CreateRenderTargetView(backBuffer, nullptr, &state->rtv);
-    backBuffer->Release();
+    HRESULT hr = state->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+    if (SUCCEEDED(hr) && backBuffer) {
+        state->device->CreateRenderTargetView(backBuffer, nullptr, &state->rtv);
+        backBuffer->Release();
+    }
+    else {
+        MessageBox(hwnd, L"Failed to get back buffer during resize.", L"Error", MB_OK);
+        return;
+    }
 
     // 创建新的深度缓冲区
     D3D11_TEXTURE2D_DESC depthBufferDesc = {};
@@ -496,7 +502,7 @@ void OnResize(StateInfo* state, UINT width, UINT height)
     depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
     ID3D11Texture2D* depthStencilBuffer = nullptr;
-    state->device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
+   hr =  state->device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
 
     // 创建深度视图
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -504,8 +510,14 @@ void OnResize(StateInfo* state, UINT width, UINT height)
     dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     dsvDesc.Texture2D.MipSlice = 0;
 
-    state->device->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, &state->depthStencilView);
-    depthStencilBuffer->Release();
+    if (SUCCEEDED(hr) && depthStencilBuffer) {
+        state->device->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, &state->depthStencilView);
+        depthStencilBuffer->Release();
+    }
+    else {
+        MessageBox(hwnd, L"Failed to create depth stencil buffer during resize.", L"Error", MB_OK);
+        return;
+    }
 
     // 重新绑定渲染目标
     state->context->OMSetRenderTargets(1, &state->rtv, state->depthStencilView);
@@ -518,7 +530,7 @@ void OnResize(StateInfo* state, UINT width, UINT height)
     vp.MaxDepth = 1.0f;
     state->context->RSSetViewports(1, &vp);
 
-    // ✅ 若你还用 projection 矩阵，也要重新计算
+    //还用 projection 矩阵，也要重新计算
     for (auto& obj : sceneObjects) {
         obj.constantBufferData.projection = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1.0f);
     }

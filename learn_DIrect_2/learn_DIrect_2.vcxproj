@@ -160,6 +160,7 @@
     <Image Include="assets\peach.dds" />
     <Image Include="assets\runningman000.dds" />
     <Image Include="assets\runningman003.dds" />
+    <Image Include="assets\run_robot.dds" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferUtils.h" />

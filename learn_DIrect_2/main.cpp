@@ -203,7 +203,7 @@ LRESULT CALLBACK WindowProc(
             if (width != 0 && height != 0) {
                 auto pState = GetAppState(hwnd);
                 if (pState) {
-                    OnResize(pState, width, height);
+                    OnResize(hwnd, pState, width, height);
                 }
             }
 
