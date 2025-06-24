@@ -21,10 +21,9 @@
 
 //定义了将数据作为常量缓冲区传递给 GPU shaders 的布局
 struct ConstantBuffer {
-    //世界变换矩阵。这将按物体进行更新并发送到顶点着色器
-    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();  // 64 字节 (4x4 float)
-    //一个数组，用于存储屏幕的宽度和高度。这在 shader 中用于将像素坐标转换为 Normalized Device Coordinates (NDC)。
-    float screenSize[2] = { 0.0f, 0.0f }; // 屏幕宽高
+    DirectX::XMMATRIX model;
+    DirectX::XMMATRIX view;
+    DirectX::XMMATRIX projection;
 
     float texOffset[2] = { 0.0f, 0.0f };   // 表示从纹理的哪里开始采样 ,[0.0, 1.0] 范围内, {0.25, 0.0} 表示从纹理的横向 25% 开始采样
     float texScale[2] = { 1.0f, 1.0f };    // 表示采样区域的大小。{0.125, 1.0} 表示只采整张图的 1/8 宽度，高度全用
@@ -68,9 +67,12 @@ struct Vertex {
 extern unsigned screenWidth;
 extern unsigned screenHeight;
 
+//
+extern float clientWidth;
+extern float clientHeight;
 
 //
-bool InitD3D(HWND hwnd, StateInfo* state);
+bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight);
 
 //
 extern std::vector<GameObject> sceneObjects;

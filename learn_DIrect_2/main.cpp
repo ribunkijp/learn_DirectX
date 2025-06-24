@@ -89,8 +89,8 @@ int WINAPI wWinMain(
         // 位置和大小
         0,
         0,
-        (int)screenWidth,
-        (int)screenHeight,
+        1920, //(int)screenWidth,
+        1080, //(int)screenHeight,
 
         NULL,       // 父窗口
         NULL,       // 菜单
@@ -106,7 +106,7 @@ int WINAPI wWinMain(
     ShowWindow(hwnd, nCmdShow);
 
     // 初始化 Direct3D11
-    if (!InitD3D(hwnd, pState)) {
+    if (!InitD3D(hwnd, pState, 1920.0f, 1080.0f)) {
         MessageBox(hwnd, L"初期化に失敗しました", L"エラー", MB_OK);
         return 0;
     }

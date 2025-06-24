@@ -13,7 +13,21 @@
 
 
 
-GameObject CreateTexture(ID3D11Device* device, const wchar_t* texturePath,float left, float top, float right, float bottom, bool isAnimated, int totalFrames, float texOffset[2], float texScale[2], int columns, int rows, float fps) {
+GameObject CreateTexture(ID3D11Device* device,
+    const wchar_t* texturePath,
+    float left, 
+    float top, 
+    float right, 
+    float bottom,
+    bool isAnimated, 
+    int totalFrames,
+    float texOffset[2], 
+    float texScale[2],
+    int columns, 
+    int rows, 
+    float fps,
+    const DirectX::XMMATRIX& view,
+    const DirectX::XMMATRIX& projection) {
     
     GameObject obj;
 
@@ -31,8 +45,10 @@ GameObject CreateTexture(ID3D11Device* device, const wchar_t* texturePath,float 
     // 创建索引缓冲区
     obj.indexBuffer = CreateQuadIndexBuffer(device);
     obj.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
-    // worldMatrix 2D平移矩阵，Z轴一般为0
-    obj.constantBufferData.worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    
+    obj.constantBufferData.model = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f); // 初始位置
+    obj.constantBufferData.view = view;
+    obj.constantBufferData.projection = projection;
 
 
     //初始化 texOffset / texScale

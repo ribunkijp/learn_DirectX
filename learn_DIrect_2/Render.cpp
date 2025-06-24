@@ -86,6 +86,8 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
         //
         pState->context->VSSetConstantBuffers(0, 1, &obj.constantBuffer);
 
+        //之后HLSL 的 PSMain 中用到 cbuffer ConstantBuffer时，再用
+        pState->context->PSSetConstantBuffers(0, 1, &obj.constantBuffer);
 
         // --- 绑定纹理和采样器到像素着色器 ---
         // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)

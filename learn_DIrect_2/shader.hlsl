@@ -5,8 +5,10 @@
 
 cbuffer ConstantBuffer : register(b0)
 {
-    matrix worldMatrix; // 4x4 矩阵
-    float2 screenSize;
+    matrix model;
+    matrix view;
+    matrix projection;
+    
     float2 texOffset;
     float2 texScale;
     float2 padding; // 保持16字节对齐
@@ -41,14 +43,12 @@ PS_INPUT VSMain(VS_INPUT input)
 
     float4 localPos = float4(input.pos, 1.0f);
 
-    // 用 worldMatrix 对顶点坐标进行平移、旋转、缩放变换。
-    float4 worldPos = mul(localPos, worldMatrix);
+    float4 worldPos = mul(localPos, model);
+    float4 viewPos = mul(worldPos, view);
+    float4 projPos = mul(viewPos, projection);
 
-    // 再把 worldPos 从像素坐标转换为 NDC 坐标
-    float x = worldPos.x / screenSize.x * 2.0f - 1.0f;
-    float y = 1.0f - worldPos.y / screenSize.y * 2.0f;
-
-    output.pos = float4(x, y, worldPos.z, 1.0f);
+    output.pos = projPos;
+    
     output.col = input.col;//将顶点颜色传递给像素着色器
     output.tex = input.tex * texScale + texOffset;
     //
@@ -61,14 +61,15 @@ float4 PSMain(PS_INPUT input) : SV_TARGET
      // 使用采样器和插值后的纹理坐标从纹理中采样颜色
     float4 textureColor = shaderTexture.Sample(SamplerClamp, input.tex);
 
-    // 你可以选择如何混合纹理颜色和顶点颜色
     // 只使用纹理颜色：
     return textureColor;
-    //return float4(textureColor.a, textureColor.a, textureColor.a, 1.0f);
+    
+     //直接输出从顶点着色器传过来的颜色, 每个像素的颜色就是顶点插值得来的颜色。
+    //return input.col;
+    
 
     // 纹理颜色与顶点颜色相乘（实现纹理的颜色着色）：
     // return textureColor * input.col;
     
-    //直接输出从顶点着色器传过来的颜色, 每个像素的颜色就是顶点插值得来的颜色。
-    //return input.col;
+   
 }

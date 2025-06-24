@@ -11,14 +11,23 @@
 
 // 获取屏幕的宽度和高度（单位：像素）
 unsigned screenWidth = (unsigned)GetSystemMetrics(SM_CXSCREEN);
-unsigned screenHeight = (unsigned)GetSystemMetrics(SM_CYSCREEN);
+unsigned  = (unsigned)GetSystemMetrics(SM_CYSCREEN);
 //
 std::vector<GameObject> sceneObjects;
 
 
 
+bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight) {
 
-bool InitD3D(HWND hwnd, StateInfo* state) {
+
+    DirectX::XMMATRIX view = DirectX::XMMatrixIdentity(); // 先用单位矩阵，你可以设置摄像机的位置后再更新
+    DirectX::XMMATRIX projection = DirectX::XMMatrixOrthographicOffCenterLH(
+        0.0f, clientWidth,      // left, right
+        clientHeight, 0.0f,      // bottom, top ← 注意顺序！
+        0.0f, 1.0f                                   // nearZ, farZ
+    );
+
+
     /*
         // 初始化交换链描述结构体（DXGI_SWAP_CHAIN_DESC）
         // 交换链（Swap Chain）是 DirectX 实现双缓冲或多缓冲的机制。
@@ -144,8 +153,8 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
     // 设置视口（绘制区域）
     D3D11_VIEWPORT vp = {};
-    vp.Width = (FLOAT)screenWidth;       // 视口宽度（与窗口宽度一致）
-    vp.Height = (FLOAT)screenHeight;     // 视口高度（与窗口高度一致）
+    vp.Width = clientWidth;       // 视口宽度（与窗口宽度一致）
+    vp.Height = clientHeight;     // 视口高度（与窗口高度一致）
     vp.MinDepth = 0.0f;                  // 最小深度（深度缓冲区最小值）
     vp.MaxDepth = 1.0f;                  // 最大深度（深度缓冲区最大值）
     state->context->RSSetViewports(1, &vp); // 设置光栅化阶段的视口
@@ -243,9 +252,7 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
     cbd.MiscFlags = 0;
     //结构化缓冲区（Structured Buffer）才用
     cbd.StructureByteStride = 0;
-    //创建常量缓冲区（Constant Buffer）在渲染过程中将数据（比如变换矩阵）从 CPU 传给 GPU 的着色器。
-    hr = state->device->CreateBuffer(&cbd, nullptr, &state->constantBuffer);
-    if (FAILED(hr)) return false;
+   
 
 
     // --- 创建纹理采样器状态 ---
@@ -299,31 +306,76 @@ bool InitD3D(HWND hwnd, StateInfo* state) {
 
 
 
-    RECT clientRect = {};
-    GetClientRect(hwnd, &clientRect);
-
-    float width = static_cast<float>(clientRect.right - clientRect.left);
-    float height = static_cast<float>(clientRect.bottom - clientRect.top);
 
 
     float offset[2] = { 0.0f, 0.0f };
     float scale[2] = { 1.0f, 1.0f };
-    GameObject bg = CreateTexture(state->device, L"assets\\bg.dds", 0.0f, 0.0f, width, height, false, 1, offset, scale, 1, 1, 8.0f);
-    //bg.constantBufferData.worldMatrix = DirectX::XMMatrixTranslation(width / 2.0f, height / 2.0f, 0.0f);
+    GameObject bg = CreateTexture(
+        state->device,
+        L"assets\\bg.dds",
+        0.0f, 0.0f, clientWidth, clientHeight,
+        false, 1,
+        offset, scale,
+        1, 1, 8.0f,
+        view, projection);
     sceneObjects.push_back(bg);
-    GameObject mario = CreateTexture(state->device, L"assets\\mario.dds", 200.0f, 100.0f, 500.0f, 400.0f, false, 1, offset, scale, 1, 1, 8.0f);
+    GameObject mario = CreateTexture(
+        state->device, 
+        L"assets\\mario.dds", 
+        200.0f, 100.0f, 500.0f, 400.0f, 
+        false, 
+        1, 
+        offset, 
+        scale, 
+        1, 
+        1, 
+        8.0f,
+        view, projection);
     sceneObjects.push_back(mario);
-    GameObject peach = CreateTexture(state->device, L"assets\\peach.dds", 600.0f, 200.0f, 1020.0f, 500.0f, false, 1, offset, scale, 1, 1, 8.0f);
+    GameObject peach = CreateTexture(
+        state->device, 
+        L"assets\\peach.dds", 
+        600.0f, 200.0f, 1020.0f, 500.0f, 
+        false, 
+        1, 
+        offset, 
+        scale, 
+        1, 
+        1, 
+        8.0f,
+        view, projection);
     sceneObjects.push_back(peach);
 
     scale[0] = 1.0f / 8.0f;
-    GameObject runningman000 = CreateTexture(state->device, L"assets\\runningman000.dds", 300.0f, 600.0f, 600.0f, 900.0f, true, 8, offset, scale, 8, 1, 8.0f);
+    GameObject runningman000 = CreateTexture(
+        state->device, 
+        L"assets\\runningman000.dds", 
+        300.0f, 600.0f, 600.0f, 900.0f, 
+        true, 
+        8, 
+        offset, 
+        scale, 
+        8, 
+        1, 
+        8.0f,
+        view, projection);
     sceneObjects.push_back(runningman000);
 
 
-    scale[0] = 1.0f / 10.0f;
+   scale[0] = 1.0f / 10.0f;
     scale[1] = 1.0f / 2.0f;
-    GameObject runningman003 = CreateTexture(state->device, L"assets\\runningman003.dds", 700.0f, 600.0f, 1000.0f, 900.0f, true, 10, offset, scale, 5, 2, 8.0f);
+    GameObject runningman003 = CreateTexture(
+        state->device, 
+        L"assets\\runningman003.dds", 
+        700.0f, 600.0f, 1000.0f, 900.0f, 
+        true, 
+        10, 
+        offset, 
+        scale, 
+        5, 
+        2, 
+        8.0f,
+        view, projection);
     sceneObjects.push_back(runningman003);
    
 
@@ -363,10 +415,6 @@ void CleanupD3D(StateInfo* state) {
     if (state->samplerState) { // 释放采样器状态
         state->samplerState->Release();
         state->samplerState = nullptr;
-    }
-    if (state->constantBuffer) { // 释放常量缓冲区
-        state->constantBuffer->Release();
-        state->constantBuffer = nullptr;
     }
     if (state->pixelShader) { // 释放像素着色器
         state->pixelShader->Release();

@@ -30,14 +30,6 @@ struct StateInfo {
     // 像素着色器：用于决定每个像素颜色的着色器
     ID3D11PixelShader* pixelShader = nullptr;
 
-    // 顶点缓冲区：存储用于绘制的顶点数据的缓冲区
-    ID3D11Buffer* vertexBuffer = nullptr;
-
-    // 存储索引数组
-    ID3D11Buffer* indexBuffer = nullptr;
-
-    //常量缓冲区 该数据传递给 shaders
-    ID3D11Buffer* constantBuffer = nullptr;
 
     //用于纹理采样的采样器状态
     ID3D11SamplerState* samplerState = nullptr;

@@ -85,14 +85,10 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
     //取得映射后的内存指针，类型转换为定义的 ConstantBuffer 结构体
     ConstantBuffer* pCb = (ConstantBuffer*)mappedResource.pData;
 
-    //
-    pCb->worldMatrix = DirectX::XMMatrixTranspose(cbData.worldMatrix);//  // 先转置矩阵（DirectX一般用行主序，HLSL一般列主序）  
-    
-    
-    
-    // 对象的变换矩阵
-    pCb->screenSize[0] = cbData.screenSize[0];        // 当前窗口宽度
-    pCb->screenSize[1] = cbData.screenSize[1];      // 当前窗口高度
+    // 将矩阵转置传入 GPU（列主序兼容 HLSL）
+    pCb->model = DirectX::XMMatrixTranspose(cbData.model);
+    pCb->view = DirectX::XMMatrixTranspose(cbData.view);
+    pCb->projection = DirectX::XMMatrixTranspose(cbData.projection);
     
     pCb->texOffset[0] = cbData.texOffset[0];
     pCb->texOffset[1] = cbData.texOffset[1];

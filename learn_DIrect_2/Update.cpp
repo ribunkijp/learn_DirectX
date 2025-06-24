@@ -41,9 +41,6 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime, float width, float hei
         // 1. 更新动画数据（帧切换）
         if(obj.isAnimated)  UpdateAnimation(obj, deltaTime, obj.columns, obj.rows);
 
-        // 2. 写入屏幕信息
-        obj.constantBufferData.screenSize[0] = width;
-        obj.constantBufferData.screenSize[1] = height;
 
         // 3. 上传到 GPU
         UpdateConstantBuffer(pState->context, obj.constantBuffer, obj.constantBufferData);
