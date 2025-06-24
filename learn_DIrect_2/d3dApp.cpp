@@ -9,9 +9,7 @@
 
 
 
-// 获取屏幕的宽度和高度（单位：像素）
-unsigned screenWidth = (unsigned)GetSystemMetrics(SM_CXSCREEN);
-unsigned  = (unsigned)GetSystemMetrics(SM_CYSCREEN);
+
 //
 std::vector<GameObject> sceneObjects;
 
@@ -50,8 +48,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     scd.BufferCount = 1;
 
     // 绘制画面的宽度和高度（分辨率）
-    scd.BufferDesc.Width = screenWidth;
-    scd.BufferDesc.Height = screenHeight;
+    scd.BufferDesc.Width = static_cast<unsigned>(clientWidth);
+    scd.BufferDesc.Height = static_cast<unsigned>(clientHeight);
 
     // 缓冲区的颜色格式（RGBA，每个8位的标准格式）
     scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -113,8 +111,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     // !!! 新增: 创建深度/模板缓冲区 !!!
     ID3D11Texture2D* depthStencilBuffer = nullptr;
     D3D11_TEXTURE2D_DESC depthBufferDesc = {};
-    depthBufferDesc.Width = screenWidth;
-    depthBufferDesc.Height = screenHeight;
+    depthBufferDesc.Width = static_cast<unsigned>(clientWidth);
+    depthBufferDesc.Height = static_cast<unsigned>(clientHeight);
     depthBufferDesc.MipLevels = 1;
     depthBufferDesc.ArraySize = 1;
     depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 24位深度 + 8位模板
@@ -465,4 +463,63 @@ void CleanupD3D(StateInfo* state) {
         state->device = nullptr;
     }
 
+}
+
+
+
+void OnResize(StateInfo* state, UINT width, UINT height)
+{
+    if (!state || !state->swapChain || !state->device || !state->context) return;
+
+    // 释放旧的资源
+    if (state->rtv) { state->rtv->Release(); state->rtv = nullptr; }
+    if (state->depthStencilView) { state->depthStencilView->Release(); state->depthStencilView = nullptr; }
+
+    // Resize 交换链 buffers
+    state->swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
+
+    // 获取新的 back buffer
+    ID3D11Texture2D* backBuffer = nullptr;
+    state->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+    state->device->CreateRenderTargetView(backBuffer, nullptr, &state->rtv);
+    backBuffer->Release();
+
+    // 创建新的深度缓冲区
+    D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+    depthBufferDesc.Width = width;
+    depthBufferDesc.Height = height;
+    depthBufferDesc.MipLevels = 1;
+    depthBufferDesc.ArraySize = 1;
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthBufferDesc.SampleDesc.Count = 1;
+    depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    ID3D11Texture2D* depthStencilBuffer = nullptr;
+    state->device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
+
+    // 创建深度视图
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = depthBufferDesc.Format;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0;
+
+    state->device->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, &state->depthStencilView);
+    depthStencilBuffer->Release();
+
+    // 重新绑定渲染目标
+    state->context->OMSetRenderTargets(1, &state->rtv, state->depthStencilView);
+
+    // 更新视口
+    D3D11_VIEWPORT vp = {};
+    vp.Width = static_cast<FLOAT>(width);
+    vp.Height = static_cast<FLOAT>(height);
+    vp.MinDepth = 0.0f;
+    vp.MaxDepth = 1.0f;
+    state->context->RSSetViewports(1, &vp);
+
+    // ✅ 若你还用 projection 矩阵，也要重新计算
+    for (auto& obj : sceneObjects) {
+        obj.constantBufferData.projection = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1.0f);
+    }
 }

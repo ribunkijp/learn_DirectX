@@ -12,8 +12,8 @@ Timer::Timer() {
 }
 
 void Timer::Reset() {
-    lastTime = std::chrono::high_resolution_clock::now();
     deltaTime = 0.0f;
+    lastTime = std::chrono::high_resolution_clock::now();
 }
 
 void Timer::Tick() {

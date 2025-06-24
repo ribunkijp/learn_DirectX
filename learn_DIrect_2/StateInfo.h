@@ -40,6 +40,8 @@ struct StateInfo {
     ID3D11DepthStencilState* depthStencilStateTransparent = nullptr;
     //深度/模板缓冲区视图 的接口指针  GPU 用来访问和操作深度/模板缓冲区的接口
     ID3D11DepthStencilView* depthStencilView = nullptr;
+    //
+    ID3D11RenderTargetView* renderTargetView = nullptr;
 
 };
 

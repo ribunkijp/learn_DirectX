@@ -28,6 +28,7 @@ WinMain（アプリの開始点）
 #include "Timer.h"
 #include "Update.h"
 #include "Render.h"
+#include "BufferUtils.h"
 
 
 
@@ -105,8 +106,14 @@ int WINAPI wWinMain(
 
     ShowWindow(hwnd, nCmdShow);
 
+
+    RECT rect;
+    GetClientRect(hwnd, &rect);
+    float clientWidth = static_cast<float>(rect.right - rect.left);
+    float clientHeight = static_cast<float>(rect.bottom - rect.top);
+
     // 初始化 Direct3D11
-    if (!InitD3D(hwnd, pState, 1920.0f, 1080.0f)) {
+    if (!InitD3D(hwnd, pState, clientWidth, clientHeight)) {
         MessageBox(hwnd, L"初期化に失敗しました", L"エラー", MB_OK);
         return 0;
     }
@@ -131,7 +138,7 @@ int WINAPI wWinMain(
         float deltaTime = timer.GetDeltaTime();  // 每帧耗时
 
         // 更新所有对象的动画和常量缓冲区
-        UpdateAllObjects(pState, deltaTime, screenWidth, screenHeight);
+        UpdateAllObjects(pState, deltaTime, clientWidth, clientHeight);
 
         //更新视口
         UpdateViewport(pState->context, hwnd);
@@ -180,6 +187,28 @@ LRESULT CALLBACK WindowProc(
             }
             PostQuitMessage(0);
             return 0;
+        case WM_SIZE:
+            {
+
+            //
+            StateInfo* pState = GetAppState(hwnd);
+            if (!pState || !pState->context)
+                return 0; // 还没初始化完毕，不执行
+
+
+
+            UINT width = LOWORD(lParam);
+            UINT height = HIWORD(lParam);
+
+            if (width != 0 && height != 0) {
+                auto pState = GetAppState(hwnd);
+                if (pState) {
+                    OnResize(pState, width, height);
+                }
+            }
+
+            return 0;
+            }
     }
     //switch 语句中未明确处理的任何消息，此行调用默认窗口过程
     return DefWindowProc(hwnd, uMsg, wParam, lParam);

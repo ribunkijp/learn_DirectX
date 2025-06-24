@@ -16,8 +16,11 @@ public:
     float GetDeltaTime() const;
 
 private:
-    std::chrono::high_resolution_clock::time_point lastTime;
     float deltaTime;
+    //
+    char padding[4] = {};
+
+    std::chrono::high_resolution_clock::time_point lastTime;
 };
 
 

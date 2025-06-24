@@ -11,7 +11,7 @@
 
 
 
-void UpdateAnimation(GameObject& obj, float deltaTime, int columns, int rows) {
+void UpdateAnimation(GameObject& obj, float deltaTime) {
 
     obj.animationTimer += deltaTime; //deltaTime 每一帧与上一帧之间的耗时（单位是秒）
 
@@ -22,15 +22,15 @@ void UpdateAnimation(GameObject& obj, float deltaTime, int columns, int rows) {
     }
 
     // 计算单帧宽高（单位: 纹理UV坐标 0~1）
-    float frameWidth = 1.0f / obj.columns;
-    float frameHeight = 1.0f / obj.rows;
+    float frameWidth = 1.0f / static_cast<float>(obj.columns);
+    float frameHeight = 1.0f / static_cast<float>(obj.rows);
 
     // 计算帧的行列位置
     int col = obj.frameIndex % obj.columns;
     int row = obj.frameIndex / obj.columns;
 
-    obj.constantBufferData.texOffset[0] = col * frameWidth;
-    obj.constantBufferData.texOffset[1] = row * frameHeight;
+    obj.constantBufferData.texOffset[0] = static_cast<float>(col) * frameWidth;
+    obj.constantBufferData.texOffset[1] = static_cast<float>(row) * frameHeight;
     obj.constantBufferData.texScale[0] = frameWidth;
     obj.constantBufferData.texScale[1] = frameHeight;
 }
@@ -39,7 +39,7 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime, float width, float hei
     for (auto& obj : sceneObjects)
     {   
         // 1. 更新动画数据（帧切换）
-        if(obj.isAnimated)  UpdateAnimation(obj, deltaTime, obj.columns, obj.rows);
+        if(obj.isAnimated)  UpdateAnimation(obj, deltaTime);
 
 
         // 3. 上传到 GPU
