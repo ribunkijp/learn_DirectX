@@ -28,7 +28,6 @@ WinMain（アプリの開始点）
 #include "Timer.h"
 #include "Update.h"
 #include "Render.h"
-#include "BufferUtils.h"
 
 
 
@@ -191,7 +190,7 @@ LRESULT CALLBACK WindowProc(
             {
 
             //
-            StateInfo* pState = GetAppState(hwnd);
+            pState = GetAppState(hwnd);
             if (!pState || !pState->context)
                 return 0; // 还没初始化完毕，不执行
 
@@ -201,7 +200,7 @@ LRESULT CALLBACK WindowProc(
             UINT height = HIWORD(lParam);
 
             if (width != 0 && height != 0) {
-                auto pState = GetAppState(hwnd);
+
                 if (pState) {
                     OnResize(hwnd, pState, width, height);
                 }

@@ -42,29 +42,33 @@ public:
 
     void Render(ID3D11DeviceContext* context);
 
-    // 
-    DirectX::XMMATRIX modelMatrix;
 
 private:
     void Release();
     void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom);
-
-    // 动画数据
-    float texOffset[2];
-    float texScale[2];
-    float animationTimer;
-    int frameIndex;
-    int totalFrames, columns, rows;
-    float fps;
-    bool isAnimated;
-
-    // GPU资源
+    
+    // GPU 资源
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
     ID3D11Buffer* constantBuffer;
     ID3D11ShaderResourceView* textureSRV;
 
+    // 动画控制
+    float texOffset[2];
+    float texScale[2];
+    float fps;
+    float animationTimer;
+    int frameIndex;
+    int totalFrames;
+    int columns;
+    int rows;
+    bool isAnimated;
+
+    // 渲染
     UINT indexCount;
+
+    // 
+    DirectX::XMMATRIX modelMatrix;
 };
 
 #endif

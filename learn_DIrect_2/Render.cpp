@@ -66,12 +66,6 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
 
 
 
-    // 更新顶点缓冲区步幅 (stride)
-    // 确保这里的 stride 与你的 Vertex 结构体大小一致
-    UINT stride = sizeof(Vertex);
-    //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
-    UINT offset = 0;
-
     // PSSetSamplers(起始槽位, 采样器数量, 采样器数组指针)
         // s0 寄存器对应起始槽位 0
     pState->context->PSSetSamplers(0, 1, &pState->samplerState);

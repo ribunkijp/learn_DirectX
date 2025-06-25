@@ -12,19 +12,8 @@
 #pragma comment(lib, "d3d11.lib")//链接Direct3D 11 的静态链接库
 #pragma comment(lib, "d3dcompiler.lib")//链接D3DCompiler API 的静态链接库
 #include <DirectXMath.h>
-#include <vector>
 #include <DirectXTex.h>
 #include "StateInfo.h"
-
-
-
-
-
-
-
-
-
-
 
 
 //

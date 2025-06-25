@@ -9,10 +9,21 @@
 using namespace DirectX;
 
 GameObject::GameObject()
-    : vertexBuffer(nullptr), indexBuffer(nullptr), constantBuffer(nullptr),
-    textureSRV(nullptr), indexCount(0), animationTimer(0.0f),
-    frameIndex(0), totalFrames(1), columns(1), rows(1), fps(8.0f),
-    isAnimated(false), modelMatrix(XMMatrixIdentity())
+    : vertexBuffer(nullptr),
+    indexBuffer(nullptr),
+    constantBuffer(nullptr),
+    textureSRV(nullptr),
+    texOffset{ 0.0f, 0.0f },
+    texScale{ 1.0f, 1.0f },
+    fps(8.0f),
+    animationTimer(0.0f),
+    frameIndex(0),
+    totalFrames(1),
+    columns(1),
+    rows(1),
+    isAnimated(false),
+    indexCount(0),
+    modelMatrix(XMMatrixIdentity()) 
 {
     texOffset[0] = texOffset[1] = 0.0f;
     texScale[0] = texScale[1] = 1.0f;
@@ -77,13 +88,13 @@ void GameObject::Update(float deltaTime) {
         animationTimer = 0.0f;
     }
 
-    float frameW = 1.0f / columns;
-    float frameH = 1.0f / rows;
+    float frameW = 1.0f / static_cast<float>(columns);
+    float frameH = 1.0f / static_cast<float>(rows);
     int col = frameIndex % columns;
     int row = frameIndex / columns;
 
-    texOffset[0] = col * frameW;
-    texOffset[1] = row * frameH;
+    texOffset[0] = static_cast<float>(col) * frameW;
+    texOffset[1] = static_cast<float>(row) * frameH;
     texScale[0] = frameW;
     texScale[1] = frameH;
 }

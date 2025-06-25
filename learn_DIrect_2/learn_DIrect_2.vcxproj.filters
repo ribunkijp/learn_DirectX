@@ -44,12 +44,7 @@
     <Text Include="shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\peach.dds" />
-    <Image Include="assets\mario.dds" />
     <Image Include="assets\bg.dds" />
-    <Image Include="assets\hk_walk.dds" />
-    <Image Include="assets\runningman000.dds" />
-    <Image Include="assets\runningman003.dds" />
     <Image Include="assets\run_robot.dds" />
   </ItemGroup>
   <ItemGroup>

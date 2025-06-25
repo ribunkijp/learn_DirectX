@@ -47,8 +47,8 @@ struct StateInfo {
     //
     ID3D11RenderTargetView* renderTargetView = nullptr;
     //
-    DirectX::XMMATRIX view;
-    DirectX::XMMATRIX projection;
+    DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
+    DirectX::XMMATRIX projection = DirectX::XMMatrixIdentity();
     //
     float logicalWidth = 100.0f;
     float logicalHeight = 62.5f;
