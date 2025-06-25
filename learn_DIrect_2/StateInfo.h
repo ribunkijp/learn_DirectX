@@ -54,6 +54,8 @@ struct StateInfo {
     float logicalHeight = 62.5f;
     //
     std::vector<std::unique_ptr<GameObject>> sceneObjects;
+    //
+    GameObject background;
 
 };
 

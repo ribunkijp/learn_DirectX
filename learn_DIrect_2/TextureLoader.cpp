@@ -9,7 +9,7 @@
 
 
 
-HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** srv) {
+HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** srv, float* outWidth, float* outHeight) {
     DirectX::TexMetadata metadata;
     DirectX::ScratchImage scratchImage;
     HRESULT hr;
@@ -24,6 +24,10 @@ HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, I
 
         return hr;
     }
+
+    // 如果调用者想获取宽高，就赋值
+    if (outWidth)  *outWidth = static_cast<float>(metadata.width);
+    if (outHeight) *outHeight = static_cast<float>(metadata.height);
 
     // 从加载的图片数据创建 Shader Resource View
     // 这个函数会自动处理 mipmaps 和纹理格式转换

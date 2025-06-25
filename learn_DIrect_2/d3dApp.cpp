@@ -318,23 +318,20 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
 
 
-    auto bg = std::make_unique<GameObject>();
-    float offset[2] = { 0.0f, 0.0f };
-    float scale[2] = { 1.0f, 1.0f };
    
-        bg->Load(
+   
+    state->background.Load(
         state->device,
         L"assets\\bg.dds",
-        0.0f, 0.0f, state->logicalWidth, state->logicalHeight,
+        0.0f, 0.0f, 1.0f, 1.0f,
         false, 
         1,
         1, 
         1, 
         8.0f);
-    state->sceneObjects.push_back(std::move(bg));
+    state->background.UpdateAsFullscreenBackground(state->logicalWidth, state->logicalHeight);
 
-    scale[0] = 1.0f / 10.0f;
-    scale[1] = 1.0f / 2.0f;
+
     auto run_robot = std::make_unique<GameObject>();
     run_robot->Load(
         state->device,
@@ -361,8 +358,11 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
 // 释放 Direct3D 资源的函数
 void CleanupD3D(StateInfo* state) {
+    //
+    state->background.Release();
     // 确保所有资源在使用前已被释放
     state->sceneObjects.clear(); // 调用 GameObject 析构函数，释放资源
+   
 
     // 释放 StateInfo 中全局持有的 D3D 资源
     if (state->samplerState) { // 释放采样器状态
@@ -497,7 +497,8 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
         0.0f, 1.0f
     );
 
+    state->background.UpdateAsFullscreenBackground(state->logicalWidth, state->logicalHeight);
 
-    //
-    //UpdateBackgroundModel_Cover(state, GameObject & obj, float textureWidth, float textureHeight)
+
+    
 }

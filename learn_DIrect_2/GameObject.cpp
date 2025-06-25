@@ -2,9 +2,13 @@
     GameObject.cpp
 
 */
+#include <windows.h>
+
 #include "GameObject.h"
 #include "BufferUtils.h"
 #include "TextureLoader.h"
+#include <DirectXMath.h>
+
 
 using namespace DirectX;
 
@@ -40,9 +44,16 @@ void GameObject::Release() {
     if (textureSRV) { textureSRV->Release(); textureSRV = nullptr; }
 }
 
-bool GameObject::Load(ID3D11Device* device, const std::wstring& texturePath,
+bool GameObject::Load(
+    ID3D11Device* device, 
+    const std::wstring& texturePath,
     float left, float top, float right, float bottom,
-    bool animated, int totalFrames_, int columns_, int rows_, float fps_) {
+    bool animated, 
+    int totalFrames_, 
+    int columns_, 
+    int rows_, 
+    float fps_) {
+    
     InitVertexData(device, left, top, right, bottom);
 
     isAnimated = animated;
@@ -60,8 +71,20 @@ bool GameObject::Load(ID3D11Device* device, const std::wstring& texturePath,
     device->CreateBuffer(&cbd, nullptr, &constantBuffer);
 
     // 加载纹理
-    if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &textureSRV))) {
+    float texWidth = 0.0f;
+    float texHeight = 0.0f;
+    if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &textureSRV, &texWidth, &texHeight))) {
         return false;
+    }
+    textureWidth = texWidth;
+    textureHeight = texHeight;
+
+    // 设置非动画图的纹理偏移和缩放
+    if (!isAnimated) {
+        texOffset[0] = 0.0f;
+        texOffset[1] = 0.0f;
+        texScale[0] = 1.0f;
+        texScale[1] = 1.0f;
     }
 
     return true;
@@ -108,9 +131,9 @@ void GameObject::UpdateConstantBuffer(ID3D11DeviceContext* context,
     
     if (SUCCEEDED(context->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource))) {
         ConstantBuffer* cb = (ConstantBuffer*)mappedResource.pData;
-        cb->model = XMMatrixTranspose(modelMatrix);
-        cb->view = XMMatrixTranspose(view);
-        cb->projection = XMMatrixTranspose(projection);
+        cb->model = DirectX::XMMatrixTranspose(modelMatrix);
+        cb->view = DirectX::XMMatrixTranspose(view);
+        cb->projection = DirectX::XMMatrixTranspose(projection);
         cb->texOffset[0] = texOffset[0];
         cb->texOffset[1] = texOffset[1];
         cb->texScale[0] = texScale[0];
@@ -134,5 +157,34 @@ void GameObject::Render(ID3D11DeviceContext* context) {
     // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)
     // t0 寄存器对应起始槽位 0
     context->PSSetShaderResources(0, 1, &textureSRV);
+    //
     context->DrawIndexed(indexCount, 0, 0);
+}
+
+void GameObject::UpdateAsFullscreenBackground(float screenW, float screenH)
+{
+    if (textureWidth <= 0.0f || textureHeight <= 0.0f)
+        return;
+
+    // 计算缩放比例（cover 模式）
+    float scaleX = screenW / textureWidth;
+    float scaleY = screenH / textureHeight;
+
+    float scale;
+    if (scaleX > scaleY) {
+        scale = scaleX;
+    }
+    else {
+        scale = scaleY;
+    }
+
+    float drawWidth = textureWidth * scale;
+    float drawHeight = textureHeight * scale;
+
+    float offsetX = (screenW - drawWidth) * 0.5f;
+    float offsetY = (screenH - drawHeight) * 0.5f;
+
+    modelMatrix =
+        DirectX::XMMatrixScaling(drawWidth, drawHeight, 1.0f) *
+        DirectX::XMMatrixTranslation(offsetX, offsetY, 0.0f);
 }

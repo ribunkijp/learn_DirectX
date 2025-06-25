@@ -10,6 +10,7 @@
 
 
 
-HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** srv);
+HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, ID3D11ShaderResourceView** srv, float* outWidth = nullptr,
+    float* outHeight = nullptr);
 
 #endif
