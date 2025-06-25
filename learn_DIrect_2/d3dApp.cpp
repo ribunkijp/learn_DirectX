@@ -346,45 +346,6 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         1,
         30.0f);
     state->sceneObjects.push_back(std::move(run_robot));
-    /*GameObject mario = CreateTexture(
-        state->device, 
-        L"assets\\mario.dds", 
-        5.0f, 2.5f, 12.5f, 10.0f, 
-        false, 
-        1, 
-        offset, 
-        scale, 
-        1, 
-        1, 
-        8.0f);
-    sceneObjects.push_back(mario);
-    GameObject peach = CreateTexture(
-        state->device, 
-        L"assets\\peach.dds", 
-        30.0f, 10.0f, 51.0f, 25.0f, 
-        false, 
-        1, 
-        offset, 
-        scale, 
-        1, 
-        1, 
-        8.0f);
-    sceneObjects.push_back(peach);
-
-    scale[0] = 1.0f / 8.0f;
-    GameObject runningman000 = CreateTexture(
-        state->device, 
-        L"assets\\runningman000.dds", 
-        10.0f, 20.0f, 20.0f, 30.0f, 
-        true, 
-        8, 
-        offset, 
-        scale, 
-        8, 
-        1, 
-        8.0f);
-    sceneObjects.push_back(runningman000);*/
-
 
   
    
