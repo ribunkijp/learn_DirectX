@@ -81,3 +81,24 @@ GameObject CreateTexture(ID3D11Device* device,
 
     return obj;
 }
+
+//void UpdateBackgroundModel_Cover(GameObject& obj, float textureWidth, float textureHeight) {
+//    float imageAspect = textureWidth / textureHeight;
+//    float screenAspect = logicalWidth / logicalHeight;
+//
+//    float scaleX = 1.0f;
+//    float scaleY = 1.0f;
+//
+//    if (imageAspect < screenAspect) {
+//        // 背景图太高 → 拉宽（超出垂直方向）
+//        scaleY = screenAspect / imageAspect;
+//    }
+//    else {
+//        // 背景图太宽 → 拉高（超出水平方向）
+//        scaleX = imageAspect / screenAspect;
+//    }
+//
+//    // 填满画布，可能会裁剪
+//    obj.modelMatrix = DirectX::XMMatrixScaling(scaleX * logicalWidth, scaleY * logicalHeight, 1.0f) *
+//        DirectX::XMMatrixTranslation(logicalWidth / 2.0f, logicalHeight / 2.0f, 0.0f);
+//}

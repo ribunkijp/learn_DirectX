@@ -32,9 +32,13 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     //设置摄像机位置和朝向
     state->view = DirectX::XMMatrixIdentity(); // 先用单位矩阵，你可以设置摄像机的位置后再更新
     //把 3D/2D 世界映射到屏幕
+    state->logicalWidth = 100.0f;
+    state->logicalHeight = state->logicalWidth * (clientHeight / clientWidth);
+
+
     state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
-        0.0f, clientWidth,      // left 到 right：X轴从左到右
-        clientHeight, 0.0f,     // bottom 到 top：Y轴从上到下
+        0.0f, state->logicalWidth,      // left 到 right：X轴从左到右
+        state->logicalHeight, 0.0f,     // bottom 到 top：Y轴从上到下
         0.0f, 1.0f              // near 到 far：Z轴从近到远
     );
 
@@ -324,7 +328,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     GameObject bg = CreateTexture(
         state->device,
         L"assets\\bg.dds",
-        0.0f, 0.0f, clientWidth, clientHeight,
+        0.0f, 0.0f, state->logicalWidth, state->logicalHeight,
         false, 1,
         offset, scale,
         1, 1, 8.0f);
@@ -332,7 +336,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     GameObject mario = CreateTexture(
         state->device, 
         L"assets\\mario.dds", 
-        200.0f, 100.0f, 500.0f, 400.0f, 
+        5.0f, 2.5f, 12.5f, 10.0f, 
         false, 
         1, 
         offset, 
@@ -344,7 +348,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     GameObject peach = CreateTexture(
         state->device, 
         L"assets\\peach.dds", 
-        600.0f, 200.0f, 1020.0f, 500.0f, 
+        30.0f, 10.0f, 51.0f, 25.0f, 
         false, 
         1, 
         offset, 
@@ -358,7 +362,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     GameObject runningman000 = CreateTexture(
         state->device, 
         L"assets\\runningman000.dds", 
-        300.0f, 600.0f, 600.0f, 900.0f, 
+        10.0f, 20.0f, 20.0f, 30.0f, 
         true, 
         8, 
         offset, 
@@ -374,7 +378,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     GameObject runningman003 = CreateTexture(
         state->device, 
         L"assets\\run_robot.dds", 
-        700.0f, 600.0f, 1000.0f, 900.0f, 
+        10.0f, 30.0f, 30.0f, 50.0f,
         true, 
         10, 
         offset, 
@@ -538,9 +542,19 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
     vp.MaxDepth = 1.0f;
     state->context->RSSetViewports(1, &vp);
 
+
+
+
+    float aspectRatio = static_cast<float>(height) / static_cast<float>(width);
+    state->logicalHeight = state->logicalWidth * aspectRatio;
+
     state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
-        0.0f, static_cast<float>(width),
-        static_cast<float>(height), 0.0f,
+        0.0f, state->logicalWidth,
+        state->logicalHeight, 0.0f,
         0.0f, 1.0f
     );
+
+
+    //
+    //UpdateBackgroundModel_Cover(state, GameObject & obj, float textureWidth, float textureHeight)
 }

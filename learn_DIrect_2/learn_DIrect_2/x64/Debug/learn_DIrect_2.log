@@ -1,5 +1,16 @@
-﻿  d3dApp.cpp
+﻿  ObjectFactory.cpp
+C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
+  (ソース ファイル 'ObjectFactory.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(51,11): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::logicalHeight' の後に追加しました。
+  (ソース ファイル 'ObjectFactory.cpp' をコンパイルしています)
+  
+  d3dApp.cpp
 C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(51,11): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::logicalHeight' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  
+  コードを生成中...
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

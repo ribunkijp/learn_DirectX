@@ -38,11 +38,12 @@ struct PS_INPUT
 //顶点着色器主函数 VSMain
 PS_INPUT VSMain(VS_INPUT input)
 {
-    //把 3D 的 pos 转成 4D float4 是为了乘以 4x4 矩阵
     PS_INPUT output;
 
+    //把 3D 的 pos 转成 4D float4 是为了乘以 4x4 矩阵
     float4 localPos = float4(input.pos, 1.0f);
-
+    
+    //
     float4 worldPos = mul(localPos, model);
     float4 viewPos = mul(worldPos, view);
     float4 projPos = mul(viewPos, projection);

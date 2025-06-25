@@ -43,9 +43,12 @@ struct StateInfo {
     ID3D11DepthStencilView* depthStencilView = nullptr;
     //
     ID3D11RenderTargetView* renderTargetView = nullptr;
-
+    //
     DirectX::XMMATRIX view;
     DirectX::XMMATRIX projection;
+    //
+    float logicalWidth = 100.0f;
+    float logicalHeight = 62.5f;
 
 };
 
