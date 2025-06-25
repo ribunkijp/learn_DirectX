@@ -141,7 +141,7 @@
   <ItemGroup>
     <ClCompile Include="BufferUtils.cpp" />
     <ClCompile Include="d3dApp.cpp" />
-    <ClCompile Include="ObjectFactory.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
@@ -165,7 +165,7 @@
   <ItemGroup>
     <ClInclude Include="BufferUtils.h" />
     <ClInclude Include="d3dApp.h" />
-    <ClInclude Include="ObjectFactory.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="StateInfo.h" />
     <ClInclude Include="TextureLoader.h" />

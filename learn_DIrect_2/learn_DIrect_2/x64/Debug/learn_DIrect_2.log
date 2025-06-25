@@ -1,16 +1,61 @@
-﻿  ObjectFactory.cpp
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'ObjectFactory.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(51,11): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::logicalHeight' の後に追加しました。
-  (ソース ファイル 'ObjectFactory.cpp' をコンパイルしています)
-  
-  d3dApp.cpp
+﻿  d3dApp.cpp
 C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(51,11): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::logicalHeight' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(59,10): warning C4820: 'GameObject': '7' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(67,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  
+  main.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(59,10): warning C4820: 'GameObject': '7' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(67,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(194,24): warning C4456: 'pState' を宣言すると、以前のローカル宣言が隠蔽されます
+      C:\code\learn_DirectX\learn_DIrect_2\main.cpp(161,16):
+      'pState' の宣言を確認してください
+  
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(204,22): warning C4456: 'pState' を宣言すると、以前のローカル宣言が隠蔽されます
+      C:\code\learn_DirectX\learn_DIrect_2\main.cpp(194,24):
+      'pState' の宣言を確認してください
+  
+  Render.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(59,10): warning C4820: 'GameObject': '7' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(67,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\Render.cpp(73,10): warning C4189: 'offset': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Render.cpp(71,10): warning C4189: 'stride': ローカル変数が初期化されましたが、参照されていません
+  Update.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(59,10): warning C4820: 'GameObject': '7' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(67,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
   コードを生成中...
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

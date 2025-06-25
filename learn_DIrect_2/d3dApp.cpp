@@ -5,13 +5,10 @@
 
 #include "d3dApp.h"
 #include "StateInfo.h"
-#include "ObjectFactory.h"
+#include "GameObject.h"
 
 
 
-
-//
-std::vector<GameObject> sceneObjects;
 
 
 
@@ -321,19 +318,35 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
 
 
-
-
+    auto bg = std::make_unique<GameObject>();
     float offset[2] = { 0.0f, 0.0f };
     float scale[2] = { 1.0f, 1.0f };
-    GameObject bg = CreateTexture(
+   
+        bg->Load(
         state->device,
         L"assets\\bg.dds",
         0.0f, 0.0f, state->logicalWidth, state->logicalHeight,
-        false, 1,
-        offset, scale,
-        1, 1, 8.0f);
-    sceneObjects.push_back(bg);
-    GameObject mario = CreateTexture(
+        false, 
+        1,
+        1, 
+        1, 
+        8.0f);
+    state->sceneObjects.push_back(std::move(bg));
+
+    scale[0] = 1.0f / 10.0f;
+    scale[1] = 1.0f / 2.0f;
+    auto run_robot = std::make_unique<GameObject>();
+    run_robot->Load(
+        state->device,
+        L"assets\\run_robot.dds",
+        10.0f, 30.0f, 30.0f, 50.0f,
+        true,
+        10,
+        9,
+        1,
+        30.0f);
+    state->sceneObjects.push_back(std::move(run_robot));
+    /*GameObject mario = CreateTexture(
         state->device, 
         L"assets\\mario.dds", 
         5.0f, 2.5f, 12.5f, 10.0f, 
@@ -370,23 +383,10 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         8, 
         1, 
         8.0f);
-    sceneObjects.push_back(runningman000);
+    sceneObjects.push_back(runningman000);*/
 
 
-   scale[0] = 1.0f / 10.0f;
-    scale[1] = 1.0f / 2.0f;
-    GameObject runningman003 = CreateTexture(
-        state->device, 
-        L"assets\\run_robot.dds", 
-        10.0f, 30.0f, 30.0f, 50.0f,
-        true, 
-        10, 
-        offset, 
-        scale, 
-        9, 
-        1, 
-        30.0f);
-    sceneObjects.push_back(runningman003);
+  
    
 
 
@@ -400,28 +400,10 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
 // 释放 Direct3D 资源的函数
 void CleanupD3D(StateInfo* state) {
-    // 确保所有资源在使用前已被释放（防止野指针操作）
-    // 通常按照创建的逆序释放是安全的，但关键是全部释放
+    // 确保所有资源在使用前已被释放
+    state->sceneObjects.clear(); // 调用 GameObject 析构函数，释放资源
 
-    // 1. 释放场景中的 GameObject 相关的资源
-    // 遍历 GameObject 列表，释放每个物体持有的 D3D 资源
-    for (auto& obj : sceneObjects) {
-        if (obj.vertexBuffer) {
-            obj.vertexBuffer->Release();
-            obj.vertexBuffer = nullptr; // 释放后置为nullptr是个好习惯
-        }
-        if (obj.indexBuffer) {
-            obj.indexBuffer->Release();
-            obj.indexBuffer = nullptr;
-        }
-        if (obj.textureSRV) { // 释放纹理资源视图
-            obj.textureSRV->Release();
-            obj.textureSRV = nullptr;
-        }
-    }
-    sceneObjects.clear(); // 清空存储 GameObject 的 vector
-
-    // 2. 释放 StateInfo 中全局持有的 D3D 资源
+    // 释放 StateInfo 中全局持有的 D3D 资源
     if (state->samplerState) { // 释放采样器状态
         state->samplerState->Release();
         state->samplerState = nullptr;

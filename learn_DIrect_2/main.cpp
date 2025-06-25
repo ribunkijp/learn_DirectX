@@ -138,7 +138,7 @@ int WINAPI wWinMain(
         float deltaTime = timer.GetDeltaTime();  // 每帧耗时
 
         // 更新所有对象的动画和常量缓冲区
-        UpdateAllObjects(pState, deltaTime, clientWidth, clientHeight);
+        UpdateAllObjects(pState, deltaTime);
 
         //更新视口
         UpdateViewport(pState->context, hwnd);

@@ -72,34 +72,14 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
     //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
     UINT offset = 0;
 
-
-
-    for (auto& obj : sceneObjects)
-    {
-        ID3D11Buffer* vertexBuffers[] = { obj.vertexBuffer };
-        // 设置顶点缓冲区
-        pState->context->IASetVertexBuffers(0, 1, vertexBuffers, &stride, &offset);
-        // 设置索引缓冲区 指定每个索引是一个 32 位无符号整数
-        pState->context->IASetIndexBuffer(obj.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-
-        //
-        pState->context->VSSetConstantBuffers(0, 1, &obj.constantBuffer);
-
-        //之后HLSL 的 PSMain 中用到 cbuffer ConstantBuffer时，再用
-        pState->context->PSSetConstantBuffers(0, 1, &obj.constantBuffer);
-
-        // --- 绑定纹理和采样器到像素着色器 ---
-        // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)
-        // t0 寄存器对应起始槽位 0
-        pState->context->PSSetShaderResources(0, 1, &obj.textureSRV);
-        // PSSetSamplers(起始槽位, 采样器数量, 采样器数组指针)
+    // PSSetSamplers(起始槽位, 采样器数量, 采样器数组指针)
         // s0 寄存器对应起始槽位 0
-        pState->context->PSSetSamplers(0, 1, &pState->samplerState);
-        // --- 绑定结束 ---
+    pState->context->PSSetSamplers(0, 1, &pState->samplerState);
 
-        // 绘制调用
-        pState->context->DrawIndexed(obj.indexCount, 0, 0);
+    for (auto& obj : pState->sceneObjects)
+    {
+        obj->Render(pState->context);
+    
     }
 
 

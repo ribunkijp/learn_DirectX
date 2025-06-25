@@ -3,6 +3,9 @@
 
 #include <d3d11.h>//ID3D11Device
 #include <DirectXMath.h>
+#include <vector>
+#include "GameObject.h"
+#include <memory>
 
 // 管理 Direct3D11 渲染状态的结构体
 struct StateInfo {
@@ -12,7 +15,7 @@ struct StateInfo {
     // 设备上下文：用于发出绘制命令和绑定资源 //D3D11DeviceContext（命令接口）
     ID3D11DeviceContext* context = nullptr;//渲染管线
 
-
+    
     /*
         交换链：管理后台缓冲区与前台缓冲区的交换（用于屏幕显示）通常包含一个或多个后备缓冲区 (Back Buffers)，
         渲染时画面首先绘制到这些缓冲区，然后调用 Present() 将当前缓冲区“交换”到前台显示。
@@ -49,6 +52,8 @@ struct StateInfo {
     //
     float logicalWidth = 100.0f;
     float logicalHeight = 62.5f;
+    //
+    std::vector<std::unique_ptr<GameObject>> sceneObjects;
 
 };
 
