@@ -14,7 +14,7 @@ struct ConstantBuffer;
 
 
 // 更新动画帧索引 & UV 的函数
-void UpdateAnimation(GameObject& obj, float deltaTime, int columns, int rows);
+void UpdateAnimation(GameObject& obj, float deltaTime);
 
 //
 void UpdateAllObjects(StateInfo* pState, float deltaTime, float width, float height);

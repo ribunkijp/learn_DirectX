@@ -10,7 +10,6 @@
 
 
 
-
 ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device, Vertex* vertices, unsigned vertices_count) {
 
 
@@ -66,7 +65,13 @@ ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device)
 }
 
 // 更新常量缓冲区的函数
-void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBuffer, const ConstantBuffer& cbData)
+void UpdateConstantBuffer(
+    ID3D11DeviceContext* context, 
+    ID3D11Buffer* constantBuffer, 
+    const DirectX::XMMATRIX& modelMatrix,
+    const float texOffset[2],
+    const float texScale[2], 
+    StateInfo* pState)
 {
   
 
@@ -86,14 +91,14 @@ void UpdateConstantBuffer(ID3D11DeviceContext* context, ID3D11Buffer* constantBu
     ConstantBuffer* pCb = (ConstantBuffer*)mappedResource.pData;
 
     // 将矩阵转置传入 GPU（列主序兼容 HLSL）
-    pCb->model = DirectX::XMMatrixTranspose(cbData.model);
-    pCb->view = DirectX::XMMatrixTranspose(cbData.view);
-    pCb->projection = DirectX::XMMatrixTranspose(cbData.projection);
+    pCb->model = DirectX::XMMatrixTranspose(modelMatrix);
+    pCb->view = DirectX::XMMatrixTranspose(pState->view);
+    pCb->projection = DirectX::XMMatrixTranspose(pState->projection);
     
-    pCb->texOffset[0] = cbData.texOffset[0];
-    pCb->texOffset[1] = cbData.texOffset[1];
-    pCb->texScale[0] = cbData.texScale[0];
-    pCb->texScale[1] = cbData.texScale[1];
+    pCb->texOffset[0] = texOffset[0];
+    pCb->texOffset[1] = texOffset[1];
+    pCb->texScale[0] = texScale[0];
+    pCb->texScale[1] = texScale[1];
 
     ////取消映射 buffer，使更新后的数据可供 GPU 使用。
     context->Unmap(constantBuffer, 0);

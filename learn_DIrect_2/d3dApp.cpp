@@ -17,12 +17,25 @@ std::vector<GameObject> sceneObjects;
 
 bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight) {
 
-
-    DirectX::XMMATRIX view = DirectX::XMMatrixIdentity(); // 先用单位矩阵，你可以设置摄像机的位置后再更新
-    DirectX::XMMATRIX projection = DirectX::XMMatrixOrthographicOffCenterLH(
-        0.0f, clientWidth,      // left, right
-        clientHeight, 0.0f,      // bottom, top ← 注意顺序！
-        0.0f, 1.0f                                   // nearZ, farZ
+    /*
+        原始模型坐标（以模型中心为原点）
+             ↓ worldMatrix（位移缩放）
+        世界坐标（以左上为原点）
+             ↓ viewMatrix（单位矩阵，没用相机）
+        视图坐标
+             ↓ projectionMatrix（正交投影）
+        NDC坐标（X/Y 在 [-1, 1]，左上变成 -1,+1）
+             ↓ 图形管线自动映射
+        屏幕像素位置
+    
+    */
+    //设置摄像机位置和朝向
+    state->view = DirectX::XMMatrixIdentity(); // 先用单位矩阵，你可以设置摄像机的位置后再更新
+    //把 3D/2D 世界映射到屏幕
+    state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
+        0.0f, clientWidth,      // left 到 right：X轴从左到右
+        clientHeight, 0.0f,     // bottom 到 top：Y轴从上到下
+        0.0f, 1.0f              // near 到 far：Z轴从近到远
     );
 
 
@@ -314,8 +327,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         0.0f, 0.0f, clientWidth, clientHeight,
         false, 1,
         offset, scale,
-        1, 1, 8.0f,
-        view, projection);
+        1, 1, 8.0f);
     sceneObjects.push_back(bg);
     GameObject mario = CreateTexture(
         state->device, 
@@ -327,8 +339,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         scale, 
         1, 
         1, 
-        8.0f,
-        view, projection);
+        8.0f);
     sceneObjects.push_back(mario);
     GameObject peach = CreateTexture(
         state->device, 
@@ -340,8 +351,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         scale, 
         1, 
         1, 
-        8.0f,
-        view, projection);
+        8.0f);
     sceneObjects.push_back(peach);
 
     scale[0] = 1.0f / 8.0f;
@@ -355,8 +365,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         scale, 
         8, 
         1, 
-        8.0f,
-        view, projection);
+        8.0f);
     sceneObjects.push_back(runningman000);
 
 
@@ -372,8 +381,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         scale, 
         9, 
         1, 
-        30.0f,
-        view, projection);
+        30.0f);
     sceneObjects.push_back(runningman003);
    
 
@@ -530,8 +538,9 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
     vp.MaxDepth = 1.0f;
     state->context->RSSetViewports(1, &vp);
 
-    //还用 projection 矩阵，也要重新计算
-    for (auto& obj : sceneObjects) {
-        obj.constantBufferData.projection = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1.0f);
-    }
+    state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
+        0.0f, static_cast<float>(width),
+        static_cast<float>(height), 0.0f,
+        0.0f, 1.0f
+    );
 }

@@ -25,9 +25,7 @@ GameObject CreateTexture(ID3D11Device* device,
     float texScale[2],
     int columns, 
     int rows, 
-    float fps,
-    const DirectX::XMMATRIX& view,
-    const DirectX::XMMATRIX& projection) {
+    float fps) {
     
     GameObject obj;
 
@@ -46,16 +44,14 @@ GameObject CreateTexture(ID3D11Device* device,
     obj.indexBuffer = CreateQuadIndexBuffer(device);
     obj.indexCount = quadIndexCount;  // 6，两个三角形的索引数量
     
-    obj.constantBufferData.model = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f); // 初始位置
-    obj.constantBufferData.view = view;
-    obj.constantBufferData.projection = projection;
+    obj.modelMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f); // 初始位置
 
 
     //初始化 texOffset / texScale
-    obj.constantBufferData.texOffset[0] = texOffset[0];
-    obj.constantBufferData.texOffset[1] = texOffset[1];
-    obj.constantBufferData.texScale[0] = texScale[0];
-    obj.constantBufferData.texScale[1] = texScale[1];
+    obj.texOffset[0] = texOffset[0];
+    obj.texOffset[1] = texOffset[1];
+    obj.texScale[0] = texScale[0];
+    obj.texScale[1] = texScale[1];
     obj.isAnimated = isAnimated;
     obj.totalFrames = totalFrames;
     obj.columns = columns;

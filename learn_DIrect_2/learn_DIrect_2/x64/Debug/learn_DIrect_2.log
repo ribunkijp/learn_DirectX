@@ -2,6 +2,4 @@
 C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\d3dApp.cpp(535,99): warning C4244: '引数': 'UINT' から 'float' への変換です。データが失われる可能性があります。
-C:\code\learn_DirectX\learn_DIrect_2\d3dApp.cpp(535,92): warning C4244: '引数': 'UINT' から 'float' への変換です。データが失われる可能性があります。
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

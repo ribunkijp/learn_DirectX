@@ -23,9 +23,7 @@ GameObject CreateTexture(ID3D11Device* device,
     float texScale[2],
     int columns,
     int rows,
-    float fps,
-    const DirectX::XMMATRIX& view,
-    const DirectX::XMMATRIX& projection);
+    float fps);
 
 
 

@@ -29,10 +29,10 @@ void UpdateAnimation(GameObject& obj, float deltaTime) {
     int col = obj.frameIndex % obj.columns;
     int row = obj.frameIndex / obj.columns;
 
-    obj.constantBufferData.texOffset[0] = static_cast<float>(col) * frameWidth;
-    obj.constantBufferData.texOffset[1] = static_cast<float>(row) * frameHeight;
-    obj.constantBufferData.texScale[0] = frameWidth;
-    obj.constantBufferData.texScale[1] = frameHeight;
+    obj.texOffset[0] = static_cast<float>(col) * frameWidth;
+    obj.texOffset[1] = static_cast<float>(row) * frameHeight;
+    obj.texScale[0] = frameWidth;
+    obj.texScale[1] = frameHeight;
 }
 
 void UpdateAllObjects(StateInfo* pState, float deltaTime, float width, float height) {
@@ -43,6 +43,6 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime, float width, float hei
 
 
         // 3. 上传到 GPU
-        UpdateConstantBuffer(pState->context, obj.constantBuffer, obj.constantBufferData);
+        UpdateConstantBuffer(pState->context, obj.constantBuffer, obj.modelMatrix, obj.texOffset, obj.texScale, pState);
     }
 }

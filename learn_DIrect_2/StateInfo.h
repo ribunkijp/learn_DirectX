@@ -2,6 +2,7 @@
 #define STATEINFO_H
 
 #include <d3d11.h>//ID3D11Device
+#include <DirectXMath.h>
 
 // 管理 Direct3D11 渲染状态的结构体
 struct StateInfo {
@@ -42,6 +43,9 @@ struct StateInfo {
     ID3D11DepthStencilView* depthStencilView = nullptr;
     //
     ID3D11RenderTargetView* renderTargetView = nullptr;
+
+    DirectX::XMMATRIX view;
+    DirectX::XMMATRIX projection;
 
 };
 

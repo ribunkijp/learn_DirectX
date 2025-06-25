@@ -33,7 +33,10 @@ struct ConstantBuffer {
 
 //
 struct alignas(16) GameObject {
-    ConstantBuffer constantBufferData;  // 新增：用于存储每个物体的动画帧、屏幕信息等
+    
+    DirectX::XMMATRIX modelMatrix = {};
+    float texOffset[2] = { 0.0f, 0.0f };   // 表示从纹理的哪里开始采样 ,[0.0, 1.0] 范围内, {0.25, 0.0} 表示从纹理的横向 25% 开始采样
+    float texScale[2] = { 1.0f, 1.0f };    // 表示采样区域的大小。{0.125, 1.0} 表示只采整张图的 1/8 宽度，高度全用
     
     ID3D11Buffer* vertexBuffer = nullptr;  // 顶点缓冲区指针，存储物体的顶点数据（位置、颜色等）
     ID3D11Buffer* indexBuffer = nullptr;   // 索引缓冲区指针，用于顶点的索引绘制，减少顶点重复
