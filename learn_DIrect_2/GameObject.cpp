@@ -161,30 +161,3 @@ void GameObject::Render(ID3D11DeviceContext* context) {
     context->DrawIndexed(indexCount, 0, 0);
 }
 
-void GameObject::UpdateAsFullscreenBackground(float screenW, float screenH)
-{
-    if (textureWidth <= 0.0f || textureHeight <= 0.0f)
-        return;
-
-    // 计算缩放比例（cover 模式）
-    float scaleX = screenW / textureWidth;
-    float scaleY = screenH / textureHeight;
-
-    float scale;
-    if (scaleX > scaleY) {
-        scale = scaleX;
-    }
-    else {
-        scale = scaleY;
-    }
-
-    float drawWidth = textureWidth * scale;
-    float drawHeight = textureHeight * scale;
-
-    float offsetX = (screenW - drawWidth) * 0.5f;
-    float offsetY = (screenH - drawHeight) * 0.5f;
-
-    modelMatrix =
-        DirectX::XMMatrixScaling(drawWidth, drawHeight, 1.0f) *
-        DirectX::XMMatrixTranslation(offsetX, offsetY, 0.0f);
-}

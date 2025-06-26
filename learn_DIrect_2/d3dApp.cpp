@@ -323,13 +323,12 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     state->background.Load(
         state->device,
         L"assets\\bg.dds",
-        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, state->logicalWidth, state->logicalHeight,
         false, 
         1,
         1, 
         1, 
         8.0f);
-    state->background.UpdateAsFullscreenBackground(state->logicalWidth, state->logicalHeight);
 
 
     auto run_robot = std::make_unique<GameObject>();
@@ -487,9 +486,8 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
 
 
 
-
-    float aspectRatio = static_cast<float>(height) / static_cast<float>(width);
-    state->logicalHeight = state->logicalWidth * aspectRatio;
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    state->logicalHeight = state->logicalWidth / aspect;
 
     state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
         0.0f, state->logicalWidth,
@@ -497,7 +495,6 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
         0.0f, 1.0f
     );
 
-    state->background.UpdateAsFullscreenBackground(state->logicalWidth, state->logicalHeight);
 
 
     

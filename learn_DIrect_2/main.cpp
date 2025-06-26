@@ -79,18 +79,37 @@ int WINAPI wWinMain(
         return 0;
     }
 
+
     // 创建窗口
+    int initWindowWidth = 1280;
+    int initWindowHeight = 720;
+
+    RECT windowRect = { 0, 0, initWindowWidth, initWindowHeight };
+    AdjustWindowRect(&windowRect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX, FALSE);
+
+    int windowWidth = windowRect.right - windowRect.left;
+    int windowHeight = windowRect.bottom - windowRect.top;
+
+    // 获取屏幕分辨率
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    // 计算居中位置
+    int windowLeft = (screenWidth - windowWidth) / 2;
+    int windowTop = (screenHeight - windowHeight) / 2;
+
+    // 
     HWND hwnd = CreateWindowEx(
         0,                              // 可选窗口样式
         CLASS_NAME,                     // 窗口类名
         L"Window_1",                    // 窗口标题（L 表示 UTF-16 字符串）
-        WS_OVERLAPPEDWINDOW,            // 窗口样式
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,            // 窗口样式
 
         // 位置和大小
-        0,
-        0,
-        1920, //(int)screenWidth,
-        1080, //(int)screenHeight,
+        windowLeft,
+        windowTop,
+        1280, //(int)screenWidth,
+        720, //(int)screenHeight,
 
         NULL,       // 父窗口
         NULL,       // 菜单
