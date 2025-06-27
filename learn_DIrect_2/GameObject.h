@@ -40,7 +40,9 @@ public:
         int totalFrames, 
         int columns, 
         int rows, 
-        float fps);
+        float fps,
+        float repeatU, // 新增：贴图重复次数（横向）   
+        float repeatV);// 新增：贴图重复次数（纵向）
 
     void Update(float deltaTime);
     void UpdateConstantBuffer(ID3D11DeviceContext* context,
@@ -50,16 +52,19 @@ public:
     void Render(ID3D11DeviceContext* context);
 
     void Release();
+
+    void UpdateModelMatrix(float logicalHeight);
     
-    void UpdateAsFullscreenBackground(float clientWidth, float clientHeight);
 
     float textureWidth = 0.0f;
     float textureHeight = 0.0f;
 
+    float floorHeight = 0.0f;
+
 
 private:
     
-    void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom);
+    void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom, float repeatU, float repeatV);
     
     // GPU 资源
     ID3D11Buffer* vertexBuffer;

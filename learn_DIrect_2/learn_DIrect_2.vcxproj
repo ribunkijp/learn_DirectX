@@ -154,7 +154,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\bg.dds" />
+    <Image Include="assets\floor.dds" />
     <Image Include="assets\run_robot.dds" />
   </ItemGroup>
   <ItemGroup>

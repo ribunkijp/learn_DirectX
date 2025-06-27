@@ -1,11 +1,8 @@
-﻿  Render.cpp
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(79,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
-  (ソース ファイル 'Render.cpp' をコンパイルしています)
+﻿  d3dApp.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(62,11): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::floorHeight' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(82,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
-  (ソース ファイル 'Render.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
-  (ソース ファイル 'Render.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(84,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

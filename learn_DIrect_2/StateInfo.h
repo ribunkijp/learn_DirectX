@@ -57,6 +57,9 @@ struct StateInfo {
     //
     //GameObject background;
 
+    //
+    GameObject* floor = nullptr;
+
 };
 
 

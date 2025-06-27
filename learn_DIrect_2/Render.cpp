@@ -73,6 +73,7 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
     //pState->background.UpdateConstantBuffer(pState->context, pState->view, pState->projection);
     //pState->background.Render(pState->context);
 
+
     for (auto& obj : pState->sceneObjects)
     {
         obj->Render(pState->context);

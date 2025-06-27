@@ -52,9 +52,12 @@ bool GameObject::Load(
     int totalFrames_, 
     int columns_, 
     int rows_, 
-    float fps_) {
+    float fps_,
+    float repeatU,    
+    float repeatV
+    ) {
     
-    InitVertexData(device, left, top, right, bottom);
+    InitVertexData(device, left, top, right, bottom, repeatU, repeatV);
 
     isAnimated = animated;
     totalFrames = totalFrames_;
@@ -87,15 +90,17 @@ bool GameObject::Load(
         texScale[1] = 1.0f;
     }
 
+    this->floorHeight = bottom - top;
+
     return true;
 }
 
-void GameObject::InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom) {
+void GameObject::InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom, float repeatU, float repeatV) {
     Vertex vertices[] = {
         { { left,  top,    0.0f }, { 1, 1, 1, 1 }, { 0.0f, 0.0f } },
-        { { right, top,    0.0f }, { 1, 1, 1, 1 }, { 1.0f, 0.0f } },
-        { { right, bottom, 0.0f }, { 1, 1, 1, 1 }, { 1.0f, 1.0f } },
-        { { left,  bottom, 0.0f }, { 1, 1, 1, 1 }, { 0.0f, 1.0f } }
+        { { right, top,    0.0f }, { 1, 1, 1, 1 }, { repeatU, 0.0f } },
+        { { right, bottom, 0.0f }, { 1, 1, 1, 1 }, { repeatU, repeatV } },
+        { { left,  bottom, 0.0f }, { 1, 1, 1, 1 }, { 0.0f, repeatV } }
     };
     vertexBuffer = CreateQuadVertexBuffer(device, vertices, 4);
     indexBuffer = CreateQuadIndexBuffer(device);
@@ -161,3 +166,8 @@ void GameObject::Render(ID3D11DeviceContext* context) {
     context->DrawIndexed(indexCount, 0, 0);
 }
 
+void GameObject::UpdateModelMatrix(float logicalHeight)
+{
+    float floorY = logicalHeight - floorHeight; // height 是地板高度（逻辑单位）
+    modelMatrix = DirectX::XMMatrixTranslation(0.0f, floorY, 0.0f);
+}

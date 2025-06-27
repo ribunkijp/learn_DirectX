@@ -330,6 +330,22 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     //    1, 
     //    8.0f);
 
+    auto floor = std::make_unique<GameObject>();
+    state->floor = floor.get();//获取原始指针
+    floor->Load(state->device, 
+        L"assets\\floor.dds",
+        0.0f, 
+        0.0f,
+        state->logicalWidth, 
+        10.0f,
+        false, 
+        1, 
+        1, 
+        1, 
+        0.0f,
+        5.0f, 
+        1.0f);
+    state->sceneObjects.push_back(std::move(floor));
 
     auto run_robot = std::make_unique<GameObject>();
     run_robot->Load(
@@ -340,8 +356,13 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         10,
         9,
         1,
-        30.0f);
+        30.0f,
+        1.0,
+        1.0);
     state->sceneObjects.push_back(std::move(run_robot));
+
+
+
 
   
    
@@ -495,6 +516,10 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
         0.0f, 1.0f
     );
 
+
+    //
+    if (state->floor)
+        state->floor->UpdateModelMatrix(state->logicalHeight);
 
 
     
