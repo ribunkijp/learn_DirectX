@@ -320,15 +320,15 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
    
    
-    state->background.Load(
-        state->device,
-        L"assets\\bg.dds",
-        0.0f, 0.0f, state->logicalWidth, state->logicalHeight,
-        false, 
-        1,
-        1, 
-        1, 
-        8.0f);
+    //state->background.Load(
+    //    state->device,
+    //    L"assets\\bg.dds",
+    //    0.0f, 0.0f, state->logicalWidth, state->logicalHeight,
+    //    false, 
+    //    1,
+    //    1, 
+    //    1, 
+    //    8.0f);
 
 
     auto run_robot = std::make_unique<GameObject>();
@@ -358,7 +358,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 // 释放 Direct3D 资源的函数
 void CleanupD3D(StateInfo* state) {
     //
-    state->background.Release();
+    //state->background.Release();
     // 确保所有资源在使用前已被释放
     state->sceneObjects.clear(); // 调用 GameObject 析构函数，释放资源
    

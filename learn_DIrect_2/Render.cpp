@@ -29,7 +29,7 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
 
 
     // 清除背景色
-    float clearColor[4] = { 0.0f, 0.3f, 0.0f, 1.0f };
+    float clearColor[4] = { 1.0f, 1.0f, 0.88f, 1.0f };
     pState->context->ClearRenderTargetView(pState->rtv, clearColor);
 
     //清除深度和模板缓冲区。1.0f是深度的默认最远值。
@@ -70,8 +70,8 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
         // s0 寄存器对应起始槽位 0
     pState->context->PSSetSamplers(0, 1, &pState->samplerState);
 
-    pState->background.UpdateConstantBuffer(pState->context, pState->view, pState->projection);
-    pState->background.Render(pState->context);
+    //pState->background.UpdateConstantBuffer(pState->context, pState->view, pState->projection);
+    //pState->background.Render(pState->context);
 
     for (auto& obj : pState->sceneObjects)
     {

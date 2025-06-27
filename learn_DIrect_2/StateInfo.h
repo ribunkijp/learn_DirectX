@@ -55,7 +55,7 @@ struct StateInfo {
     //
     std::vector<std::unique_ptr<GameObject>> sceneObjects;
     //
-    GameObject background;
+    //GameObject background;
 
 };
 

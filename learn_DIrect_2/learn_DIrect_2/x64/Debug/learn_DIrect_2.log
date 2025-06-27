@@ -1,22 +1,11 @@
-﻿  d3dApp.cpp
+﻿  Render.cpp
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(79,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(82,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
   
-  main.cpp
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(79,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(82,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
-  
-  コードを生成中...
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe
