@@ -99,6 +99,8 @@ int WINAPI wWinMain(
     //pState 指针将保存所有 Direct3D rendering state
     StateInfo* pState = new StateInfo();  // 用 new 进行初始化
 
+
+
     if (pState == NULL)
     {
         return 0;
@@ -141,16 +143,20 @@ int WINAPI wWinMain(
     ShowWindow(hwnd, nCmdShow);
 
 
-    //RECT rect;
-    //GetClientRect(hwnd, &rect);
-    //float clientWidth = static_cast<float>(rect.right - rect.left);
-    //float clientHeight = static_cast<float>(rect.bottom - rect.top);
+    RECT rect;
+    GetClientRect(hwnd, &rect);
+    float clientWidth = static_cast<float>(rect.right - rect.left);
+    float clientHeight = static_cast<float>(rect.bottom - rect.top);
 
-    //// 初始化 Direct3D11
-    //if (!InitD3D(hwnd, pState, clientWidth, clientHeight)) {
-    //    MessageBox(hwnd, L"初期化に失敗しました", L"エラー", MB_OK);
-    //    return 0;
-    //}
+
+
+
+    if (!InitD3D(hwnd, pState, clientWidth, clientHeight)) {
+        MessageBox(hwnd, L"D3D 初始化失败!", L"错误", MB_OK);
+        return 0;
+    }
+   
+
    
     Timer timer;       // 计时器对象
     timer.Reset();     // 程序启动时调用一次
@@ -167,20 +173,20 @@ int WINAPI wWinMain(
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        if (pState->d3dInitialized) {
+       
 
-            timer.Tick();    // 每帧调用
-            float deltaTime = timer.GetDeltaTime();  // 每帧耗时
+        timer.Tick();    // 每帧调用
+        float deltaTime = timer.GetDeltaTime();  // 每帧耗时
 
-            // 更新所有对象的动画和常量缓冲区
-            UpdateAllObjects(pState, deltaTime);
+        // 更新所有对象的动画和常量缓冲区
+        UpdateAllObjects(pState, deltaTime);
 
-            //更新视口
-            UpdateViewport(pState->context, hwnd);
+        //更新视口
+        UpdateViewport(pState->context, hwnd);
 
-            // 如果没有消息，进行每一帧渲染
-            RenderFrame(hwnd, pState);
-        }
+        // 如果没有消息，进行每一帧渲染
+        RenderFrame(hwnd, pState);
+        
     }
 
     return 0;
@@ -227,35 +233,12 @@ LRESULT CALLBACK WindowProc(
         {
             //
             pState = GetAppState(hwnd);
-            if (!pState)
-                return 0;
-
-            UINT width = LOWORD(lParam);
-            UINT height = HIWORD(lParam);
-
-            if (width == 0 || height == 0)
-            {
-                // 窗口被最小化了，我们不处理，直接返回
-                return 0;
-            }
-
-            if (!pState->d3dInitialized) {
-                if (InitD3D(hwnd, pState, static_cast<float>(width), static_cast<float>(height)))
-                {
-                    // 初始化成功，设置标志位
-                    pState->d3dInitialized = true;
+            if (pState) {
+                UINT width = LOWORD(lParam);
+                UINT height = HIWORD(lParam);
+                if (width > 0 && height > 0) {
+                    OnResize(hwnd, pState, width, height);
                 }
-                else
-                {
-                    // 初始化失败，报告错误并销毁窗口
-                    MessageBox(hwnd, L"D3D 初始化失败!", L"错误", MB_OK);
-                    DestroyWindow(hwnd);
-                    return 0;
-                }
-            }
-            else
-            {
-                OnResize(hwnd, pState, width, height);
             }
 
             return 0;

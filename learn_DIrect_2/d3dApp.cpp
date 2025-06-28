@@ -331,9 +331,9 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     floor->Load(state->device, 
         L"assets\\floor.dds",
         0.0f, 
-        1920.0f,
-        1040.0f, 
-        1080.0f,
+        1042.0f,
+        1888.0f, 
+        1062.0f,
         false, 
         1, 
         1, 
@@ -360,7 +360,16 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
 
 
-
+    RECT rc;
+    GetClientRect(hwnd, &rc);
+    int clientW = rc.right - rc.left;
+    int clientH = rc.bottom - rc.top;
+    char msg[128];
+    sprintf_s(msg, "[InitD3D] client: %d x %d\n", clientW, clientH);
+    OutputDebugStringA(msg);
+    char msg1[128];
+    sprintf_s(msg1, "[InitD3D] logical: %d x %d\n", static_cast<int>(state->logicalWidth), static_cast<int>(state->logicalHeight));
+    OutputDebugStringA(msg1);
   
    
 
@@ -506,29 +515,22 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     state->context->RSSetViewports(1, &vp);
+    // 推荐这样设置
+   
 
-    // 2. 正确地更新投影矩阵以保持宽高比
-    //    我们不再修改 logicalHeight，而是调整投影范围来适应窗口
-    float targetAspectRatio = state->logicalWidth / state->logicalHeight;
-    float windowAspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    
 
-    float projWidth = state->logicalWidth;
-    float projHeight = state->logicalHeight;
+    state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
+        0.0f, state->logicalWidth,
+        state->logicalHeight, 0.0f,
+        0.0f, 1.0f);
 
-    if (windowAspectRatio > targetAspectRatio) {
-        // 窗口比目标更宽 (Pillarbox - 上下填满，左右留黑边)
-        projWidth = projHeight * windowAspectRatio;
-    }
-    else {
-        // 窗口比目标更高 (Letterbox - 左右填满，上下留黑边)
-        projHeight = projWidth / windowAspectRatio;
-    }
-
-    float left = (state->logicalWidth - projWidth) / 2.0f;
-    float right = left + projWidth;
-    float top = (state->logicalHeight - projHeight) / 2.0f;
-    float bottom = top + projHeight;
-
-    state->projection = DirectX::XMMatrixOrthographicOffCenterLH(left, right, bottom, top, 0.0f, 1.0f);
+    RECT rc;
+    GetClientRect(hwnd, &rc);
+    int clientW = rc.right - rc.left;
+    int clientH = rc.bottom - rc.top;
+    char msg[128];
+    sprintf_s(msg, "[InitD3D] client: %d x %d\n", clientW, clientH);
+    OutputDebugStringA(msg);
 }
     

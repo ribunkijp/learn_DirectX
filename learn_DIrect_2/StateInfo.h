@@ -61,8 +61,6 @@ struct StateInfo {
     GameObject* floor = nullptr;
 
     //
-     // 【新增】D3D 初始化标志位
-    bool d3dInitialized = false;
 
 };
 

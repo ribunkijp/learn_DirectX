@@ -1,14 +1,8 @@
-﻿  main.cpp
+﻿  d3dApp.cpp
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(81,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(84,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(65,10): warning C4820: 'StateInfo': '15' バイトのパディングを データ メンバー 'StateInfo::d3dInitialized' の後に追加しました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
-  
-C:\code\learn_DirectX\learn_DIrect_2\main.cpp(306,22): warning C5219: 'UINT' から 'float' への暗黙的な変換です。データが失われる可能性があります
-C:\code\learn_DirectX\learn_DIrect_2\main.cpp(307,42): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
-C:\code\learn_DirectX\learn_DIrect_2\main.cpp(308,42): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe
