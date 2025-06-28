@@ -29,10 +29,6 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     //设置摄像机位置和朝向
     state->view = DirectX::XMMatrixIdentity(); // 先用单位矩阵，你可以设置摄像机的位置后再更新
     //把 3D/2D 世界映射到屏幕
-    state->logicalWidth = 100.0f;
-    state->logicalHeight = state->logicalWidth * (clientHeight / clientWidth);
-
-
     state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
         0.0f, state->logicalWidth,      // left 到 right：X轴从左到右
         state->logicalHeight, 0.0f,     // bottom 到 top：Y轴从上到下
@@ -335,9 +331,9 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     floor->Load(state->device, 
         L"assets\\floor.dds",
         0.0f, 
-        0.0f,
-        state->logicalWidth, 
-        10.0f,
+        1920.0f,
+        1040.0f, 
+        1080.0f,
         false, 
         1, 
         1, 
@@ -346,6 +342,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         5.0f, 
         1.0f);
     state->sceneObjects.push_back(std::move(floor));
+
 
     auto run_robot = std::make_unique<GameObject>();
     run_robot->Load(
@@ -378,6 +375,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
 // 释放 Direct3D 资源的函数
 void CleanupD3D(StateInfo* state) {
+    
+    if (!state) return;
     //
     //state->background.Release();
     // 确保所有资源在使用前已被释放
@@ -425,15 +424,18 @@ void CleanupD3D(StateInfo* state) {
 
     // 最后释放设备对象
     // 在调试模式下，可以检查是否有未释放的 COM 接口
-#ifdef _DEBUG
-    ID3D11Debug* debug = nullptr;
-    if (SUCCEEDED(state->device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug))) {
-        debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-        debug->Release();
-    }
-#endif
+    if (state->device) { // 先检查 device 指针是否存在且有效
 
-    if (state->device) {
+        // 【关键修正】将调试代码块移动到 device 指针有效的检查内部
+#ifdef _DEBUG
+        ID3D11Debug* debug = nullptr;
+        if (SUCCEEDED(state->device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug)))
+        {
+            debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+            debug->Release();
+        }
+#endif
+        // 然后再释放设备本身
         state->device->Release();
         state->device = nullptr;
     }
@@ -497,7 +499,7 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
     // 重新绑定渲染目标
     state->context->OMSetRenderTargets(1, &state->rtv, state->depthStencilView);
 
-    // 更新视口
+    //    ClearRenderTargetView 会清除整个窗口
     D3D11_VIEWPORT vp = {};
     vp.Width = static_cast<FLOAT>(width);
     vp.Height = static_cast<FLOAT>(height);
@@ -505,22 +507,28 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
     vp.MaxDepth = 1.0f;
     state->context->RSSetViewports(1, &vp);
 
+    // 2. 正确地更新投影矩阵以保持宽高比
+    //    我们不再修改 logicalHeight，而是调整投影范围来适应窗口
+    float targetAspectRatio = state->logicalWidth / state->logicalHeight;
+    float windowAspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
+    float projWidth = state->logicalWidth;
+    float projHeight = state->logicalHeight;
 
-    float aspect = static_cast<float>(width) / static_cast<float>(height);
-    state->logicalHeight = state->logicalWidth / aspect;
+    if (windowAspectRatio > targetAspectRatio) {
+        // 窗口比目标更宽 (Pillarbox - 上下填满，左右留黑边)
+        projWidth = projHeight * windowAspectRatio;
+    }
+    else {
+        // 窗口比目标更高 (Letterbox - 左右填满，上下留黑边)
+        projHeight = projWidth / windowAspectRatio;
+    }
 
-    state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
-        0.0f, state->logicalWidth,
-        state->logicalHeight, 0.0f,
-        0.0f, 1.0f
-    );
+    float left = (state->logicalWidth - projWidth) / 2.0f;
+    float right = left + projWidth;
+    float top = (state->logicalHeight - projHeight) / 2.0f;
+    float bottom = top + projHeight;
 
-
-    //
-    if (state->floor)
-        state->floor->UpdateModelMatrix(state->logicalHeight);
-
-
-    
+    state->projection = DirectX::XMMatrixOrthographicOffCenterLH(left, right, bottom, top, 0.0f, 1.0f);
 }
+    

@@ -22,7 +22,11 @@ WinMain（アプリの開始点）
 #define UNICODE
 #endif 
 
+
 #include <windows.h>
+#include <ShellScalingAPI.h>
+#pragma comment(lib, "Shcore.lib")
+
 #include "StateInfo.h"
 #include "d3dApp.h"
 #include "Timer.h"
@@ -31,9 +35,14 @@ WinMain（アプリの開始点）
 
 
 
+void GetScaledWindowSizeAndPosition(int logicalWidth, int logicalHeight,
+    int& outW, int& outH, int& outLeft, int& outTop, DWORD C_WND_STYLE);
+
 inline StateInfo* GetAppState(HWND hwnd);
 
 void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd);
+
+
 
 
 // 窗口过程函数
@@ -53,6 +62,22 @@ int WINAPI wWinMain(
     _In_ PWSTR pCmdLine,//命令行参数字符串（不包含程序本身的路径）
     _In_ int nCmdShow //窗口显示的方式
 ) {
+    // 设置 DPI 感知
+    SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+
+    //dpi检测
+    //PROCESS_DPI_AWARENESS awareness;
+    //HRESULT hr = GetProcessDpiAwareness(NULL, &awareness); // NULL 代表当前进程
+
+    //if (SUCCEEDED(hr))
+    //{
+    //    wchar_t buffer[256];
+    //    // PROCESS_DPI_AWARENESS 的枚举值也是 0, 1, 2，含义相同
+    //    swprintf_s(buffer, L"DPI Awareness Level:\n\n0 = Unaware\n1 = System Aware\n2 = Per-Monitor Aware\n\nYour Level: %d", awareness);
+    //    MessageBox(NULL, buffer, L"DPI Check", MB_OK);
+    //}
+
+
     (void)hPrevInstance; // 虽然不使用，但为了消除警告而显式引用
     (void)pCmdLine;      // 同上
 
@@ -67,7 +92,7 @@ int WINAPI wWinMain(
     wc.hInstance = hInstance;
     //// 这里设置窗口类名(自定义的字符串)
     wc.lpszClassName = CLASS_NAME;
-
+    
     // 注册窗口类
     RegisterClass(&wc);
 
@@ -79,37 +104,28 @@ int WINAPI wWinMain(
         return 0;
     }
 
+    const DWORD C_WND_STYLE = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
-    // 创建窗口
-    int initWindowWidth = 1280;
-    int initWindowHeight = 720;
-
-    RECT windowRect = { 0, 0, initWindowWidth, initWindowHeight };
-    AdjustWindowRect(&windowRect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX, FALSE);
-
-    int windowWidth = windowRect.right - windowRect.left;
-    int windowHeight = windowRect.bottom - windowRect.top;
-
-    // 获取屏幕分辨率
-    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
-    // 计算居中位置
-    int windowLeft = (screenWidth - windowWidth) / 2;
-    int windowTop = (screenHeight - windowHeight) / 2;
+    //
+    int winW = 0, winH = 0, winL = 0, winT = 0;
+    GetScaledWindowSizeAndPosition(
+        static_cast<int>(pState->logicalWidth),
+        static_cast<int>(pState->logicalHeight),
+        winW, winH, winL, winT, C_WND_STYLE);
+    
 
     // 
     HWND hwnd = CreateWindowEx(
         0,                              // 可选窗口样式
         CLASS_NAME,                     // 窗口类名
         L"Window_1",                    // 窗口标题（L 表示 UTF-16 字符串）
-        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,            // 窗口样式
+        C_WND_STYLE,            // 窗口样式
 
         // 位置和大小
-        windowLeft,
-        windowTop,
-        1280, //(int)screenWidth,
-        720, //(int)screenHeight,
+        CW_USEDEFAULT, // <-- 使用默认 X 位置
+        CW_USEDEFAULT, // <-- 使用默认 Y 位置
+        winW, 
+        winH,
 
         NULL,       // 父窗口
         NULL,       // 菜单
@@ -125,16 +141,16 @@ int WINAPI wWinMain(
     ShowWindow(hwnd, nCmdShow);
 
 
-    RECT rect;
-    GetClientRect(hwnd, &rect);
-    float clientWidth = static_cast<float>(rect.right - rect.left);
-    float clientHeight = static_cast<float>(rect.bottom - rect.top);
+    //RECT rect;
+    //GetClientRect(hwnd, &rect);
+    //float clientWidth = static_cast<float>(rect.right - rect.left);
+    //float clientHeight = static_cast<float>(rect.bottom - rect.top);
 
-    // 初始化 Direct3D11
-    if (!InitD3D(hwnd, pState, clientWidth, clientHeight)) {
-        MessageBox(hwnd, L"初期化に失敗しました", L"エラー", MB_OK);
-        return 0;
-    }
+    //// 初始化 Direct3D11
+    //if (!InitD3D(hwnd, pState, clientWidth, clientHeight)) {
+    //    MessageBox(hwnd, L"初期化に失敗しました", L"エラー", MB_OK);
+    //    return 0;
+    //}
    
     Timer timer;       // 计时器对象
     timer.Reset();     // 程序启动时调用一次
@@ -151,18 +167,20 @@ int WINAPI wWinMain(
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+        if (pState->d3dInitialized) {
 
-        timer.Tick();    // 每帧调用
-        float deltaTime = timer.GetDeltaTime();  // 每帧耗时
+            timer.Tick();    // 每帧调用
+            float deltaTime = timer.GetDeltaTime();  // 每帧耗时
 
-        // 更新所有对象的动画和常量缓冲区
-        UpdateAllObjects(pState, deltaTime);
+            // 更新所有对象的动画和常量缓冲区
+            UpdateAllObjects(pState, deltaTime);
 
-        //更新视口
-        UpdateViewport(pState->context, hwnd);
+            //更新视口
+            UpdateViewport(pState->context, hwnd);
 
-        // 如果没有消息，进行每一帧渲染
-        RenderFrame(hwnd, pState);
+            // 如果没有消息，进行每一帧渲染
+            RenderFrame(hwnd, pState);
+        }
     }
 
     return 0;
@@ -206,27 +224,43 @@ LRESULT CALLBACK WindowProc(
             PostQuitMessage(0);
             return 0;
         case WM_SIZE:
-            {
-
+        {
             //
             pState = GetAppState(hwnd);
-            if (!pState || !pState->context)
-                return 0; // 还没初始化完毕，不执行
-
-
+            if (!pState)
+                return 0;
 
             UINT width = LOWORD(lParam);
             UINT height = HIWORD(lParam);
 
-            if (width != 0 && height != 0) {
+            if (width == 0 || height == 0)
+            {
+                // 窗口被最小化了，我们不处理，直接返回
+                return 0;
+            }
 
-                if (pState) {
-                    OnResize(hwnd, pState, width, height);
+            if (!pState->d3dInitialized) {
+                if (InitD3D(hwnd, pState, static_cast<float>(width), static_cast<float>(height)))
+                {
+                    // 初始化成功，设置标志位
+                    pState->d3dInitialized = true;
                 }
+                else
+                {
+                    // 初始化失败，报告错误并销毁窗口
+                    MessageBox(hwnd, L"D3D 初始化失败!", L"错误", MB_OK);
+                    DestroyWindow(hwnd);
+                    return 0;
+                }
+            }
+            else
+            {
+                OnResize(hwnd, pState, width, height);
             }
 
             return 0;
-            }
+        }
+            
     }
     //switch 语句中未明确处理的任何消息，此行调用默认窗口过程
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -260,7 +294,46 @@ void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd)
 }
 
 
+void GetScaledWindowSizeAndPosition(int logicalWidth, int logicalHeight,
+    int& outW, int& outH, int& outLeft, int& outTop, DWORD C_WND_STYLE)
+{
+    // --- 获取主显示器的 DPI ---
+    HMONITOR monitor = MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY);
+    UINT dpiX = 96, dpiY = 96;
+    GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
 
+    // --- 根据DPI计算客户端需要的物理像素大小 ---
+    float dpiScale = dpiX / 96.0f;
+    int scaledClientW = static_cast<int>(logicalWidth * dpiScale);
+    int scaledClientH = static_cast<int>(logicalHeight * dpiScale);
+
+    // --- 根据客户端大小和窗口样式，计算整个窗口需要的物理像素大小 ---
+    RECT rect = { 0, 0, scaledClientW, scaledClientH };
+    AdjustWindowRectExForDpi(&rect, C_WND_STYLE, FALSE, 0, dpiX);
+    outW = rect.right - rect.left;
+    outH = rect.bottom - rect.top;
+
+    // --- 【关键修正】获取主显示器在虚拟桌面中的真实工作区矩形 ---
+    MONITORINFO mi = { sizeof(mi) };
+    if (GetMonitorInfo(monitor, &mi))
+    {
+        // 从 MONITORINFO 中获取显示器的宽度和高度
+        int monitorW = mi.rcMonitor.right - mi.rcMonitor.left;
+        int monitorH = mi.rcMonitor.bottom - mi.rcMonitor.top;
+
+        // 将窗口居中到这个显示器的矩形区域内
+        outLeft = mi.rcMonitor.left + (monitorW - outW) / 2;
+        outTop = mi.rcMonitor.top + (monitorH - outH) / 2;
+    }
+    else
+    {
+        // 如果 GetMonitorInfo 失败，回退到旧的方法
+        int screenW = GetSystemMetricsForDpi(SM_CXSCREEN, dpiX);
+        int screenH = GetSystemMetricsForDpi(SM_CYSCREEN, dpiX);
+        outLeft = (screenW - outW) / 2;
+        outTop = (screenH - outH) / 2;
+    }
+}
 
 
 

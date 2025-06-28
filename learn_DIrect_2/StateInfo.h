@@ -50,8 +50,8 @@ struct StateInfo {
     DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
     DirectX::XMMATRIX projection = DirectX::XMMatrixIdentity();
     //
-    float logicalWidth = 100.0f;
-    float logicalHeight = 62.5f;
+    float logicalWidth = 1888.0f;
+    float logicalHeight = 1062.0f;
     //
     std::vector<std::unique_ptr<GameObject>> sceneObjects;
     //
@@ -59,6 +59,10 @@ struct StateInfo {
 
     //
     GameObject* floor = nullptr;
+
+    //
+     // 【新增】D3D 初始化标志位
+    bool d3dInitialized = false;
 
 };
 

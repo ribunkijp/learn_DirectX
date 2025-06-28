@@ -53,13 +53,10 @@ public:
 
     void Release();
 
-    void UpdateModelMatrix(float logicalHeight);
     
 
     float textureWidth = 0.0f;
     float textureHeight = 0.0f;
-
-    float floorHeight = 0.0f;
 
 
 private:

@@ -90,7 +90,6 @@ bool GameObject::Load(
         texScale[1] = 1.0f;
     }
 
-    this->floorHeight = bottom - top;
 
     return true;
 }
@@ -164,10 +163,4 @@ void GameObject::Render(ID3D11DeviceContext* context) {
     context->PSSetShaderResources(0, 1, &textureSRV);
     //
     context->DrawIndexed(indexCount, 0, 0);
-}
-
-void GameObject::UpdateModelMatrix(float logicalHeight)
-{
-    float floorY = logicalHeight - floorHeight; // height 是地板高度（逻辑单位）
-    modelMatrix = DirectX::XMMatrixTranslation(0.0f, floorY, 0.0f);
 }
