@@ -1,8 +1,19 @@
-﻿  d3dApp.cpp
+﻿  main.cpp
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(81,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'main.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(84,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'main.cpp' をコンパイルしています)
   
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(287,22): warning C5219: 'UINT' から 'float' への暗黙的な変換です。データが失われる可能性があります
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(288,42): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(289,42): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(316,35): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(317,35): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(320,22): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(321,22): warning C5219: 'int' から 'float' への暗黙的な変換です。データが失われる可能性があります
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(301,10): warning C4189: 'ret': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(238,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(238,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(237) : 注: この行で比較を行ってインデックス 'height' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(238,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(238) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

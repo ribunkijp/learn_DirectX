@@ -331,7 +331,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     floor->Load(state->device, 
         L"assets\\floor.dds",
         0.0f, 
-        1042.0f,
+        1012.0f,
         1888.0f, 
         1062.0f,
         false, 
@@ -347,8 +347,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     auto run_robot = std::make_unique<GameObject>();
     run_robot->Load(
         state->device,
-        L"assets\\run_robot.dds",
-        10.0f, 30.0f, 30.0f, 50.0f,
+        L"assets\\robot_run.dds",
+        100.0f, 0.0f, 300.0f, 200.0f,
         true,
         10,
         9,
@@ -358,18 +358,6 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         1.0);
     state->sceneObjects.push_back(std::move(run_robot));
 
-
-
-    RECT rc;
-    GetClientRect(hwnd, &rc);
-    int clientW = rc.right - rc.left;
-    int clientH = rc.bottom - rc.top;
-    char msg[128];
-    sprintf_s(msg, "[InitD3D] client: %d x %d\n", clientW, clientH);
-    OutputDebugStringA(msg);
-    char msg1[128];
-    sprintf_s(msg1, "[InitD3D] logical: %d x %d\n", static_cast<int>(state->logicalWidth), static_cast<int>(state->logicalHeight));
-    OutputDebugStringA(msg1);
   
    
 
@@ -525,12 +513,6 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
         state->logicalHeight, 0.0f,
         0.0f, 1.0f);
 
-    RECT rc;
-    GetClientRect(hwnd, &rc);
-    int clientW = rc.right - rc.left;
-    int clientH = rc.bottom - rc.top;
-    char msg[128];
-    sprintf_s(msg, "[InitD3D] client: %d x %d\n", clientW, clientH);
-    OutputDebugStringA(msg);
+
 }
     

@@ -124,8 +124,8 @@ int WINAPI wWinMain(
         C_WND_STYLE,            // 窗口样式
 
         // 位置和大小
-        CW_USEDEFAULT, // <-- 使用默认 X 位置
-        CW_USEDEFAULT, // <-- 使用默认 Y 位置
+        winL, // <-- 使用默认 X 位置
+        winT, // <-- 使用默认 Y 位置
         winW, 
         winH,
 
@@ -147,8 +147,6 @@ int WINAPI wWinMain(
     GetClientRect(hwnd, &rect);
     float clientWidth = static_cast<float>(rect.right - rect.left);
     float clientHeight = static_cast<float>(rect.bottom - rect.top);
-
-
 
 
     if (!InitD3D(hwnd, pState, clientWidth, clientHeight)) {
@@ -290,33 +288,52 @@ void GetScaledWindowSizeAndPosition(int logicalWidth, int logicalHeight,
     int scaledClientW = static_cast<int>(logicalWidth * dpiScale);
     int scaledClientH = static_cast<int>(logicalHeight * dpiScale);
 
+
     // --- 根据客户端大小和窗口样式，计算整个窗口需要的物理像素大小 ---
     RECT rect = { 0, 0, scaledClientW, scaledClientH };
     AdjustWindowRectExForDpi(&rect, C_WND_STYLE, FALSE, 0, dpiX);
     outW = rect.right - rect.left;
     outH = rect.bottom - rect.top;
 
-    // --- 【关键修正】获取主显示器在虚拟桌面中的真实工作区矩形 ---
+    // 获得工作区
     MONITORINFO mi = { sizeof(mi) };
+   
+    BOOL ret = GetMonitorInfo(monitor, &mi);
+ 
+    int workW = 0, workH = 0;
     if (GetMonitorInfo(monitor, &mi))
     {
-        // 从 MONITORINFO 中获取显示器的宽度和高度
-        int monitorW = mi.rcMonitor.right - mi.rcMonitor.left;
-        int monitorH = mi.rcMonitor.bottom - mi.rcMonitor.top;
-
-        // 将窗口居中到这个显示器的矩形区域内
-        outLeft = mi.rcMonitor.left + (monitorW - outW) / 2;
-        outTop = mi.rcMonitor.top + (monitorH - outH) / 2;
+        workW = mi.rcWork.right - mi.rcWork.left;
+        workH = mi.rcWork.bottom - mi.rcWork.top;
     }
     else
     {
-        // 如果 GetMonitorInfo 失败，回退到旧的方法
-        int screenW = GetSystemMetricsForDpi(SM_CXSCREEN, dpiX);
-        int screenH = GetSystemMetricsForDpi(SM_CYSCREEN, dpiX);
-        outLeft = (screenW - outW) / 2;
-        outTop = (screenH - outH) / 2;
+        workW = GetSystemMetricsForDpi(SM_CXSCREEN, dpiX);
+        workH = GetSystemMetricsForDpi(SM_CYSCREEN, dpiX);
     }
+
+    // ---- 限制窗口尺寸不得超过屏幕 ----
+    float wScale = (float)workW / outW;
+    float hScale = (float)workH / outH;
+    float scale = (wScale < hScale) ? wScale : hScale;
+    if (scale < 1.0f) { // 只缩小，不放大
+        outW = (int)(outW * scale);
+        outH = (int)(outH * scale);
+    }
+
+    // 再次居中（以显示器 rcMonitor 区域为基准，绝不会超界）
+    outLeft = mi.rcWork.left + (workW - outW) / 2;
+    outTop = mi.rcWork.top + (workH - outH) / 2;
+    //outTop = 0;
+  
+    /*char msg[128];
+    sprintf_s(msg, "outLeft = %d, outTop = %d\n", outLeft, outTop);
+    OutputDebugStringA(msg);*/
+
+
+
 }
+
 
 
 
