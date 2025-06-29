@@ -40,9 +40,7 @@ public:
         int totalFrames, 
         int columns, 
         int rows, 
-        float fps,
-        float repeatU, // 新增：贴图重复次数（横向）   
-        float repeatV);// 新增：贴图重复次数（纵向）
+        float fps);
 
     void Update(float deltaTime);
     void UpdateConstantBuffer(ID3D11DeviceContext* context,
@@ -61,7 +59,7 @@ public:
 
 private:
     
-    void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom, float repeatU, float repeatV);
+    void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom);
     
     // GPU 资源
     ID3D11Buffer* vertexBuffer;

@@ -313,49 +313,32 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
 
 
-
-   
-   
-    //state->background.Load(
-    //    state->device,
-    //    L"assets\\bg.dds",
-    //    0.0f, 0.0f, state->logicalWidth, state->logicalHeight,
-    //    false, 
-    //    1,
-    //    1, 
-    //    1, 
-    //    8.0f);
-
-    auto floor = std::make_unique<GameObject>();
-    state->floor = floor.get();//获取原始指针
-    floor->Load(state->device, 
-        L"assets\\floor.dds",
-        0.0f, 
-        1012.0f,
-        1888.0f, 
-        1062.0f,
-        false, 
-        1, 
-        1, 
-        1, 
-        0.0f,
-        5.0f, 
+    auto bg = std::make_unique<GameObject>();
+    bg->Load(
+        state->device,
+        L"assets\\bg.dds",
+        0.0f, -196.0f, 1888.0f, 1062.0f,
+        false,
+        1,
+        1,
+        1,
         1.0f);
-    state->sceneObjects.push_back(std::move(floor));
+   
+    state->sceneObjects.push_back(std::move(bg));
+
+   
 
 
     auto run_robot = std::make_unique<GameObject>();
     run_robot->Load(
         state->device,
         L"assets\\robot_run.dds",
-        100.0f, 0.0f, 300.0f, 200.0f,
+        100.0f, 762.0f, 300.0f, 962.0f,
         true,
         10,
         9,
         1,
-        30.0f,
-        1.0,
-        1.0);
+        30.0f);
     state->sceneObjects.push_back(std::move(run_robot));
 
   
@@ -374,8 +357,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 void CleanupD3D(StateInfo* state) {
     
     if (!state) return;
-    //
-    //state->background.Release();
+   
     // 确保所有资源在使用前已被释放
     state->sceneObjects.clear(); // 调用 GameObject 析构函数，释放资源
    

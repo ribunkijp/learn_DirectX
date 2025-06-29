@@ -35,7 +35,7 @@ WinMain（アプリの開始点）
 
 
 
-void GetScaledWindowSizeAndPosition(int logicalWidth, int logicalHeight,
+void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
     int& outW, int& outH, int& outLeft, int& outTop, DWORD C_WND_STYLE);
 
 inline StateInfo* GetAppState(HWND hwnd);
@@ -111,8 +111,8 @@ int WINAPI wWinMain(
     //
     int winW = 0, winH = 0, winL = 0, winT = 0;
     GetScaledWindowSizeAndPosition(
-        static_cast<int>(pState->logicalWidth),
-        static_cast<int>(pState->logicalHeight),
+        pState->logicalWidth,
+        pState->logicalHeight,
         winW, winH, winL, winT, C_WND_STYLE);
     
 
@@ -275,7 +275,7 @@ void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd)
 }
 
 
-void GetScaledWindowSizeAndPosition(int logicalWidth, int logicalHeight,
+void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
     int& outW, int& outH, int& outLeft, int& outTop, DWORD C_WND_STYLE)
 {
     // --- 获取主显示器的 DPI ---
@@ -284,7 +284,7 @@ void GetScaledWindowSizeAndPosition(int logicalWidth, int logicalHeight,
     GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
 
     // --- 根据DPI计算客户端需要的物理像素大小 ---
-    float dpiScale = dpiX / 96.0f;
+    float dpiScale = static_cast<float>(dpiX) / 96.0f;
     int scaledClientW = static_cast<int>(logicalWidth * dpiScale);
     int scaledClientH = static_cast<int>(logicalHeight * dpiScale);
 
@@ -313,12 +313,12 @@ void GetScaledWindowSizeAndPosition(int logicalWidth, int logicalHeight,
     }
 
     // ---- 限制窗口尺寸不得超过屏幕 ----
-    float wScale = (float)workW / outW;
-    float hScale = (float)workH / outH;
+    float wScale = static_cast<float>(workW) / static_cast<float>(outW);
+    float hScale = static_cast<float>(workH) / static_cast<float>(outH);
     float scale = (wScale < hScale) ? wScale : hScale;
     if (scale < 1.0f) { // 只缩小，不放大
-        outW = (int)(outW * scale);
-        outH = (int)(outH * scale);
+        outW = static_cast<int>(static_cast<float>(outW) * scale);
+        outH = static_cast<int>(static_cast<float>(outH) * scale);
     }
 
     // 再次居中（以显示器 rcMonitor 区域为基准，绝不会超界）

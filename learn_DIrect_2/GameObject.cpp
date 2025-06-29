@@ -52,12 +52,10 @@ bool GameObject::Load(
     int totalFrames_, 
     int columns_, 
     int rows_, 
-    float fps_,
-    float repeatU,    
-    float repeatV
+    float fps_
     ) {
     
-    InitVertexData(device, left, top, right, bottom, repeatU, repeatV);
+    InitVertexData(device, left, top, right, bottom);
 
     isAnimated = animated;
     totalFrames = totalFrames_;
@@ -74,13 +72,10 @@ bool GameObject::Load(
     device->CreateBuffer(&cbd, nullptr, &constantBuffer);
 
     // 加载纹理
-    float texWidth = 0.0f;
-    float texHeight = 0.0f;
-    if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &textureSRV, &texWidth, &texHeight))) {
+    if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &textureSRV, &textureWidth, &textureHeight))) {
         return false;
     }
-    textureWidth = texWidth;
-    textureHeight = texHeight;
+   
 
     // 设置非动画图的纹理偏移和缩放
     if (!isAnimated) {
@@ -94,12 +89,12 @@ bool GameObject::Load(
     return true;
 }
 
-void GameObject::InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom, float repeatU, float repeatV) {
+void GameObject::InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom) {
     Vertex vertices[] = {
-        { { left,  top,    0.0f }, { 1, 1, 1, 1 }, { 0.0f, 0.0f } },
-        { { right, top,    0.0f }, { 1, 1, 1, 1 }, { repeatU, 0.0f } },
-        { { right, bottom, 0.0f }, { 1, 1, 1, 1 }, { repeatU, repeatV } },
-        { { left,  bottom, 0.0f }, { 1, 1, 1, 1 }, { 0.0f, repeatV } }
+       { { left,  top,    0.0f }, { 1, 1, 1, 1 }, { 0.0f, 0.0f } },
+        { { right, top,    0.0f }, { 1, 1, 1, 1 }, { 1.0f, 0.0f } },
+        { { right, bottom, 0.0f }, { 1, 1, 1, 1 }, { 1.0f, 1.0f } },
+        { { left,  bottom, 0.0f }, { 1, 1, 1, 1 }, { 0.0f, 1.0f } }
     };
     vertexBuffer = CreateQuadVertexBuffer(device, vertices, 4);
     indexBuffer = CreateQuadIndexBuffer(device);

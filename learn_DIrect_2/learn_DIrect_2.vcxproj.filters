@@ -44,8 +44,8 @@
     <Text Include="shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\floor.dds" />
     <Image Include="assets\robot_run.dds" />
+    <Image Include="assets\bg.dds" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dApp.h">
