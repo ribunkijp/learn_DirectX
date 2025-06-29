@@ -42,7 +42,7 @@ inline StateInfo* GetAppState(HWND hwnd);
 
 void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd);
 
-
+void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed);
 
 
 // 窗口过程函数
@@ -120,7 +120,7 @@ int WINAPI wWinMain(
     HWND hwnd = CreateWindowEx(
         0,                              // 可选窗口样式
         CLASS_NAME,                     // 窗口类名
-        L"Window_1",                    // 窗口标题（L 表示 UTF-16 字符串）
+        L"ホラーランキング",                    // 窗口标题（L 表示 UTF-16 字符串）
         C_WND_STYLE,            // 窗口样式
 
         // 位置和大小
@@ -175,6 +175,9 @@ int WINAPI wWinMain(
 
         timer.Tick();    // 每帧调用
         float deltaTime = timer.GetDeltaTime();  // 每帧耗时
+
+
+        UpdateBackground(pState, deltaTime, 200.0f);
 
         // 更新所有对象的动画和常量缓冲区
         UpdateAllObjects(pState, deltaTime);
@@ -334,7 +337,12 @@ void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
 
 }
 
-
+void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed) {
+    pState->bgOffsetX -= scrollSpeed * deltaTime;
+    if (pState->bgOffsetX <= -1888.0f) {
+        pState->bgOffsetX += 1888.0f;
+    }
+}
 
 
 /*
@@ -363,5 +371,20 @@ void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
            |   显示器/窗口            |
            +--------------------------+
 
+
+*/
+
+/*
+
+[左上角(0,0)]-------------------------
+|                                     |
+|                                     |
+|      [playerX, playerY]             |
+|           ⬇️                        |
+|        🧑‍🚀                         |
+|                                     |
+|                   [objectX,objectY] |
+|                        🍀           |
+---------------------------------------
 
 */

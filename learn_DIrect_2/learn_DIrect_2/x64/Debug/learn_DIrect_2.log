@@ -1,17 +1,24 @@
-﻿  GameObject.cpp
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(79,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
-  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+﻿  main.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(80,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(82,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
-  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(83,10): warning C4820: 'GameObject': '8' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(56,46): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::sceneObjects' の後に追加しました。
-  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(63,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::playerSpeed' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
   
-C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
-  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(67,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::bgOffsetX' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(140,1): warning C5045: /Qspectre スイッチが 
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(140,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(131) : 注: この行で比較を行ってインデックス '' の範囲を確認します
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(140,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(140) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(11,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(11,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(304,10): warning C4189: 'ret': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(241,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(241,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(240) : 注: この行で比較を行ってインデックス 'height' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(241,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(241) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

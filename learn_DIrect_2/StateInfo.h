@@ -54,11 +54,17 @@ struct StateInfo {
     float logicalHeight = 1062.0f;
     //
     std::vector<std::unique_ptr<GameObject>> sceneObjects;
-  
+    //カメラ
+    float cameraX = 0.0f;
+    float cameraY = 0.0f;
+    //player
+    float playerX = 200.0f;  // 人物初始世界坐标
+    float playerY = 900.0f;
+    float playerSpeed = 300.0f; // 移动速度，像素/秒
 
-    
-
-
+    //bg
+    std::unique_ptr<GameObject> bg;
+    float bgOffsetX = 0.0f;
 };
 
 

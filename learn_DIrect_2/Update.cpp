@@ -19,3 +19,16 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime) {
         obj->UpdateConstantBuffer(pState->context, pState->view, pState->projection);
     }
 }
+
+void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed) {
+    float speed = 0.0f;
+    if (leftPressed) {
+        speed = -state->playerSpeed;
+    }
+    else if (rightPressed) {
+        speed = state->playerSpeed;
+    }
+    state->playerX += speed * deltaTime;
+    if (state->playerX < 0) state->playerX = 0;
+    // 可以加右边界判定：if (state->playerX > mapWidth - playerWidth) state->playerX = mapWidth - playerWidth;
+}

@@ -10,6 +10,7 @@
 #include <DirectXMath.h>
 
 
+
 using namespace DirectX;
 
 GameObject::GameObject()
@@ -144,6 +145,30 @@ void GameObject::UpdateConstantBuffer(ID3D11DeviceContext* context,
 void GameObject::Render(ID3D11DeviceContext* context) {
     // 更新顶点缓冲区步幅 (stride)
    // 确保这里的 stride 与你的 Vertex 结构体大小一致
+    UINT stride = sizeof(Vertex);
+    //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
+    UINT offset = 0;
+    // 设置顶点缓冲区
+    context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+    // 设置索引缓冲区 指定每个索引是一个 32 位无符号整数
+    context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    // 之后HLSL 的 PSMain 中用到 cbuffer ConstantBuffer时，再用
+    context->VSSetConstantBuffers(0, 1, &constantBuffer);
+    // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)
+    // t0 寄存器对应起始槽位 0
+    context->PSSetShaderResources(0, 1, &textureSRV);
+    //
+    context->DrawIndexed(indexCount, 0, 0);
+}
+void GameObject::Render(ID3D11DeviceContext* context, float x, float y, const DirectX::XMMATRIX& view,
+    const DirectX::XMMATRIX& projection) {
+    
+    //
+    modelMatrix = DirectX::XMMatrixTranslation(x, y, 0.0f);
+    UpdateConstantBuffer(context, view, projection);
+
+    // 更新顶点缓冲区步幅 (stride)
+  // 确保这里的 stride 与你的 Vertex 结构体大小一致
     UINT stride = sizeof(Vertex);
     //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
     UINT offset = 0;

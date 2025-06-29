@@ -312,9 +312,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     }
 
 
-
-    auto bg = std::make_unique<GameObject>();
-    bg->Load(
+    state->bg = std::make_unique<GameObject>();
+    state->bg->Load(
         state->device,
         L"assets\\bg.dds",
         0.0f, -196.0f, 1888.0f, 1062.0f,
@@ -324,13 +323,13 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         1,
         1.0f);
    
-    state->sceneObjects.push_back(std::move(bg));
+   
 
    
 
 
-    auto run_robot = std::make_unique<GameObject>();
-    run_robot->Load(
+    auto robot_run = std::make_unique<GameObject>();
+    robot_run->Load(
         state->device,
         L"assets\\robot_run.dds",
         100.0f, 762.0f, 300.0f, 962.0f,
@@ -338,11 +337,44 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         10,
         9,
         1,
-        30.0f);
-    state->sceneObjects.push_back(std::move(run_robot));
+        24.0f);
+    state->sceneObjects.push_back(std::move(robot_run));
 
-  
+    auto kodomo_run = std::make_unique<GameObject>();
+    kodomo_run->Load(
+        state->device,
+        L"assets\\kodomo_run.dds",
+        400.0f, 600.0f, 560.0f, 780.0f,
+        true,
+        12,
+        6,
+        2,
+        24.0f);
+    state->sceneObjects.push_back(std::move(kodomo_run));
    
+    auto yoko_run = std::make_unique<GameObject>();
+    yoko_run->Load(
+        state->device,
+        L"assets\\yoko_run.dds",
+        800.0f, 600.0f, 990.0f, 895.0f,
+        true,
+        10,
+        5,
+        2,
+        24.0f);
+    state->sceneObjects.push_back(std::move(yoko_run));
+
+    auto kaiten_run = std::make_unique<GameObject>();
+    kaiten_run->Load(
+        state->device,
+        L"assets\\kaiten_run.dds",
+        1100.0f, 722.0f, 1310.0f, 962.0f,
+        true,
+        12,
+        6,
+        2,
+        24.0f);
+    state->sceneObjects.push_back(std::move(kaiten_run));
 
 
 
@@ -357,6 +389,11 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 void CleanupD3D(StateInfo* state) {
     
     if (!state) return;
+
+    if (state->bg) {
+        state->bg->Release();  // 你自己写的资源释放函数，释放 D3D buffer/texture 等
+        state->bg.reset();     // unique_ptr 的安全释放（如果是裸指针则 delete）
+    }
    
     // 确保所有资源在使用前已被释放
     state->sceneObjects.clear(); // 调用 GameObject 析构函数，释放资源
