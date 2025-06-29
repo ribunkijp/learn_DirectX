@@ -1,13 +1,13 @@
-/*
+/**********************************************************************************
     Render.cpp
 
-*/
+                                                                LI WENHUI
+                                                                2025/06/30
+
+**********************************************************************************/
 
 
 #include "Render.h"
-
-
-
 
 
 
@@ -22,68 +22,59 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
 
 
 
-
-
-    // 绑定渲染目标视图和深度/模板视图
+    // レンダーターゲットビューと深度/ステンシルビューをバインド
     pState->context->OMSetRenderTargets(1, &pState->rtv, pState->depthStencilView);
 
-
-    // 清除背景色
+    // 背景色をクリア
     float clearColor[4] = { 1.0f, 1.0f, 0.88f, 1.0f };
     pState->context->ClearRenderTargetView(pState->rtv, clearColor);
 
-    //清除深度和模板缓冲区。1.0f是深度的默认最远值。
+    // 深度とステンシルバッファをクリア。1.0fは深度のデフォルトで最遠の値。
     pState->context->ClearDepthStencilView(pState->depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 
-    // 设置输入布局和着色器
+    // 入力レイアウトとシェーダーを設定
     /*
-        告诉GPU顶点数据长啥样，怎么读；
+        GPUに頂点データの構造と読み方を伝える；
 
-        告诉GPU顶点数据如何被顶点着色器处理；
+        GPUに頂点データが頂点シェーダーでどう処理されるかを伝える；
 
-        告诉GPU像素怎么被像素着色器处理。
+        GPUにピクセルがピクセルシェーダーでどう処理されるかを伝える。
     */
-    //设置输入布局（Input Layout）
+    // 入力レイアウト（Input Layout）を設定
     pState->context->IASetInputLayout(pState->inputLayout);
-    //绑定顶点着色器（Vertex Shader）到管线
+    // 頂点シェーダー（Vertex Shader）をパイプラインにバインド
     pState->context->VSSetShader(pState->vertexShader, nullptr, 0);
-    //绑定像素着色器（Pixel Shader）到管线
+    // ピクセルシェーダー（Pixel Shader）をパイプラインにバインド
     pState->context->PSSetShader(pState->pixelShader, nullptr, 0);
 
-    // 作用是告诉 GPU 如何把顶点组织成图元来绘制。设置图元类型为三角形列表:D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+    // GPUに頂点をどのようにプリミティブ（図形）として描画するかを伝える。プリミティブタイプは三角形リスト（D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST）
     pState->context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // --- 绑定混合状态 ---
-   // 第二个参数是一个常数数组，用于那些在混合描述中设置为 D3D11_BLEND_BLEND_FACTOR 或 D3D11_BLEND_INV_BLEND_FACTOR 的混合模式。
-   // 如果你的混合因子是基于源 Alpha 的，这里通常用 nullptr 或全为1的数组。
-   // 第三个参数是样本遮罩，通常为 0xffffffff。
+    // --- ブレンドステートをバインド ---
+    // 2番目のパラメータは定数配列。ブレンド記述でD3D11_BLEND_BLEND_FACTORやD3D11_BLEND_INV_BLEND_FACTORを使う場合に利用。
+    // 通常、アルファブレンドの場合はnullptrか全て1の配列でOK。
+    // 3番目はサンプルマスク。通常は0xffffffff。
     pState->context->OMSetBlendState(pState->blendState, nullptr, 0xffffffff);
 
-    //设置用于透明的深度模板状态！这是关键！
-    // 第二个参数(StencilRef)在这里不重要，设为0即可。
+    // 透過用の深度ステンシルステートを設定！これが重要！
+    // 2番目（StencilRef）はここでは重要でないので0でOK。
     pState->context->OMSetDepthStencilState(pState->depthStencilStateTransparent, 0);
 
-
-
-    // PSSetSamplers(起始槽位, 采样器数量, 采样器数组指针)
-        // s0 寄存器对应起始槽位 0
+    // PSSetSamplers(開始スロット, サンプラー数, サンプラー配列ポインタ)
+    // s0レジスタはスロット0に対応
     pState->context->PSSetSamplers(0, 1, &pState->samplerState);
 
-   
+
     pState->bg->Render(pState->context, pState->bgOffsetX, 0.0f, pState->view, pState->projection);
     pState->bg->Render(pState->context, pState->bgOffsetX + 1888.0f, 0.0f, pState->view, pState->projection);
-
 
     for (auto& obj : pState->sceneObjects)
     {
         obj->Render(pState->context);
-    
     }
 
-
-
-    // 将后备缓冲区 (已完成渲染的缓冲区) 与前台缓冲区 (当前显示在屏幕上的缓冲区) 交换
+    // バックバッファ（描画が終わったバッファ）とフロントバッファ（画面に表示されているバッファ）を交換
     pState->swapChain->Present(1, 0);
 
     EndPaint(hwnd, &ps);

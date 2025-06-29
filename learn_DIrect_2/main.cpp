@@ -1,8 +1,10 @@
-/*
+/**********************************************************************************
     main.cpp
+                                                                
+                                                                LI WENHUI
+                                                                2025/06/30
 
-*/
-
+**********************************************************************************/
 
 /*
 
@@ -16,12 +18,9 @@ WinMain（アプリの開始点）
           └─ WM_PAINT / WM_CLOSE / WM_DESTROY などの処理
 */
 
-
-
 #ifndef UNICODE
 #define UNICODE
 #endif 
-
 
 #include <windows.h>
 #include <ShellScalingAPI.h>
@@ -34,7 +33,6 @@ WinMain（アプリの開始点）
 #include "Render.h"
 
 
-
 void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
     int& outW, int& outH, int& outLeft, int& outTop, DWORD C_WND_STYLE);
 
@@ -45,61 +43,46 @@ void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd);
 void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed);
 
 
-// 窗口过程函数
+// ウィンドウプロシージャ関数
 LRESULT CALLBACK WindowProc(
-    HWND hwnd,//窗口句柄 一个具体窗口的“身份证”
+    HWND hwnd, // ウィンドウハンドル（ウィンドウの「ID」）
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam
 );
 
-
-
-// 程序入口
+// プログラムのエントリーポイント
 int WINAPI wWinMain(
-    _In_ HINSTANCE hInstance, //实例句柄 应用本身的“身份证”代表当前运行的应用程序实例,即你这个程序在内存中的一个副本
-    _In_opt_ HINSTANCE hPrevInstance,//Windows 95 时代遗留参数，总是为 NULL
-    _In_ PWSTR pCmdLine,//命令行参数字符串（不包含程序本身的路径）
-    _In_ int nCmdShow //窗口显示的方式
+    _In_ HINSTANCE hInstance, // インスタンスハンドル（アプリ自身の「ID」、現在の実行中インスタンスを表す。）
+    _In_opt_ HINSTANCE hPrevInstance, // Windows 95時代の引数、常にNULL
+    _In_ PWSTR pCmdLine, // コマンドライン引数（プログラム自身のパスを含まない文字列）
+    _In_ int nCmdShow // ウィンドウ表示方法
 ) {
-    // 设置 DPI 感知
+    // DPI感知を設定
     SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 
-    //dpi检测
-    //PROCESS_DPI_AWARENESS awareness;
-    //HRESULT hr = GetProcessDpiAwareness(NULL, &awareness); // NULL 代表当前进程
+    //(省略：DPIチェックのコメント)
 
-    //if (SUCCEEDED(hr))
-    //{
-    //    wchar_t buffer[256];
-    //    // PROCESS_DPI_AWARENESS 的枚举值也是 0, 1, 2，含义相同
-    //    swprintf_s(buffer, L"DPI Awareness Level:\n\n0 = Unaware\n1 = System Aware\n2 = Per-Monitor Aware\n\nYour Level: %d", awareness);
-    //    MessageBox(NULL, buffer, L"DPI Check", MB_OK);
-    //}
-
-
-    (void)hPrevInstance; // 虽然不使用，但为了消除警告而显式引用
+    (void)hPrevInstance; // 使わないが、警告回避のため明示的に参照
     (void)pCmdLine;      // 同上
 
-    // 自定义的字符串
+    // 独自の文字列
     const wchar_t CLASS_NAME[] = L"WIndow_1";
 
-    //wc代表你要注册的窗口类 
+    // wcは登録するウィンドウクラス
     WNDCLASS wc = { };
-    //设置窗口消息处理函数
+    // ウィンドウメッセージ処理関数を設定
     wc.lpfnWndProc = WindowProc;
-    //// 设置窗口所属的应用实例
+    // ウィンドウ所属アプリインスタンスを設定
     wc.hInstance = hInstance;
-    //// 这里设置窗口类名(自定义的字符串)
+    // ウィンドウクラス名（独自の文字列）を設定
     wc.lpszClassName = CLASS_NAME;
-    
-    // 注册窗口类
+
+    // ウィンドウクラスを登録
     RegisterClass(&wc);
 
-    //pState 指针将保存所有 Direct3D rendering state
-    StateInfo* pState = new StateInfo();  // 用 new 进行初始化
-
-
+    // pState ポインタは全Direct3D描画状態を保存
+    StateInfo* pState = new StateInfo();  // newで初期化
 
     if (pState == NULL)
     {
@@ -114,25 +97,24 @@ int WINAPI wWinMain(
         pState->logicalWidth,
         pState->logicalHeight,
         winW, winH, winL, winT, C_WND_STYLE);
-    
 
     // 
     HWND hwnd = CreateWindowEx(
-        0,                              // 可选窗口样式
-        CLASS_NAME,                     // 窗口类名
-        L"ホラーランニング",                    // 窗口标题（L 表示 UTF-16 字符串）
-        C_WND_STYLE,            // 窗口样式
+        0,                              // オプションのウィンドウスタイル
+        CLASS_NAME,                     // ウィンドウクラス名
+        L"ホラーランニング",                    // ウィンドウタイトル（LはUTF-16文字列）
+        C_WND_STYLE,            // ウィンドウスタイル
 
-        // 位置和大小
-        winL, // <-- 使用默认 X 位置
-        winT, // <-- 使用默认 Y 位置
-        winW, 
+        // 位置とサイズ
+        winL, // <-- デフォルトのX位置を使用
+        winT, // <-- デフォルトのY位置を使用
+        winW,
         winH,
 
-        NULL,       // 父窗口
-        NULL,       // 菜单
-        hInstance,  // 实例句柄
-        pState      // 附加的应用数据 ← 这是 lpParam，可在 WM_CREATE 中获取
+        NULL,       // 親ウィンドウ
+        NULL,       // メニュー
+        hInstance,  // インスタンスハンドル
+        pState      // 追加アプリデータ ← これはlpParam、WM_CREATEで取得可能
     );
 
     if (hwnd == NULL)
@@ -142,24 +124,20 @@ int WINAPI wWinMain(
 
     ShowWindow(hwnd, nCmdShow);
 
-
     RECT rect;
     GetClientRect(hwnd, &rect);
     float clientWidth = static_cast<float>(rect.right - rect.left);
     float clientHeight = static_cast<float>(rect.bottom - rect.top);
 
-
     if (!InitD3D(hwnd, pState, clientWidth, clientHeight)) {
         MessageBox(hwnd, L"D3D 初始化失败!", L"错误", MB_OK);
         return 0;
     }
-   
 
-   
-    Timer timer;       // 计时器对象
-    timer.Reset();     // 程序启动时调用一次
+    Timer timer;       // タイマーオブジェクト
+    timer.Reset();     // プログラム起動時に一度だけ呼び出す
 
-    // 消息循环
+    // メッセージループ
     MSG msg = {};
     while (true)
     {
@@ -171,41 +149,39 @@ int WINAPI wWinMain(
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-       
 
-        timer.Tick();    // 每帧调用
-        float deltaTime = timer.GetDeltaTime();  // 每帧耗时
-
+        timer.Tick();    // 毎フレーム呼び出す
+        float deltaTime = timer.GetDeltaTime();  // 各フレーム経過時間
 
         UpdateBackground(pState, deltaTime, 200.0f);
 
-        // 更新所有对象的动画和常量缓冲区
+        // 全オブジェクトのアニメーション・定数バッファを更新
         UpdateAllObjects(pState, deltaTime);
 
-        //更新视口
+        // ビューポート更新
         UpdateViewport(pState->context, hwnd);
 
-        // 如果没有消息，进行每一帧渲染
+        // メッセージがなければ、各フレームをレンダリング
         RenderFrame(hwnd, pState);
-        
+
     }
 
     return 0;
 }
 
-// 窗口过程
+// ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(
     HWND hwnd,
     UINT uMsg,
-    WPARAM wParam, // 无符号整数类型
-    LPARAM lParam  // 有符号整数或指针
+    WPARAM wParam, // 符号なし整数型
+    LPARAM lParam  // 符号付き整数またはポインタ
 ) {
-    // 保存 StateInfo 结构体的指针（结构体 = 数据的集合）
+    // StateInfo構造体ポインタを保存（構造体 = データの集合体）
     StateInfo* pState = nullptr;
 
     if (uMsg == WM_CREATE)
     {
-        // 从 CreateWindowEx 中传入的 pState 取出并保存在窗口中
+        // CreateWindowExで渡したpStateをウィンドウに保存
         CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
         pState = reinterpret_cast<StateInfo*>(pCreate->lpCreateParams);
         SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pState);
@@ -216,43 +192,43 @@ LRESULT CALLBACK WindowProc(
     }
 
     switch (uMsg) {
-        case WM_CLOSE:
-            if (MessageBox(hwnd, L"really quit？", L"cancel", MB_OKCANCEL) == IDOK) {
-                DestroyWindow(hwnd);
-            }
-            return 0;
-
-        case WM_DESTROY:
-            if (pState) { // 确保 pState 是有效的指针
-                CleanupD3D(pState);
-                delete pState;
-                pState = nullptr;
-            }
-            PostQuitMessage(0);
-            return 0;
-        case WM_SIZE:
-        {
-            //
-            pState = GetAppState(hwnd);
-            if (pState) {
-                UINT width = LOWORD(lParam);
-                UINT height = HIWORD(lParam);
-                if (width > 0 && height > 0) {
-                    OnResize(hwnd, pState, width, height);
-                }
-            }
-
-            return 0;
+    case WM_CLOSE:
+        if (MessageBox(hwnd, L"really quit？", L"cancel", MB_OKCANCEL) == IDOK) {
+            DestroyWindow(hwnd);
         }
-            
+        return 0;
+
+    case WM_DESTROY:
+        if (pState) { // pStateが有効なポインタか確認
+            CleanupD3D(pState);
+            delete pState;
+            pState = nullptr;
+        }
+        PostQuitMessage(0);
+        return 0;
+    case WM_SIZE:
+    {
+        //
+        pState = GetAppState(hwnd);
+        if (pState) {
+            UINT width = LOWORD(lParam);
+            UINT height = HIWORD(lParam);
+            if (width > 0 && height > 0) {
+                OnResize(hwnd, pState, width, height);
+            }
+        }
+
+        return 0;
     }
-    //switch 语句中未明确处理的任何消息，此行调用默认窗口过程
+
+    }
+    // switch文で明示的に処理しなかったメッセージは、デフォルトウィンドウプロシージャへ
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 inline StateInfo* GetAppState(HWND hwnd)
 {
-    //从指定窗口（hwnd）中取出你之前用 SetWindowLongPtr 存进去的自定义指针或数据。
+    // 指定したウィンドウ（hwnd）から以前SetWindowLongPtrで保存したカスタムポインタやデータを取り出す
     LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
     StateInfo* pState = reinterpret_cast<StateInfo*>(ptr);
     return pState;
@@ -281,28 +257,27 @@ void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd)
 void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
     int& outW, int& outH, int& outLeft, int& outTop, DWORD C_WND_STYLE)
 {
-    // --- 获取主显示器的 DPI ---
+    // --- メインディスプレイのDPI取得 ---
     HMONITOR monitor = MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY);
     UINT dpiX = 96, dpiY = 96;
     GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
 
-    // --- 根据DPI计算客户端需要的物理像素大小 ---
+    // --- DPIに基づきクライアント領域の物理ピクセルサイズを計算 ---
     float dpiScale = static_cast<float>(dpiX) / 96.0f;
     int scaledClientW = static_cast<int>(logicalWidth * dpiScale);
     int scaledClientH = static_cast<int>(logicalHeight * dpiScale);
 
-
-    // --- 根据客户端大小和窗口样式，计算整个窗口需要的物理像素大小 ---
+    // --- クライアントサイズとウィンドウスタイルに基づき、ウィンドウ全体の物理ピクセルサイズを計算 ---
     RECT rect = { 0, 0, scaledClientW, scaledClientH };
     AdjustWindowRectExForDpi(&rect, C_WND_STYLE, FALSE, 0, dpiX);
     outW = rect.right - rect.left;
     outH = rect.bottom - rect.top;
 
-    // 获得工作区
+    // 作業領域を取得
     MONITORINFO mi = { sizeof(mi) };
-   
+
     BOOL ret = GetMonitorInfo(monitor, &mi);
- 
+
     int workW = 0, workH = 0;
     if (GetMonitorInfo(monitor, &mi))
     {
@@ -315,26 +290,23 @@ void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
         workH = GetSystemMetricsForDpi(SM_CYSCREEN, dpiX);
     }
 
-    // ---- 限制窗口尺寸不得超过屏幕 ----
+    // ---- ウィンドウサイズが画面を超えないように制限 ----
     float wScale = static_cast<float>(workW) / static_cast<float>(outW);
     float hScale = static_cast<float>(workH) / static_cast<float>(outH);
     float scale = (wScale < hScale) ? wScale : hScale;
-    if (scale < 1.0f) { // 只缩小，不放大
+    if (scale < 1.0f) { // 縮小のみ、拡大しない
         outW = static_cast<int>(static_cast<float>(outW) * scale);
         outH = static_cast<int>(static_cast<float>(outH) * scale);
     }
 
-    // 再次居中（以显示器 rcMonitor 区域为基准，绝不会超界）
+    // 再度中央寄せ（ディスプレイrcMonitor領域基準、必ずはみ出さない）
     outLeft = mi.rcWork.left + (workW - outW) / 2;
     outTop = mi.rcWork.top + (workH - outH) / 2;
     //outTop = 0;
-  
+
     /*char msg[128];
     sprintf_s(msg, "outLeft = %d, outTop = %d\n", outLeft, outTop);
     OutputDebugStringA(msg);*/
-
-
-
 }
 
 void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed) {
@@ -344,31 +316,30 @@ void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed) {
     }
 }
 
-
 /*
 +------------------+        +-----------------+        +------------------+
-|   顶点缓冲区     | -----> | 顶点着色器 VS   | -----> | 光栅化（生成像素） |
-| (Vertex Buffer)  |        |（处理位置等）   |        +------------------+
+|   頂点バッファ    | -----> | 頂点シェーダ VS | -----> | ラスタライズ（ピクセル生成）|
+| (Vertex Buffer)  |        |（位置処理など） |        +------------------+
 +------------------+                                   ↓
            ↑
            ❘
 +------------------+        +-----------------+        ↓
-| 常量缓冲区       | -----> | 像素着色器 PS   | <------+
-| (ConstantBuffer) |        |（上色计算）     |
+| 定数バッファ     | -----> | ピクセルシェーダ PS| <------+
+| (ConstantBuffer) |        |（色計算）         |
 +------------------+        +-----------------+
 
-                     最终绘制到
+                     最終的に描画
                      ↓
 
            +--------------------------+
-           | 渲染目标视图 (RTV)        |
-           | (后备缓冲区的“视图”)      |
+           | レンダーターゲットビュー (RTV)|
+           | (バックバッファの「ビュー」)     |
            +--------------------------+
                         ↓
-               Present（交换显示）
+               Present（表示交換）
 
            +--------------------------+
-           |   显示器/窗口            |
+           |   ディスプレイ／ウィンドウ      |
            +--------------------------+
 
 
@@ -376,7 +347,7 @@ void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed) {
 
 /*
 
-[左上角(0,0)]-------------------------
+[左上(0,0)]-------------------------
 |                                     |
 |                                     |
 |      [playerX, playerY]             |

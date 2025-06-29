@@ -1,15 +1,16 @@
-/*
+/**********************************************************************************
     GameObject.cpp
 
-*/
+                                                                LI WENHUI
+                                                                2025/06/30
+
+**********************************************************************************/
 #include <windows.h>
 
 #include "GameObject.h"
 #include "BufferUtils.h"
 #include "TextureLoader.h"
 #include <DirectXMath.h>
-
-
 
 using namespace DirectX;
 
@@ -28,7 +29,7 @@ GameObject::GameObject()
     rows(1),
     isAnimated(false),
     indexCount(0),
-    modelMatrix(XMMatrixIdentity()) 
+    modelMatrix(XMMatrixIdentity())
 {
     texOffset[0] = texOffset[1] = 0.0f;
     texScale[0] = texScale[1] = 1.0f;
@@ -46,16 +47,16 @@ void GameObject::Release() {
 }
 
 bool GameObject::Load(
-    ID3D11Device* device, 
+    ID3D11Device* device,
     const std::wstring& texturePath,
     float left, float top, float right, float bottom,
-    bool animated, 
-    int totalFrames_, 
-    int columns_, 
-    int rows_, 
+    bool animated,
+    int totalFrames_,
+    int columns_,
+    int rows_,
     float fps_
-    ) {
-    
+) {
+
     InitVertexData(device, left, top, right, bottom);
 
     isAnimated = animated;
@@ -64,7 +65,7 @@ bool GameObject::Load(
     rows = rows_;
     fps = fps_;
 
-    // 创建常量缓冲区
+    // 定数バッファを作成
     D3D11_BUFFER_DESC cbd = {};
     cbd.Usage = D3D11_USAGE_DYNAMIC;
     cbd.ByteWidth = sizeof(ConstantBuffer);
@@ -72,20 +73,18 @@ bool GameObject::Load(
     cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     device->CreateBuffer(&cbd, nullptr, &constantBuffer);
 
-    // 加载纹理
+    // テクスチャの読み込み
     if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &textureSRV, &textureWidth, &textureHeight))) {
         return false;
     }
-   
 
-    // 设置非动画图的纹理偏移和缩放
+    // アニメーションでない場合はテクスチャのオフセット・スケールを設定
     if (!isAnimated) {
         texOffset[0] = 0.0f;
         texOffset[1] = 0.0f;
         texScale[0] = 1.0f;
         texScale[1] = 1.0f;
     }
-
 
     return true;
 }
@@ -124,11 +123,11 @@ void GameObject::Update(float deltaTime) {
 
 void GameObject::UpdateConstantBuffer(ID3D11DeviceContext* context,
     const XMMATRIX& view, const XMMATRIX& projection) {
-    
-    //将 GPU 的 constantBuffer 映射到 CPU-accessible memory, 可以写入新数据
-    //Direct3D 映射（Map）之后，提供给你的 一块可以写入的内存地址，类型是 void*（无类型指针)
+
+    // GPUのconstantBufferをCPUがアクセスできるメモリにマッピングし、新しいデータを書き込む
+    // Direct3DのMap後に、書き込み可能なメモリアドレス（void*型）を得られる
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    
+
     if (SUCCEEDED(context->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource))) {
         ConstantBuffer* cb = (ConstantBuffer*)mappedResource.pData;
         cb->model = DirectX::XMMatrixTranspose(modelMatrix);
@@ -143,43 +142,43 @@ void GameObject::UpdateConstantBuffer(ID3D11DeviceContext* context,
 }
 
 void GameObject::Render(ID3D11DeviceContext* context) {
-    // 更新顶点缓冲区步幅 (stride)
-   // 确保这里的 stride 与你的 Vertex 结构体大小一致
+    // 頂点バッファのストライド（stride）を更新
+    // Vertex構造体のサイズと一致させること
     UINT stride = sizeof(Vertex);
-    //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
+    // offset（オフセット）：頂点バッファの先頭から何バイト目からデータを読むか。ここは0で、バッファの先頭から読む
     UINT offset = 0;
-    // 设置顶点缓冲区
+    // 頂点バッファを設定
     context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-    // 设置索引缓冲区 指定每个索引是一个 32 位无符号整数
+    // インデックスバッファを設定。各インデックスは32ビットの符号なし整数
     context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    // 之后HLSL 的 PSMain 中用到 cbuffer ConstantBuffer时，再用
+    // HLSLのPSMainでcbuffer ConstantBufferを使う際にセット
     context->VSSetConstantBuffers(0, 1, &constantBuffer);
-    // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)
-    // t0 寄存器对应起始槽位 0
+    // PSSetShaderResources（開始スロット、ビュー数、SRV配列ポインタ）
+    // t0レジスタがスロット0に対応
     context->PSSetShaderResources(0, 1, &textureSRV);
     //
     context->DrawIndexed(indexCount, 0, 0);
 }
 void GameObject::Render(ID3D11DeviceContext* context, float x, float y, const DirectX::XMMATRIX& view,
     const DirectX::XMMATRIX& projection) {
-    
+
     //
     modelMatrix = DirectX::XMMatrixTranslation(x, y, 0.0f);
     UpdateConstantBuffer(context, view, projection);
 
-    // 更新顶点缓冲区步幅 (stride)
-  // 确保这里的 stride 与你的 Vertex 结构体大小一致
+    // 頂点バッファのストライド（stride）を更新
+    // Vertex構造体のサイズと一致させること
     UINT stride = sizeof(Vertex);
-    //offset（偏移量）：从顶点缓冲区开始处偏移多少字节读取数据，这里是0，表示从缓冲区头开始。
+    // offset（オフセット）：頂点バッファの先頭から何バイト目からデータを読むか。ここは0で、バッファの先頭から読む
     UINT offset = 0;
-    // 设置顶点缓冲区
+    // 頂点バッファを設定
     context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-    // 设置索引缓冲区 指定每个索引是一个 32 位无符号整数
+    // インデックスバッファを設定。各インデックスは32ビットの符号なし整数
     context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    // 之后HLSL 的 PSMain 中用到 cbuffer ConstantBuffer时，再用
+    // HLSLのPSMainでcbuffer ConstantBufferを使う際にセット
     context->VSSetConstantBuffers(0, 1, &constantBuffer);
-    // PSSetShaderResources(起始槽位, 视图数量, SRV数组指针)
-    // t0 寄存器对应起始槽位 0
+    // PSSetShaderResources（開始スロット、ビュー数、SRV配列ポインタ）
+    // t0レジスタがスロット0に対応
     context->PSSetShaderResources(0, 1, &textureSRV);
     //
     context->DrawIndexed(indexCount, 0, 0);

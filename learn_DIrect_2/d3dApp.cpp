@@ -1,7 +1,10 @@
-/*
+/**********************************************************************************
     d3dApp.cpp
 
-*/
+                                                                LI WENHUI
+                                                                2025/06/30
+
+**********************************************************************************/
 
 #include "d3dApp.h"
 #include "StateInfo.h"
@@ -10,126 +13,121 @@
 
 
 
-
-
 bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight) {
 
     /*
-        原始模型坐标（以模型中心为原点）
-             ↓ worldMatrix（位移缩放）
-        世界坐标（以左上为原点）
-             ↓ viewMatrix（单位矩阵，没用相机）
-        视图坐标
-             ↓ projectionMatrix（正交投影）
-        NDC坐标（X/Y 在 [-1, 1]，左上变成 -1,+1）
-             ↓ 图形管线自动映射
-        屏幕像素位置
-    
+        元のモデル座標（モデル中心が原点）
+             ↓ worldMatrix（平行移動・拡大縮小）
+        ワールド座標（左上が原点）
+             ↓ viewMatrix（単位行列・カメラなし）
+        ビュー座標
+             ↓ projectionMatrix（正射投影）
+        NDC座標（X/Y は [-1, 1]、左上は -1,+1 に）
+             ↓ グラフィックスパイプラインによる自動マッピング
+        画面ピクセル位置
     */
-    //设置摄像机位置和朝向
-    state->view = DirectX::XMMatrixIdentity(); // 先用单位矩阵，你可以设置摄像机的位置后再更新
-    //把 3D/2D 世界映射到屏幕
+    // カメラ位置と向きを設定
+    state->view = DirectX::XMMatrixIdentity(); // まずは単位行列、カメラ位置を設定したら更新できる
+    // 3D/2D ワールドを画面にマッピング
     state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
-        0.0f, state->logicalWidth,      // left 到 right：X轴从左到右
-        state->logicalHeight, 0.0f,     // bottom 到 top：Y轴从上到下
-        0.0f, 1.0f              // near 到 far：Z轴从近到远
+        0.0f, state->logicalWidth,      // left から right：X軸は左から右へ
+        state->logicalHeight, 0.0f,     // bottom から top：Y軸は上から下へ
+        0.0f, 1.0f              // near から far：Z軸は手前から奥へ
     );
 
 
     /*
-        // 初始化交换链描述结构体（DXGI_SWAP_CHAIN_DESC）
-        // 交换链（Swap Chain）是 DirectX 实现双缓冲或多缓冲的机制。
-        // 它包含一个或多个“后备缓冲区”（Back Buffers），渲染时画面先画到这些缓冲区，
-        // 然后调用 Present() 把当前缓冲区“交换”到前台显示。
+        // スワップチェーン記述構造体（DXGI_SWAP_CHAIN_DESC）を初期化
+        // スワップチェーン（Swap Chain）は DirectX のダブルバッファ/マルチバッファ機構です。
+        // 1つ以上の「バックバッファ」を持ち、描画時にまずそこへ描画し、
+        // Present() を呼ぶことで現在のバッファを前面へ「交換」して表示します。
 
-        // DXGI_SWAP_CHAIN_DESC 是用来配置交换链的结构体，
-        // 包括：缓冲区数量、分辨率、格式、窗口句柄、全屏/窗口模式、抗锯齿等设置。
+        // DXGI_SWAP_CHAIN_DESC はスワップチェーンの設定用構造体です。
+        // バッファ数、解像度、フォーマット、ウィンドウハンドル、フルスクリーン/ウィンドウ、アンチエイリアス等を設定。
         //
-        // 此结构体将作为参数传入 D3D11CreateDeviceAndSwapChain 函数，
-        // 同时创建以下关键对象：
-        // - ID3D11Device（显卡接口，资源创建用）
-        // - ID3D11DeviceContext（设备上下文，发命令用）
-        // - IDXGISwapChain（交换链接口，管理缓冲区显示）
+        // この構造体は D3D11CreateDeviceAndSwapChain 関数に渡され、
+        // 以下の主要オブジェクトが同時に作成されます：
+        // - ID3D11Device（GPUデバイス、リソース作成用）
+        // - ID3D11DeviceContext（デバイスコンテキスト、コマンド送信用）
+        // - IDXGISwapChain（スワップチェーン、バッファ管理）
         //
     */
     DXGI_SWAP_CHAIN_DESC scd = {};
 
-    // 后备缓冲区数量（只使用1个）
+    // バックバッファ数（1つのみ使用）
     scd.BufferCount = 1;
 
-    // 绘制画面的宽度和高度（分辨率）
+    // 描画画面の幅・高さ（解像度）
     scd.BufferDesc.Width = static_cast<unsigned>(clientWidth);
     scd.BufferDesc.Height = static_cast<unsigned>(clientHeight);
 
-    // 缓冲区的颜色格式（RGBA，每个8位的标准格式）
+    // バッファのカラーフォーマット（RGBA・各8bit 標準フォーマット）
     scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-    // 缓冲区的用途（作为渲染目标使用）缓冲区将作为渲染目标绑定到渲染管线中
+    // バッファの用途（レンダーターゲットとして利用）
     scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-    // 输出目标的窗口句柄
+    // 出力先ウィンドウハンドル
     scd.OutputWindow = hwnd;
 
-    // 多重采样（抗锯齿）设置（1：无效）
+    // マルチサンプリング（アンチエイリアス）（1: 無効）
     scd.SampleDesc.Count = 1;
 
-    // 启用窗口模式（TRUE：非全屏）
+    // ウィンドウモードを有効に（TRUE: ウィンドウ表示）
     scd.Windowed = TRUE;
 
-    // 创建 Direct3D 设备和交换链和命令上下文
+    // Direct3D デバイス・スワップチェーン・コマンドコンテキスト作成
     if (FAILED(D3D11CreateDeviceAndSwapChain(
-        nullptr,                        // 使用默认显卡（适配器）
-        D3D_DRIVER_TYPE_HARDWARE,      // 使用硬件加速（最快，也是默认）
-        nullptr,                        // 无软件渲染 DLL（因为你用的是硬件驱动）
-        0,                              // 不设置 debug 标志（正式版设为 0）
-        nullptr, 0,                     // 不指定功能级别（会自动选择）
-        D3D11_SDK_VERSION,             // Direct3D SDK 的版本宏（必须这样写）
-        &scd,                          // 你准备好的交换链配置（DXGI_SWAP_CHAIN_DESC）
-        &state->swapChain,             // 输出：交换链接口指针
-        &state->device,                // 输出：设备指针（GPU 设备对象）
-        nullptr,                       // 不关心功能级别，传 nullptr 即可
-        &state->context)))            // // 输出：设备上下文（用于提交渲染命令）
-        return false; // 失败返回false
+        nullptr,                        // デフォルトGPU（アダプタ）を使用
+        D3D_DRIVER_TYPE_HARDWARE,      // ハードウェアアクセラレーション（最速・デフォルト）
+        nullptr,                        // ソフトウェアレンダDLLはなし（ハードのみ）
+        0,                              // デバッグフラグなし（リリース時は0）
+        nullptr, 0,                     // 機能レベル未指定（自動選択）
+        D3D11_SDK_VERSION,             // Direct3D SDK バージョン
+        &scd,                          // 準備済みスワップチェーン設定（DXGI_SWAP_CHAIN_DESC）
+        &state->swapChain,             // 出力：スワップチェーン
+        &state->device,                // 出力：デバイス
+        nullptr,                       // 機能レベル不要
+        &state->context)))            // 出力：コマンドコンテキスト
+        return false; // 失敗時はfalse返却
 
 
-    // 获取后备缓冲区的纹理（绘制目标）
+    // バックバッファテクスチャ（描画先）の取得
     ID3D11Texture2D* backBuffer = nullptr;
     /*
-        第一个参数0 表示缓冲区索引 第一个缓冲区;
-        第二个参数 uuidof(ID3D11Texture2D) 指明你想得到的接口类型是 ID3D11Texture2D，也就是2D纹理;
-        第三个参数(void**)&backBuffer 是输出指针，GetBuffer 会把后备缓冲区纹理的接口指针写进这里
-        需要拿到它的纹理接口，后续才能创建渲染目标视图（Render Target View）绑定到它，从而告诉GPU“这就是我们渲染的目标”。
+        1つ目の引数0はバッファ番号・最初のバッファ;
+        2つ目 uuidof(ID3D11Texture2D)で求めるインターフェース型を指定;
+        3つ目 (void**)&backBuffer は出力用、GetBufferがここに取得先を書き込む
+        バックバッファのテクスチャを取ることで、後でレンダーターゲットビュー作成やGPUへの描画先指示が可能となる。
     */
     HRESULT hr = state->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
     if (FAILED(hr) || backBuffer == nullptr) {
-        return false; // 失败时中断初始化
+        return false; // 失敗時は初期化中断
     }
 
-    // 为后备缓冲区创建渲染目标视图 通过设置 RTV，把 GPU 的“绘画目标”指向后台缓冲区。
+    // バックバッファ用レンダーターゲットビューの作成。RTVでGPUの描画先をバックバッファに指定
     hr = state->device->CreateRenderTargetView(backBuffer, nullptr, &state->rtv);
     if (FAILED(hr)) {
-        return false; // 这里也要检查失败
+        return false; // 失敗もチェック
     }
 
-    // 释放后备缓冲区（视图已经创建完成）
+    // バックバッファ解放（ビュー作成済みなのでOK）
     backBuffer->Release();
 
 
 
-
-
-    // !!! 新增: 创建深度/模板缓冲区 !!!
+    // !!! 新規: 深度/ステンシルバッファ作成 !!!
     ID3D11Texture2D* depthStencilBuffer = nullptr;
     D3D11_TEXTURE2D_DESC depthBufferDesc = {};
     depthBufferDesc.Width = static_cast<unsigned>(clientWidth);
     depthBufferDesc.Height = static_cast<unsigned>(clientHeight);
     depthBufferDesc.MipLevels = 1;
     depthBufferDesc.ArraySize = 1;
-    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 24位深度 + 8位模板
-    depthBufferDesc.SampleDesc.Count = 1; // 与RTV的SampleDesc.Count一致
-    depthBufferDesc.SampleDesc.Quality = 0; // 与RTV的SampleDesc.Quality一致
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 24bit深度+8bitステンシル
+    depthBufferDesc.SampleDesc.Count = 1; // RTVのSampleDesc.Countと同じ
+    depthBufferDesc.SampleDesc.Quality = 0; // RTVのSampleDesc.Qualityと同じ
     depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; // 绑定为深度/模板缓冲区
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; // 深度/ステンシルバッファ用
     depthBufferDesc.CPUAccessFlags = 0;
     depthBufferDesc.MiscFlags = 0;
 
@@ -139,51 +137,49 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
-    // !!! 新增: 创建深度/模板视图 !!!
+    // !!! 新規: 深度/ステンシルビュー作成 !!!
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 视图格式与缓冲区格式匹配
-    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D; // 2D 纹理的视图
-    dsvDesc.Texture2D.MipSlice = 0; // 只使用第一个 mipmap 级别
+    dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0;
 
     hr = state->device->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, &state->depthStencilView);
     if (FAILED(hr)) {
         MessageBox(hwnd, L"Failed to create depth stencil view.", L"Error", MB_OK);
-        if (depthStencilBuffer) depthStencilBuffer->Release(); // 创建视图失败也要释放缓冲区
+        if (depthStencilBuffer) depthStencilBuffer->Release();
         return false;
     }
-    if (depthStencilBuffer) depthStencilBuffer->Release(); // 视图创建成功后，缓冲区本身可以释放，视图会持有引用
+    if (depthStencilBuffer) depthStencilBuffer->Release(); // ビュー作成後は本体解放でOK
 
 
-
-
-    // 将创建的渲染目标视图设置到GPU（指定绘制目标）
+    // 作成したレンダーターゲットビューをGPUに設定（描画先の指定）
     state->context->OMSetRenderTargets(1, &state->rtv, state->depthStencilView);
 
-    // 设置视口（绘制区域）
+    // ビューポート（描画範囲）の設定
     D3D11_VIEWPORT vp = {};
-    vp.Width = clientWidth;       // 视口宽度（与窗口宽度一致）
-    vp.Height = clientHeight;     // 视口高度（与窗口高度一致）
-    vp.MinDepth = 0.0f;                  // 最小深度（深度缓冲区最小值）
-    vp.MaxDepth = 1.0f;                  // 最大深度（深度缓冲区最大值）
-    state->context->RSSetViewports(1, &vp); // 设置光栅化阶段的视口
+    vp.Width = clientWidth;       // ビューポート幅（ウィンドウ幅と一致）
+    vp.Height = clientHeight;     // ビューポート高さ（ウィンドウ高と一致）
+    vp.MinDepth = 0.0f;           // 最小深度
+    vp.MaxDepth = 1.0f;           // 最大深度
+    state->context->RSSetViewports(1, &vp); // ラスタライズ段階のビューポート指定
 
     /*
-            把 .hlsl 源代码编译成 GPU 可以执行的二进制字节码（Bytecode）。
+        .hlsl ソースをGPU用のバイトコードにコンパイル
     */
-    // 1. 编译顶点着色器和像素着色器
-    ID3DBlob* vsBlob = nullptr;         // 顶点着色器二进制数据存储
-    ID3DBlob* psBlob = nullptr;         // 像素着色器二进制数据存储
+    // 1. 頂点シェーダ・ピクセルシェーダのコンパイル
+    ID3DBlob* vsBlob = nullptr;         // 頂点シェーダバイナリ格納
+    ID3DBlob* psBlob = nullptr;         // ピクセルシェーダバイナリ格納
 
-    // 编译顶点着色器（VS)
+    // 頂点シェーダ（VS）コンパイル
     hr = D3DCompileFromFile(
-        L"shader.hlsl",                 // HLSL文件路径
-        nullptr, nullptr,              // 不使用宏和包含
-        "VSMain", "vs_5_0",            // 入口函数名和着色器模型
+        L"shader.hlsl",                 // HLSLファイルパス
+        nullptr, nullptr,
+        "VSMain", "vs_5_0",
         0, 0,
-        &vsBlob, nullptr               // 存储编译结果（成功时）
+        &vsBlob, nullptr
     );
-    if (FAILED(hr)) return false;      // 失败时退出
-    //编译像素着色器（PS）
+    if (FAILED(hr)) return false;
+    // ピクセルシェーダ（PS）コンパイル
     hr = D3DCompileFromFile(
         L"shader.hlsl",
         nullptr, nullptr,
@@ -192,16 +188,16 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         &psBlob, nullptr
     );
     if (FAILED(hr)) {
-        vsBlob->Release();             // 释放资源
+        vsBlob->Release();
         return false;
     }
 
-    // 2. 创建着色器对象（转换为GPU可用的着色器）
+    // 2. シェーダオブジェクト作成（GPUで使える形式に変換）
     hr = state->device->CreateVertexShader(
-        vsBlob->GetBufferPointer(),    // 二进制指针
-        vsBlob->GetBufferSize(),       // 二进制大小
+        vsBlob->GetBufferPointer(),
+        vsBlob->GetBufferSize(),
         nullptr,
-        &state->vertexShader           // 结果存储
+        &state->vertexShader
     );
     if (FAILED(hr)) {
         vsBlob->Release();
@@ -221,54 +217,49 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
-
-    // 3. 创建输入布局（顶点缓冲区中的数据如何映射到顶点着色器的输入)
+    // 3. 入力レイアウト作成（頂点バッファのデータがVS入力にどう割当てられるかを定義）
     D3D11_INPUT_ELEMENT_DESC layout[] = {
-        // POSITION: 3个float（x, y, z）
+        // POSITION: float3（x, y, z）
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0},
 
-        // COLOR: 4个float（r, g, b, a）
+        // COLOR: float4（r, g, b, a）
         {"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
 
-        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0}  // 28是前3个float+前4个float的字节大小
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0}  // 28はfloat3+float4のバイト数
     };
 
     hr = state->device->CreateInputLayout(
-        layout,      // 布局数组
-        3,           // 数组长度
-        vsBlob->GetBufferPointer(), // 用来检查布局是否匹配 VS
+        layout,
+        3,
+        vsBlob->GetBufferPointer(),
         vsBlob->GetBufferSize(),
-        &state->inputLayout         // 输出结果（用于绑定到渲染管线）
+        &state->inputLayout
     );
     vsBlob->Release();
     psBlob->Release();
     if (FAILED(hr)) return false;
 
-
-    // 常量缓冲区（Constant Buffer）
-    //初始化一个描述结构体，准备告诉 GPU 我们要创建一个什么样的缓冲区。
+    // 定数バッファ（Constant Buffer）
+    // 記述構造体を初期化し、GPUにどんなバッファを作るか伝える
     D3D11_BUFFER_DESC cbd = {};
-    //设置这个缓冲区的“用途”DYNAMIC 表示：CPU 会频繁改数据（如每帧传入新的矩阵），GPU 会读取。
+    // 用途はDYNAMIC：CPUが毎フレーム値を更新（例：行列）、GPUが読み取る
     cbd.Usage = D3D11_USAGE_DYNAMIC;
-    //将缓冲区的大小 (以字节为单位) 设置为与你的 ConstantBuffer struct 匹配
+    // サイズはConstantBuffer構造体と同じ
     cbd.ByteWidth = sizeof(ConstantBuffer);
-    //告诉 GPU：这个缓冲区是用作常量缓冲区，也就是要绑定到着色器里
+    // このバッファは定数バッファとして使う
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    //表示 CPU 可以写入这个缓冲区（比如更新变换矩阵）  这和 D3D11_USAGE_DYNAMIC 是配套的。只有 DYNAMIC 才能设置这个。
+    // CPU書き込み許可（D3D11_USAGE_DYNAMICとセットで必要）
     cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    //高级功能（结构化缓冲区等）才用到这个。
+    // 高度な用途は0
     cbd.MiscFlags = 0;
-    //结构化缓冲区（Structured Buffer）才用
     cbd.StructureByteStride = 0;
-   
 
-
-    // --- 创建纹理采样器状态 ---
+    // --- テクスチャサンプラーステート作成 ---
     D3D11_SAMPLER_DESC sampDesc = {};
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // 线性过滤，适用于大部分情况
-    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;     // U 坐标超出范围时重复纹理
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;     // V 坐标超出范围时重复纹理
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;     // W 坐标超出范围时重复纹理 (对2D纹理影响不大)
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // 線形フィルタ・一般用途向き
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;     // U座標範囲外でリピート
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;     // V座標範囲外でリピート
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;     // W座標範囲外でリピート（2Dはあまり影響なし）
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
@@ -278,17 +269,17 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
-    // --- 创建并设置透明混合状态 ---
+    // --- 透明ブレンドステート作成 ---
     D3D11_BLEND_DESC blendDesc = {};
-    // RenderTarget[0] 对应第一个渲染目标
-    blendDesc.RenderTarget[0].BlendEnable = TRUE; // 启用混合
-    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA; // 源混合因子：源像素的 alpha 值
-    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA; // 目标混合因子：1 - 源像素的 alpha 值
-    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD; // 混合操作：源 + 目标
-    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE; // Alpha 源混合因子 (通常为1)
-    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO; // Alpha 目标混合因子 (通常为0)
-    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD; // Alpha 混合操作 (通常为加法)
-    // D3D11_COLOR_WRITE_ENABLE_ALL 表示所有颜色通道 (RGBA) 都可以写入
+    // RenderTarget[0] は最初のレンダーターゲット
+    blendDesc.RenderTarget[0].BlendEnable = TRUE; // ブレンド有効
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA; // ソースのα値
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA; // 1-ソースのα値
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD; // ソース+デスティネーション
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE; // α成分（通常1）
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO; // α成分（通常0）
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD; // α加算
+    // D3D11_COLOR_WRITE_ENABLE_ALL は全色成分(RGBA)書込可
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
     hr = state->device->CreateBlendState(&blendDesc, &state->blendState);
@@ -297,11 +288,11 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
-    // 创建用于透明物体的深度/模板状态 
+    // 透明物体用の深度/ステンシルステート作成
     D3D11_DEPTH_STENCIL_DESC transparentDepthStencilDesc = {};
-    transparentDepthStencilDesc.DepthEnable = TRUE; // 仍然启用深度测试 (与不透明物体比较)
-    //// **禁用深度写入**不让透明物体“覆盖”后面的物体的 Z 值，否则会挡住后面本该看到的东西
-    transparentDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; 
+    transparentDepthStencilDesc.DepthEnable = TRUE; // 深度テストは有効（不透明物体との比較）
+    //// **深度書き込み無効化** 透明物体が奥の物体のZ値を「塗りつぶす」のを防ぐ
+    transparentDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
     transparentDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
     transparentDepthStencilDesc.StencilEnable = FALSE;
 
@@ -310,7 +301,6 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         MessageBox(hwnd, L"Failed to create transparent depth stencil state.", L"Error", MB_OK);
         return false;
     }
-
 
     state->bg = std::make_unique<GameObject>();
     state->bg->Load(
@@ -322,11 +312,6 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         1,
         1,
         1.0f);
-   
-   
-
-   
-
 
     auto robot_run = std::make_unique<GameObject>();
     robot_run->Load(
@@ -351,7 +336,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         2,
         24.0f);
     state->sceneObjects.push_back(std::move(kodomo_run));
-   
+
     auto yoko_run = std::make_unique<GameObject>();
     yoko_run->Load(
         state->device,
@@ -376,58 +361,53 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         24.0f);
     state->sceneObjects.push_back(std::move(kaiten_run));
 
-
-
-    return true; // 成功时返回true
+    return true; // 成功時はtrue
 }
 
 
-
-
-
-// 释放 Direct3D 资源的函数
+// Direct3D リソース解放関数
 void CleanupD3D(StateInfo* state) {
-    
+
     if (!state) return;
 
     if (state->bg) {
-        state->bg->Release();  // 你自己写的资源释放函数，释放 D3D buffer/texture 等
-        state->bg.reset();     // unique_ptr 的安全释放（如果是裸指针则 delete）
+        state->bg->Release();  // 独自のリリース関数（D3Dバッファ・テクスチャ等解放）
+        state->bg.reset();     // unique_ptrの安全な解放（生ポインタならdelete）
     }
-   
-    // 确保所有资源在使用前已被释放
-    state->sceneObjects.clear(); // 调用 GameObject 析构函数，释放资源
-   
 
-    // 释放 StateInfo 中全局持有的 D3D 资源
-    if (state->samplerState) { // 释放采样器状态
+    // 全リソースは使用前に解放しておくこと
+    state->sceneObjects.clear(); // GameObjectデストラクタが呼ばれリソース解放
+
+
+    // StateInfoが持つD3Dリソースを全て解放
+    if (state->samplerState) { // サンプラーステート解放
         state->samplerState->Release();
         state->samplerState = nullptr;
     }
-    if (state->pixelShader) { // 释放像素着色器
+    if (state->pixelShader) { // ピクセルシェーダ解放
         state->pixelShader->Release();
         state->pixelShader = nullptr;
     }
-    if (state->vertexShader) { // 释放顶点着色器
+    if (state->vertexShader) { // 頂点シェーダ解放
         state->vertexShader->Release();
         state->vertexShader = nullptr;
     }
-    if (state->inputLayout) { // 释放输入布局
+    if (state->inputLayout) { // 入力レイアウト解放
         state->inputLayout->Release();
         state->inputLayout = nullptr;
     }
-    if (state->rtv) { // 释放渲染目标视图
+    if (state->rtv) { // レンダーターゲットビュー解放
         state->rtv->Release();
         state->rtv = nullptr;
     }
-    if (state->blendState) { // 释放混合状态
+    if (state->blendState) { // ブレンドステート解放
         state->blendState->Release();
         state->blendState = nullptr;
     }
 
 
-    // 释放设备上下文和交换链之前，确保所有挂起的操作都已完成
-    // 通常在释放设备之前，应该先释放上下文，并确保没有其他操作正在进行
+    // デバイスコンテキスト・スワップチェーン解放前に、全操作完了を確認
+    // 通常はデバイス解放前にまずコンテキストを解放し、未完了の操作がないことを確認
     if (state->context) {
         state->context->Release();
         state->context = nullptr;
@@ -438,11 +418,11 @@ void CleanupD3D(StateInfo* state) {
         state->swapChain = nullptr;
     }
 
-    // 最后释放设备对象
-    // 在调试模式下，可以检查是否有未释放的 COM 接口
-    if (state->device) { // 先检查 device 指针是否存在且有效
+    // 最後にデバイス本体の解放
+    // デバッグ時は未解放のCOMインターフェースがないか確認
+    if (state->device) {
 
-        // 【关键修正】将调试代码块移动到 device 指针有效的检查内部
+        // 【重要修正】デバッグコードは device有効のときのみ
 #ifdef _DEBUG
         ID3D11Debug* debug = nullptr;
         if (SUCCEEDED(state->device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug)))
@@ -451,7 +431,7 @@ void CleanupD3D(StateInfo* state) {
             debug->Release();
         }
 #endif
-        // 然后再释放设备本身
+        // そしてデバイス本体の解放
         state->device->Release();
         state->device = nullptr;
     }
@@ -459,19 +439,19 @@ void CleanupD3D(StateInfo* state) {
 }
 
 
-
+// ウィンドウサイズ変更時の処理
 void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
 {
     if (!state || !state->swapChain || !state->device || !state->context) return;
 
-    // 释放旧的资源
+    // 既存リソースを解放
     if (state->rtv) { state->rtv->Release(); state->rtv = nullptr; }
     if (state->depthStencilView) { state->depthStencilView->Release(); state->depthStencilView = nullptr; }
 
-    // Resize 交换链 buffers
+    // スワップチェーンのバッファをリサイズ
     state->swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
 
-    // 获取新的 back buffer
+    // 新しいバックバッファ取得
     ID3D11Texture2D* backBuffer = nullptr;
     HRESULT hr = state->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
     if (SUCCEEDED(hr) && backBuffer) {
@@ -483,7 +463,7 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
         return;
     }
 
-    // 创建新的深度缓冲区
+    // 新しい深度バッファ作成
     D3D11_TEXTURE2D_DESC depthBufferDesc = {};
     depthBufferDesc.Width = width;
     depthBufferDesc.Height = height;
@@ -495,9 +475,9 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
     depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
     ID3D11Texture2D* depthStencilBuffer = nullptr;
-   hr =  state->device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
+    hr = state->device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
 
-    // 创建深度视图
+    // 深度ビュー作成
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
     dsvDesc.Format = depthBufferDesc.Format;
     dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -512,26 +492,22 @@ void OnResize(HWND hwnd, StateInfo* state, UINT width, UINT height)
         return;
     }
 
-    // 重新绑定渲染目标
+    // 新しいレンダーターゲットを再バインド
     state->context->OMSetRenderTargets(1, &state->rtv, state->depthStencilView);
 
-    //    ClearRenderTargetView 会清除整个窗口
+    //    ClearRenderTargetView でウィンドウ全体をクリア
     D3D11_VIEWPORT vp = {};
     vp.Width = static_cast<FLOAT>(width);
     vp.Height = static_cast<FLOAT>(height);
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     state->context->RSSetViewports(1, &vp);
-    // 推荐这样设置
-   
+    // この方法が推奨
 
-    
 
     state->projection = DirectX::XMMatrixOrthographicOffCenterLH(
         0.0f, state->logicalWidth,
         state->logicalHeight, 0.0f,
         0.0f, 1.0f);
 
-
 }
-    

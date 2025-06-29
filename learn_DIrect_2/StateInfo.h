@@ -1,3 +1,11 @@
+/**********************************************************************************
+    StateInfo.h
+
+                                                                LI WENHUI
+                                                                2025/06/30
+
+**********************************************************************************/
+
 #ifndef STATEINFO_H
 #define STATEINFO_H
 
@@ -7,42 +15,42 @@
 #include "GameObject.h"
 #include <memory>
 
-// 管理 Direct3D11 渲染状态的结构体
+// Direct3D11のレンダリング状態を管理する構造体
 struct StateInfo {
-    // 设备对象：用于创建资源和着色器
-    ID3D11Device* device = nullptr; //ID3D11Device（显卡接口）
+    // デバイスオブジェクト：リソースやシェーダーの作成に使う
+    ID3D11Device* device = nullptr; //ID3D11Device（グラフィックカードインターフェース）
 
-    // 设备上下文：用于发出绘制命令和绑定资源 //D3D11DeviceContext（命令接口）
-    ID3D11DeviceContext* context = nullptr;//渲染管线
+    // デバイスコンテキスト：描画コマンドやリソースのバインドに使用 //D3D11DeviceContext（コマンドインターフェース）
+    ID3D11DeviceContext* context = nullptr;//レンダリングパイプライン
 
-    
+
     /*
-        交换链：管理后台缓冲区与前台缓冲区的交换（用于屏幕显示）通常包含一个或多个后备缓冲区 (Back Buffers)，
-        渲染时画面首先绘制到这些缓冲区，然后调用 Present() 将当前缓冲区“交换”到前台显示。
+        スワップチェーン：バックバッファとフロントバッファの交換を管理（画面表示用）
+        通常は1つ以上のバックバッファ（Back Buffers）を持つ。
+        描画時はまずこれらのバッファにレンダリングし、Present() を呼ぶことで現在のバッファをフロントに“交換”して表示する。
     */
     IDXGISwapChain* swapChain = nullptr;
 
-    // 渲染目标视图：指定绘制目标缓冲区的视图
+    // レンダーターゲットビュー：描画対象バッファのビューを指定
     ID3D11RenderTargetView* rtv = nullptr;
 
-    // 输入布局：将顶点数据的结构传达给 GPU 的设置
+    // 入力レイアウト：頂点データの構造をGPUに伝える設定
     ID3D11InputLayout* inputLayout = nullptr;
 
-    // 顶点着色器：对每个顶点进行处理的着色器
+    // 頂点シェーダー：各頂点の処理を行うシェーダー
     ID3D11VertexShader* vertexShader = nullptr;
 
-    // 像素着色器：用于决定每个像素颜色的着色器
+    // ピクセルシェーダー：各ピクセルの色を決定するシェーダー
     ID3D11PixelShader* pixelShader = nullptr;
 
-
-    //用于纹理采样的采样器状态
+    // テクスチャサンプリング用のサンプラーステート
     ID3D11SamplerState* samplerState = nullptr;
 
-    // 用于透明混合
+    // 透過ブレンド用
     ID3D11BlendState* blendState = nullptr;
-    // 用于透明物体的深度状态
+    // 透過物体用の深度ステンシル状態
     ID3D11DepthStencilState* depthStencilStateTransparent = nullptr;
-    //深度/模板缓冲区视图 的接口指针  GPU 用来访问和操作深度/模板缓冲区的接口
+    // 深度/ステンシルバッファビューのインターフェースポインタ。GPUが深度/ステンシルバッファへアクセス・操作するためのもの
     ID3D11DepthStencilView* depthStencilView = nullptr;
     //
     ID3D11RenderTargetView* renderTargetView = nullptr;
@@ -54,26 +62,17 @@ struct StateInfo {
     float logicalHeight = 1062.0f;
     //
     std::vector<std::unique_ptr<GameObject>> sceneObjects;
-    //カメラ
+    // カメラ
     float cameraX = 0.0f;
     float cameraY = 0.0f;
-    //player
-    float playerX = 200.0f;  // 人物初始世界坐标
+    // プレイヤー
+    float playerX = 200.0f;  // キャラクターの初期ワールド座標
     float playerY = 900.0f;
-    float playerSpeed = 300.0f; // 移动速度，像素/秒
+    float playerSpeed = 300.0f; // 移動速度、ピクセル/秒
 
-    //bg
+    // 背景
     std::unique_ptr<GameObject> bg;
     float bgOffsetX = 0.0f;
 };
-
-
-
-
-
-
-
-
-
 
 #endif

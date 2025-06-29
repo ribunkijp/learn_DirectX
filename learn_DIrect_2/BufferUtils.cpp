@@ -1,66 +1,61 @@
-/*
+/**********************************************************************************
     BufferUtils.cpp
 
-*/
+                                                                LI WENHUI
+                                                                2025/06/30
+
+**********************************************************************************/
 
 #include "BufferUtils.h"
 
-
-
-
-
-
 ID3D11Buffer* CreateQuadVertexBuffer(ID3D11Device* device, Vertex* vertices, unsigned vertices_count) {
 
+    D3D11_BUFFER_DESC bd = {};// Direct3D 11 でバッファの属性を記述する構造体
+    bd.Usage = D3D11_USAGE_DEFAULT;              // バッファはGPUによって読み書きされる。作成後はCPUから直接アクセスできない。
+    bd.ByteWidth = sizeof(Vertex) * vertices_count;             // バッファのサイズ＝頂点全体のサイズ
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;     // 頂点バッファとして使用
 
+    D3D11_SUBRESOURCE_DATA initData = {};//D3D11_SUBRESOURCE_DATA はバッファ初期化用の構造体
+    initData.pSysMem = vertices;// GPU上のバッファを初期化するためのデータへのポインタ
 
-    D3D11_BUFFER_DESC bd = {};// Direct3D 11 用来描述缓冲区属性的结构体
-    bd.Usage = D3D11_USAGE_DEFAULT;              // 指示缓冲区将由 GPU 读取和写入。创建后不允许 CPU 直接访问。
-    bd.ByteWidth = sizeof(Vertex) * vertices_count;             // 缓冲区大小 = 顶点总大小
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;     // 用作顶点缓冲区
-
-    D3D11_SUBRESOURCE_DATA initData = {};//D3D11_SUBRESOURCE_DATA 是用来初始化缓冲区数据的结构体。
-    initData.pSysMem = vertices;// 提供用于在 GPU 上填充缓冲区的初始数据指针
-
-    //定义一个指向 Direct3D 11 顶点缓冲区的指针，初始值设为 nullptr（空指针）
+    // Direct3D 11 の頂点バッファへのポインタ、初期値は nullptr（ヌルポインタ）
     ID3D11Buffer* vertexBuffer = nullptr;
-    //创建一个 GPU 上的缓冲区。
+    // GPU上にバッファを作成する
     HRESULT hr = device->CreateBuffer(&bd, &initData, &vertexBuffer);
     if (FAILED(hr)) {
-        // 错误处理
+        // エラー処理
         return nullptr;
     }
     return vertexBuffer;
 }
 ID3D11Buffer* CreateQuadIndexBuffer(ID3D11Device* device)
 {
-    // 定义矩形的索引数组，共6个索引，绘制两个三角形组成一个矩形
-    // 三角形1顶点索引: 0, 1, 2
-    // 三角形2顶点索引: 0, 2, 3
+    // 矩形のインデックス配列を定義。合計6つのインデックスで、2つの三角形から矩形を描画
+    // 三角形1の頂点インデックス: 0, 1, 2
+    // 三角形2の頂点インデックス: 0, 2, 3
     UINT indices[6] = { 0, 1, 2, 0, 2, 3 };
 
-    // 初始化缓冲区描述结构体
+    // バッファ記述構造体の初期化
     D3D11_BUFFER_DESC bd = {};
-    bd.Usage = D3D11_USAGE_DEFAULT;                // 默认使用方式，GPU可读写，CPU不可访问
-    bd.ByteWidth = sizeof(UINT) * 6;               // 缓冲区大小，6个索引，每个索引是UINT类型
-    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;        // 绑定标志，表示该缓冲区是索引缓冲区
+    bd.Usage = D3D11_USAGE_DEFAULT;                // デフォルトの使い方。GPUが読み書きし、CPUからアクセス不可
+    bd.ByteWidth = sizeof(UINT) * 6;               // バッファのサイズ。6つのインデックス、各インデックスはUINT型
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;        // インデックスバッファとしてバインド
 
-    // 定义初始化数据结构，告诉D3D缓冲区初始化时使用哪个内存的数据
+    // 初期化データ構造体を定義し、D3Dにどのメモリを使うか教える
     D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = indices;                     // 指向索引数组的指针
+    initData.pSysMem = indices;                     // インデックス配列へのポインタ
 
-    // 创建索引缓冲区指针，初始值为空
+    // インデックスバッファへのポインタを初期化（nullptr）
     ID3D11Buffer* indexBuffer = nullptr;
 
-    // 调用设备接口，创建索引缓冲区
+    // デバイスインターフェースを呼び出してインデックスバッファを作成
     HRESULT hr = device->CreateBuffer(&bd, &initData, &indexBuffer);
     if (FAILED(hr))
     {
-        // 创建失败，返回nullptr，可以在调用处检测失败并处理
+        // 作成失敗時はnullptrを返す。呼び出し元で失敗を検出して処理可能
         return nullptr;
     }
 
-    // 创建成功，返回索引缓冲区指针
+    // 作成成功時はインデックスバッファのポインタを返す
     return indexBuffer;
 }
-

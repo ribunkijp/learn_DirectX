@@ -1,7 +1,10 @@
-/*
+/**********************************************************************************
     shader.hlsl
 
-*/
+                                                                LI WENHUI
+                                                                2025/06/30
+
+**********************************************************************************/
 
 cbuffer ConstantBuffer : register(b0)
 {
@@ -11,36 +14,36 @@ cbuffer ConstantBuffer : register(b0)
     
     float2 texOffset;
     float2 texScale;
-    float2 padding; // 保持16字节对齐
-    
+    float2 padding; // 16バイトアライメントを保持するため
 };
-// 声明一个纹理对象 (Texture2D) 和一个采样器 (SamplerState)
-// register(t0) 表示将纹理绑定到寄存器 t0
-// register(s0) 表示将采样器绑定到寄存器 s0
+// テクスチャオブジェクト (Texture2D) とサンプラー (SamplerState) を宣言
+// register(t0) はテクスチャをレジスタ t0 にバインドすることを意味する
+// register(s0) はサンプラーをレジスタ s0 にバインドすることを意味する
 Texture2D shaderTexture : register(t0);
 SamplerState SamplerClamp : register(s0);
 
-//顶点着色器输入结构 VS_INPUT
+// 頂点シェーダーの入力構造体 VS_INPUT
 struct VS_INPUT
 {
     float3 pos : POSITION; // スクリーン座標（ピクセル）
     float4 col : COLOR;
-    float2 tex : TEXCOORD; // 纹理坐标输入
+    float2 tex : TEXCOORD; // テクスチャ座標入力
 };
 
-// 这个结构体是从顶点着色器传递到像素着色器的数据，其中的纹理坐标会被自动插值
+// この構造体は頂点シェーダーからピクセルシェーダーに渡すデータで、
+// 中のテクスチャ座標は自動で補間される
 struct PS_INPUT
 {
     float4 pos : SV_POSITION;
     float4 col : COLOR;
-    float2 tex : TEXCOORD; // 纹理坐标输出
+    float2 tex : TEXCOORD; // テクスチャ座標出力
 };
-//顶点着色器主函数 VSMain
+// 頂点シェーダーのメイン関数 VSMain
 PS_INPUT VSMain(VS_INPUT input)
 {
     PS_INPUT output;
 
-    //把 3D 的 pos 转成 4D float4 是为了乘以 4x4 矩阵
+    // 3Dのposを4Dのfloat4に変換するのは、4x4行列を掛けるため
     float4 localPos = float4(input.pos, 1.0f);
     
     //
@@ -50,7 +53,7 @@ PS_INPUT VSMain(VS_INPUT input)
 
     output.pos = projPos;
     
-    output.col = input.col;//将顶点颜色传递给像素着色器
+    output.col = input.col; // 頂点カラーをピクセルシェーダーへ渡す
     output.tex = input.tex * texScale + texOffset;
     //
     return output;
@@ -59,17 +62,17 @@ PS_INPUT VSMain(VS_INPUT input)
 float4 PSMain(PS_INPUT input) : SV_TARGET
 {
     
-     // 使用采样器和插值后的纹理坐标从纹理中采样颜色
+     // サンプラーと補間後のテクスチャ座標を使ってテクスチャから色をサンプリング
     float4 textureColor = shaderTexture.Sample(SamplerClamp, input.tex);
 
-    // 只使用纹理颜色：
+    // テクスチャの色だけを使う：
     return textureColor;
     
-     //直接输出从顶点着色器传过来的颜色, 每个像素的颜色就是顶点插值得来的颜色。
+     // 頂点シェーダーから渡された色をそのまま出力する場合。各ピクセルの色は頂点から補間されたものになる。
     //return input.col;
     
 
-    // 纹理颜色与顶点颜色相乘（实现纹理的颜色着色）：
+    // テクスチャカラーと頂点カラーを掛け合わせる（テクスチャの色付けを実現）：
     // return textureColor * input.col;
     
    

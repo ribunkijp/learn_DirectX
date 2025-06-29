@@ -1,7 +1,10 @@
-/*
+/**********************************************************************************
     GameObject.h
 
-*/
+                                                                LI WENHUI
+                                                                2025/06/30
+
+**********************************************************************************/
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
@@ -10,13 +13,15 @@
 #include <string>
 
 //
+// 頂点構造体
 struct Vertex {
     DirectX::XMFLOAT3 position;  // 位置
-    DirectX::XMFLOAT4 color;     // 颜色
-    DirectX::XMFLOAT2 texCoord;  // 纹理坐标 (U, V)
+    DirectX::XMFLOAT4 color;     // 色
+    DirectX::XMFLOAT2 texCoord;  // テクスチャ座標 (U, V)
 };
 
 
+// 定数バッファ構造体
 struct ConstantBuffer {
     DirectX::XMMATRIX model;
     DirectX::XMMATRIX view;
@@ -31,15 +36,14 @@ public:
     GameObject();
     ~GameObject();
 
-
     bool Load(
-        ID3D11Device* device, 
+        ID3D11Device* device,
         const std::wstring& texturePath,
         float left, float top, float right, float bottom,
-        bool animated, 
-        int totalFrames, 
-        int columns, 
-        int rows, 
+        bool animated,
+        int totalFrames,
+        int columns,
+        int rows,
         float fps);
 
     void Update(float deltaTime);
@@ -52,23 +56,19 @@ public:
 
     void Release();
 
-    
-
     float textureWidth = 0.0f;
     float textureHeight = 0.0f;
 
-
 private:
-    
     void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom);
-    
-    // GPU 资源
+
+    // GPUリソース
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
     ID3D11Buffer* constantBuffer;
     ID3D11ShaderResourceView* textureSRV;
 
-    // 动画控制
+    // アニメーション制御
     float texOffset[2];
     float texScale[2];
     float fps;
@@ -79,7 +79,7 @@ private:
     int rows;
     bool isAnimated;
 
-    // 渲染
+    // 描画
     UINT indexCount;
 
     // 
