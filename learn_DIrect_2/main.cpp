@@ -120,7 +120,7 @@ int WINAPI wWinMain(
     HWND hwnd = CreateWindowEx(
         0,                              // 可选窗口样式
         CLASS_NAME,                     // 窗口类名
-        L"ホラーランキング",                    // 窗口标题（L 表示 UTF-16 字符串）
+        L"ホラーランニング",                    // 窗口标题（L 表示 UTF-16 字符串）
         C_WND_STYLE,            // 窗口样式
 
         // 位置和大小
