@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\robot_run.dds" />
-    <Image Include="assets\bg.dds" />
     <Image Include="assets\kodomo_run.dds" />
     <Image Include="assets\yoko_run.dds" />
     <Image Include="assets\kaiten_run.dds" />
