@@ -191,27 +191,3 @@ void GameObject::Render(ID3D11DeviceContext* context) {
     //
     context->DrawIndexed(indexCount, 0, 0);
 }
-void GameObject::Render(ID3D11DeviceContext* context, float x, float y, const DirectX::XMMATRIX& view,
-    const DirectX::XMMATRIX& projection) {
-
-    //
-    modelMatrix = DirectX::XMMatrixTranslation(x, y, 0.0f);
-    UpdateConstantBuffer(context, view, projection);
-
-    // 頂点バッファのストライド（stride）を更新
-    // Vertex構造体のサイズと一致させること
-    UINT stride = sizeof(Vertex);
-    // offset（オフセット）：頂点バッファの先頭から何バイト目からデータを読むか。ここは0で、バッファの先頭から読む
-    UINT offset = 0;
-    // 頂点バッファを設定
-    context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-    // インデックスバッファを設定。各インデックスは32ビットの符号なし整数
-    context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    // HLSLのPSMainでcbuffer ConstantBufferを使う際にセット
-    context->VSSetConstantBuffers(0, 1, &constantBuffer);
-    // PSSetShaderResources（開始スロット、ビュー数、SRV配列ポインタ）
-    // t0レジスタがスロット0に対応
-    context->PSSetShaderResources(0, 1, &textureSRV);
-    //
-    context->DrawIndexed(indexCount, 0, 0);
-}

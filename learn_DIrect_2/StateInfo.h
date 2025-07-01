@@ -70,9 +70,6 @@ struct StateInfo {
     float playerY = 900.0f;
     float playerSpeed = 300.0f; // 移動速度、ピクセル/秒
 
-    // 背景
-    std::unique_ptr<GameObject> bg;
-    float bgOffsetX = 0.0f;
 
     //
     GameObject* playerPtr = nullptr;

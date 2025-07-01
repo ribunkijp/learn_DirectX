@@ -66,9 +66,7 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
     pState->context->PSSetSamplers(0, 1, &pState->samplerState);
 
 
-    pState->bg->Render(pState->context, pState->bgOffsetX, 0.0f, pState->view, pState->projection);
-    pState->bg->Render(pState->context, pState->bgOffsetX + 1888.0f, 0.0f, pState->view, pState->projection);
-
+  
     for (auto& obj : pState->sceneObjects)
     {
         obj->Render(pState->context);

@@ -1,23 +1,98 @@
-﻿  d3dApp.cpp
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+﻿  BufferUtils.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(91,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(96,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(71,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::playerSpeed' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(75,17): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::playerPtr' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+  d3dApp.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(91,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(96,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(71,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::playerSpeed' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(75,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::bgOffsetX' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(75,17): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::playerPtr' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(78,17): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::playerPtr' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  GameObject.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(91,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(96,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(71,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::playerSpeed' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
   
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(75,17): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::playerPtr' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+  main.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(91,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(96,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(71,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::playerSpeed' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(75,17): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::playerPtr' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(293,10): warning C4189: 'ret': ローカル変数が初期化されましたが、参照されていません
+  Render.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(91,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(96,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(71,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::playerSpeed' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(75,17): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::playerPtr' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+  TextureLoader.cpp
+C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
+  (ソース ファイル 'TextureLoader.cpp' をコンパイルしています)
+  
+  Timer.cpp
+  Update.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(91,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(96,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(71,11): warning C4820: 'StateInfo': '4' バイトのパディングを データ メンバー 'StateInfo::playerSpeed' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(75,17): warning C4820: 'StateInfo': '8' バイトのパディングを データ メンバー 'StateInfo::playerPtr' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+  コードを生成中...
+C:\code\learn_DirectX\learn_DIrect_2\TextureLoader.cpp(23,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\TextureLoader.cpp(23,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\TextureLoader.cpp(18) : 注: この行で比較を行ってインデックス 'hr' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\TextureLoader.cpp(23,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\TextureLoader.cpp(23) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(227,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(227,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(226) : 注: この行で比較を行ってインデックス 'height' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(227,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(227) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(163) : 注: この行で比較を行ってインデックス '' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

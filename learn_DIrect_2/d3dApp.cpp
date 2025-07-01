@@ -302,22 +302,11 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
-    state->bg = std::make_unique<GameObject>();
-    state->bg->SetPos(0.0f, -596.0f);
-    state->bg->Load(
-        state->device,
-        L"assets\\bg.dds",
-        1888.0f, 1258.0f,
-        false,
-        1,
-        1,
-        1,
-        1.0f);
 
     auto robot_run = std::make_unique<GameObject>();
 
     state->playerPtr = robot_run.get();
-    state->playerPtr->SetSpeed(150.0f);
+    state->playerPtr->SetSpeed(200.0f);
     state->playerPtr->SetPos(200.0f, 762.0f);
     robot_run->Load(
         state->device,
@@ -376,10 +365,6 @@ void CleanupD3D(StateInfo* state) {
 
     if (!state) return;
 
-    if (state->bg) {
-        state->bg->Release();  // 独自のリリース関数（D3Dバッファ・テクスチャ等解放）
-        state->bg.reset();     // unique_ptrの安全な解放（生ポインタならdelete）
-    }
 
     // 全リソースは使用前に解放しておくこと
     state->sceneObjects.clear(); // GameObjectデストラクタが呼ばれリソース解放

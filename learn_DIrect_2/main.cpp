@@ -40,7 +40,6 @@ inline StateInfo* GetAppState(HWND hwnd);
 
 void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd);
 
-void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed);
 
 
 // ウィンドウプロシージャ関数
@@ -153,7 +152,6 @@ int WINAPI wWinMain(
         timer.Tick();    // 毎フレーム呼び出す
         float deltaTime = timer.GetDeltaTime();  // 各フレーム経過時間
 
-       //UpdateBackground(pState, deltaTime, 200.0f);
 
         // 
         bool leftPressed = (GetAsyncKeyState('A') & 0x8000) != 0;
@@ -325,12 +323,6 @@ void GetScaledWindowSizeAndPosition(float logicalWidth, float logicalHeight,
     OutputDebugStringA(msg);*/
 }
 
-void UpdateBackground(StateInfo* pState, float deltaTime, float scrollSpeed) {
-    pState->bgOffsetX -= scrollSpeed * deltaTime;
-    if (pState->bgOffsetX <= -1888.0f) {
-        pState->bgOffsetX += 1888.0f;
-    }
-}
 
 /*
 +------------------+        +-----------------+        +------------------+
