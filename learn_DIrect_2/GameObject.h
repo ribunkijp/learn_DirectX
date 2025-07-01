@@ -51,7 +51,8 @@ public:
         const DirectX::XMMATRIX& view,
         const DirectX::XMMATRIX& projection);
 
-    void Render(ID3D11DeviceContext* context);
+    void Render(ID3D11DeviceContext* context, const DirectX::XMMATRIX& view,
+        const DirectX::XMMATRIX& projection);
 
     void Release();
 

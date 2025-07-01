@@ -72,7 +72,7 @@ struct StateInfo {
 
 
     //
-    GameObject* playerPtr = nullptr;
+    std::unique_ptr<GameObject> Player;
 };
 
 #endif

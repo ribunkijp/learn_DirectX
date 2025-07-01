@@ -65,11 +65,11 @@ void RenderFrame(HWND hwnd, StateInfo* pState) {
     // s0レジスタはスロット0に対応
     pState->context->PSSetSamplers(0, 1, &pState->samplerState);
 
-
+    pState->Player->Render(pState->context, pState->view, pState->projection);
   
     for (auto& obj : pState->sceneObjects)
     {
-        obj->Render(pState->context);
+        obj->Render(pState->context, pState->view, pState->projection);
     }
 
     // バックバッファ（描画が終わったバッファ）とフロントバッファ（画面に表示されているバッファ）を交換

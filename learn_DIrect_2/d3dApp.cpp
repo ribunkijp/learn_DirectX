@@ -302,13 +302,98 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
+    auto kaidan_01 = std::make_unique<GameObject>();
+    kaidan_01->SetPos(550.0f, 700.0f);
+    kaidan_01->Load(
+        state->device,
+        L"assets\\kaidan_01.dds",
+        272.0f, 84.0f,
+        false,
+        1,
+        1,
+        1,
+        0.0f
+    );
+    state->sceneObjects.push_back(std::move(kaidan_01));
 
-    auto robot_run = std::make_unique<GameObject>();
+    auto kaidan_02 = std::make_unique<GameObject>();
+    kaidan_02->SetPos(900.0f, 480.0f);
+    kaidan_02->Load(
+        state->device,
+        L"assets\\kaidan_01.dds",
+        272.0f, 84.0f,
+        false,
+        1,
+        1,
+        1,
+        0.0f
+    );
+    state->sceneObjects.push_back(std::move(kaidan_02));
 
-    state->playerPtr = robot_run.get();
-    state->playerPtr->SetSpeed(200.0f);
-    state->playerPtr->SetPos(200.0f, 762.0f);
-    robot_run->Load(
+
+    auto kaidan_03 = std::make_unique<GameObject>();
+    kaidan_03->SetPos(1300.0f, 450.0f);
+    kaidan_03->Load(
+        state->device,
+        L"assets\\kaidan_01.dds",
+        272.0f, 84.0f,
+        false,
+        1,
+        1,
+        1,
+        0.0f
+    );
+    state->sceneObjects.push_back(std::move(kaidan_03));
+
+
+    auto kaidan_04 = std::make_unique<GameObject>();
+    kaidan_04->SetPos(1600.0f, 200.0f);
+    kaidan_04->Load(
+        state->device,
+        L"assets\\kaidan_01.dds",
+        272.0f, 84.0f,
+        false,
+        1,
+        1,
+        1,
+        0.0f
+    );
+    state->sceneObjects.push_back(std::move(kaidan_04));
+
+
+    auto kaidan_05 = std::make_unique<GameObject>();
+    kaidan_05->SetPos(450.0f, 300.0f);
+    kaidan_05->Load(
+        state->device,
+        L"assets\\kaidan_01.dds",
+        272.0f, 84.0f,
+        false,
+        1,
+        1,
+        1,
+        0.0f
+    );
+    state->sceneObjects.push_back(std::move(kaidan_05));
+
+    auto kaidan_06 = std::make_unique<GameObject>();
+    kaidan_06->SetPos(150.0f, 100.0f);
+    kaidan_06->Load(
+        state->device,
+        L"assets\\kaidan_01.dds",
+        272.0f, 84.0f,
+        false,
+        1,
+        1,
+        1,
+        0.0f
+    );
+    state->sceneObjects.push_back(std::move(kaidan_06));
+
+
+    state->Player = std::make_unique<GameObject>();
+    state->Player->SetSpeed(200.0f);
+    state->Player->SetPos(200.0f, 762.0f);
+    state->Player->Load(
         state->device,
         L"assets\\robot_run.dds",
         200.0f, 200.0f,
@@ -316,9 +401,12 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         10,
         9,
         1,
-        24.0f);
+        24.0f
+    );
    
-    state->sceneObjects.push_back(std::move(robot_run));
+
+
+
 
    /* auto kodomo_run = std::make_unique<GameObject>();
     kodomo_run->Load(
@@ -329,32 +417,9 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         12,
         6,
         2,
-        24.0f);
-    state->sceneObjects.push_back(std::move(kodomo_run));
-
-    auto yoko_run = std::make_unique<GameObject>();
-    yoko_run->Load(
-        state->device,
-        L"assets\\yoko_run.dds",
-        800.0f, 600.0f, 990.0f, 895.0f,
-        true,
-        10,
-        5,
-        2,
-        24.0f);
-    state->sceneObjects.push_back(std::move(yoko_run));
-
-    auto kaiten_run = std::make_unique<GameObject>();
-    kaiten_run->Load(
-        state->device,
-        L"assets\\kaiten_run.dds",
-        1100.0f, 722.0f, 1310.0f, 962.0f,
-        true,
-        12,
-        6,
-        2,
-        24.0f);
-    state->sceneObjects.push_back(std::move(kaiten_run));*/
+        24.0f
+   );
+    state->sceneObjects.push_back(std::move(kodomo_run));*/
 
     return true; // 成功時はtrue
 }
@@ -365,6 +430,7 @@ void CleanupD3D(StateInfo* state) {
 
     if (!state) return;
 
+    state->Player.reset();
 
     // 全リソースは使用前に解放しておくこと
     state->sceneObjects.clear(); // GameObjectデストラクタが呼ばれリソース解放

@@ -173,7 +173,11 @@ void GameObject::UpdateConstantBuffer(ID3D11DeviceContext* context,
     }
 }
 
-void GameObject::Render(ID3D11DeviceContext* context) {
+void GameObject::Render(ID3D11DeviceContext* context, const DirectX::XMMATRIX& view,
+    const DirectX::XMMATRIX& projection) {
+    
+    UpdateConstantBuffer(context, view, projection);
+    
     // 頂点バッファのストライド（stride）を更新
     // Vertex構造体のサイズと一致させること
     UINT stride = sizeof(Vertex);

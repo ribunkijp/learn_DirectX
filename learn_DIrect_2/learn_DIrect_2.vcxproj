@@ -154,6 +154,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="assets\kaidan_01.dds" />
     <Image Include="assets\kaiten_run.dds" />
     <Image Include="assets\kodomo_run.dds" />
     <Image Include="assets\robot_run.dds" />

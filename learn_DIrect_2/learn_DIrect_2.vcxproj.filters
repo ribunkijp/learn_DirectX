@@ -48,6 +48,7 @@
     <Image Include="assets\kodomo_run.dds" />
     <Image Include="assets\yoko_run.dds" />
     <Image Include="assets\kaiten_run.dds" />
+    <Image Include="assets\kaidan_01.dds" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dApp.h">

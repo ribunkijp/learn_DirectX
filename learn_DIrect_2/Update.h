@@ -19,7 +19,7 @@
 void UpdateAllObjects(StateInfo* pState, float deltaTime);
 
 //
-void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed);
+void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed, bool topPressed, bool bottomPressed);
 
 //
 void UpdateCamera(StateInfo* state);
