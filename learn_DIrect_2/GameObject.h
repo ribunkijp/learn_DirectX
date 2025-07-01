@@ -39,7 +39,7 @@ public:
     bool Load(
         ID3D11Device* device,
         const std::wstring& texturePath,
-        float left, float top, float right, float bottom,
+        float width, float height,
         bool animated,
         int totalFrames,
         int columns,
@@ -61,18 +61,18 @@ public:
 
     
 
-    float GetPlayerPosX() const;
-    float GetPlayerPosY() const;
-    float GetPlayerW() const;
-    float GetPlayerH() const;
+    float GetPosX() const;
+    float GetPosY() const;
+    float GetW() const;
+    float GetH() const;
 
-    void SetPlayerPos(float x, float y);
+    void SetPos(float x, float y);
 
     float GetSpeed() const;
     void SetSpeed(float speed_new);
 
 private:
-    void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom);
+    void InitVertexData(ID3D11Device* device, float width, float height);
 
     // GPUリソース
     ID3D11Buffer* vertexBuffer;
@@ -91,8 +91,8 @@ private:
     int rows;
     bool isAnimated;
     float speed = 0.0f;
-    float playerW = 0.0f;
-    float playerH = 0.0f;
+    float objW = 0.0f;
+    float objH = 0.0f;
     // 描画
     UINT indexCount;
 

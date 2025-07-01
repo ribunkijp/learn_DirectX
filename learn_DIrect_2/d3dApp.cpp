@@ -303,10 +303,11 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     }
 
     state->bg = std::make_unique<GameObject>();
+    state->bg->SetPos(0.0f, -596.0f);
     state->bg->Load(
         state->device,
         L"assets\\bg.dds",
-        0.0f, -196.0f, 1888.0f, 1062.0f,
+        1888.0f, 1258.0f,
         false,
         1,
         1,
@@ -317,16 +318,17 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
     state->playerPtr = robot_run.get();
     state->playerPtr->SetSpeed(150.0f);
-    
+    state->playerPtr->SetPos(200.0f, 762.0f);
     robot_run->Load(
         state->device,
         L"assets\\robot_run.dds",
-        100.0f, 762.0f, 300.0f, 962.0f,
+        200.0f, 200.0f,
         true,
         10,
         9,
         1,
         24.0f);
+   
     state->sceneObjects.push_back(std::move(robot_run));
 
    /* auto kodomo_run = std::make_unique<GameObject>();

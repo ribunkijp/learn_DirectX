@@ -22,8 +22,8 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime) {
 void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed) {
     if (!state || !state->playerPtr) return;
 
-    float playerX = state->playerPtr->GetPlayerPosX();
-    float playerY = state->playerPtr->GetPlayerPosY();
+    float playerX = state->playerPtr->GetPosX();
+    float playerY = state->playerPtr->GetPosY();
 
     float speed = state->playerPtr->GetSpeed();
 
@@ -31,14 +31,14 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
     if (rightPressed) playerX += speed * deltaTime;
 
     // player 座標更新
-    state->playerPtr->SetPlayerPos(playerX, playerY);
+    state->playerPtr->SetPos(playerX, playerY);
 }
 
 void UpdateCamera(StateInfo* state) {
-    float playerX = state->playerPtr->GetPlayerPosX();
-    float playerY = state->playerPtr->GetPlayerPosY();
-    float playerW = state->playerPtr->GetPlayerW();
-    float playerH = state->playerPtr->GetPlayerH();
+    float playerX = state->playerPtr->GetPosX();
+    float playerY = state->playerPtr->GetPosY();
+    float playerW = state->playerPtr->GetW();
+    float playerH = state->playerPtr->GetH();
 
     float halfW = state->logicalWidth * 0.5f;
     float halfH = state->logicalHeight * 0.5f;

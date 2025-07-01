@@ -48,7 +48,7 @@ void GameObject::Release() {
 bool GameObject::Load(
     ID3D11Device* device,
     const std::wstring& texturePath,
-    float left, float top, float right, float bottom,
+    float width, float height,
     bool animated,
     int totalFrames_,
     int columns_,
@@ -56,7 +56,7 @@ bool GameObject::Load(
     float fps_
 ) {
 
-    InitVertexData(device, left, top, right, bottom);
+    InitVertexData(device, width ,height);
 
     isAnimated = animated;
     totalFrames = totalFrames_;
@@ -86,19 +86,19 @@ bool GameObject::Load(
     }
 
 
-    playerW = right - left;
-    playerH = bottom - top;
+    objW = width;
+    objH = height;
 
 
     return true;
 }
 
-void GameObject::InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom) {
+void GameObject::InitVertexData(ID3D11Device* device, float width, float height) {
     Vertex vertices[] = {
-       { { left,  top,    0.0f }, { 1, 1, 1, 1 }, { 0.0f, 0.0f } },
-        { { right, top,    0.0f }, { 1, 1, 1, 1 }, { 1.0f, 0.0f } },
-        { { right, bottom, 0.0f }, { 1, 1, 1, 1 }, { 1.0f, 1.0f } },
-        { { left,  bottom, 0.0f }, { 1, 1, 1, 1 }, { 0.0f, 1.0f } }
+        { { 0.0f,  0.0f,    0.0f }, { 1, 1, 1, 1 }, { 0.0f, 0.0f } },
+        { { width, 0.0f,    0.0f }, { 1, 1, 1, 1 }, { 1.0f, 0.0f } },
+        { { width, height, 0.0f }, { 1, 1, 1, 1 }, { 1.0f, 1.0f } },
+        { { 0.0f,  height, 0.0f }, { 1, 1, 1, 1 }, { 0.0f, 1.0f } }
     };
     vertexBuffer = CreateQuadVertexBuffer(device, vertices, 4);
     indexBuffer = CreateQuadIndexBuffer(device);
@@ -106,21 +106,21 @@ void GameObject::InitVertexData(ID3D11Device* device, float left, float top, flo
 }
 
 
-float GameObject::GetPlayerPosX() const {
+float GameObject::GetPosX() const {
     return modelMatrix.r[3].m128_f32[0];// x
 }
-float GameObject::GetPlayerPosY() const {
+float GameObject::GetPosY() const {
     return modelMatrix.r[3].m128_f32[1];// y
 }
 
-float GameObject::GetPlayerW() const {
-    return playerW;
+float GameObject::GetW() const {
+    return objW;
 }
-float GameObject::GetPlayerH() const {
-    return playerH;
+float GameObject::GetH() const {
+    return objH;
 }
 
-void GameObject::SetPlayerPos(float x, float y) {
+void GameObject::SetPos(float x, float y) {
     modelMatrix = DirectX::XMMatrixTranslation(x, y, 0.0f);
 }
 
