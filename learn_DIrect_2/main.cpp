@@ -153,13 +153,21 @@ int WINAPI wWinMain(
         timer.Tick();    // 毎フレーム呼び出す
         float deltaTime = timer.GetDeltaTime();  // 各フレーム経過時間
 
-        UpdateBackground(pState, deltaTime, 200.0f);
+       //UpdateBackground(pState, deltaTime, 200.0f);
+
+        // 
+        bool leftPressed = (GetAsyncKeyState('A') & 0x8000) != 0;
+        bool rightPressed = (GetAsyncKeyState('D') & 0x8000) != 0;
+
+        // 传给 UpdatePlayer
+        UpdatePlayer(pState, deltaTime, leftPressed, rightPressed);
 
         // 全オブジェクトのアニメーション・定数バッファを更新
         UpdateAllObjects(pState, deltaTime);
 
-        // ビューポート更新
-        UpdateViewport(pState->context, hwnd);
+        //
+        UpdateCamera(pState);
+
 
         // メッセージがなければ、各フレームをレンダリング
         RenderFrame(hwnd, pState);
@@ -211,6 +219,10 @@ LRESULT CALLBACK WindowProc(
         //
         pState = GetAppState(hwnd);
         if (pState) {
+
+            // ビューポート更新
+            UpdateViewport(pState->context, hwnd);
+
             UINT width = LOWORD(lParam);
             UINT height = HIWORD(lParam);
             if (width > 0 && height > 0) {
@@ -237,6 +249,10 @@ inline StateInfo* GetAppState(HWND hwnd)
 //
 void UpdateViewport(ID3D11DeviceContext* context, HWND hwnd)
 {
+    if (!context) {
+        OutputDebugStringA("UpdateViewport: context is nullptr!\n");
+        return;
+    }
     RECT rect;
     GetClientRect(hwnd, &rect);
     float width = static_cast<float>(rect.right - rect.left);

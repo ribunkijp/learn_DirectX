@@ -5,7 +5,6 @@
                                                                 2025/06/30
 
 **********************************************************************************/
-#include <windows.h>
 
 #include "GameObject.h"
 #include "BufferUtils.h"
@@ -86,6 +85,11 @@ bool GameObject::Load(
         texScale[1] = 1.0f;
     }
 
+
+    playerW = right - left;
+    playerH = bottom - top;
+
+
     return true;
 }
 
@@ -100,6 +104,34 @@ void GameObject::InitVertexData(ID3D11Device* device, float left, float top, flo
     indexBuffer = CreateQuadIndexBuffer(device);
     indexCount = 6;
 }
+
+
+float GameObject::GetPlayerPosX() const {
+    return modelMatrix.r[3].m128_f32[0];// x
+}
+float GameObject::GetPlayerPosY() const {
+    return modelMatrix.r[3].m128_f32[1];// y
+}
+
+float GameObject::GetPlayerW() const {
+    return playerW;
+}
+float GameObject::GetPlayerH() const {
+    return playerH;
+}
+
+void GameObject::SetPlayerPos(float x, float y) {
+    modelMatrix = DirectX::XMMatrixTranslation(x, y, 0.0f);
+}
+
+float GameObject::GetSpeed() const {
+    return speed;
+}
+
+void GameObject::SetSpeed(float speed_new) {
+    speed = speed_new;
+}
+
 
 void GameObject::Update(float deltaTime) {
     if (!isAnimated) return;

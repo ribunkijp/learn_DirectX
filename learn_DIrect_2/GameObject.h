@@ -59,6 +59,18 @@ public:
     float textureWidth = 0.0f;
     float textureHeight = 0.0f;
 
+    
+
+    float GetPlayerPosX() const;
+    float GetPlayerPosY() const;
+    float GetPlayerW() const;
+    float GetPlayerH() const;
+
+    void SetPlayerPos(float x, float y);
+
+    float GetSpeed() const;
+    void SetSpeed(float speed_new);
+
 private:
     void InitVertexData(ID3D11Device* device, float left, float top, float right, float bottom);
 
@@ -78,7 +90,9 @@ private:
     int columns;
     int rows;
     bool isAnimated;
-
+    float speed = 0.0f;
+    float playerW = 0.0f;
+    float playerH = 0.0f;
     // 描画
     UINT indexCount;
 

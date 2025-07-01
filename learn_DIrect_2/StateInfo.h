@@ -73,6 +73,9 @@ struct StateInfo {
     // 背景
     std::unique_ptr<GameObject> bg;
     float bgOffsetX = 0.0f;
+
+    //
+    GameObject* playerPtr = nullptr;
 };
 
 #endif

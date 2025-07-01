@@ -314,6 +314,10 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         1.0f);
 
     auto robot_run = std::make_unique<GameObject>();
+
+    state->playerPtr = robot_run.get();
+    state->playerPtr->SetSpeed(150.0f);
+    
     robot_run->Load(
         state->device,
         L"assets\\robot_run.dds",
@@ -325,7 +329,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         24.0f);
     state->sceneObjects.push_back(std::move(robot_run));
 
-    auto kodomo_run = std::make_unique<GameObject>();
+   /* auto kodomo_run = std::make_unique<GameObject>();
     kodomo_run->Load(
         state->device,
         L"assets\\kodomo_run.dds",
@@ -359,7 +363,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         6,
         2,
         24.0f);
-    state->sceneObjects.push_back(std::move(kaiten_run));
+    state->sceneObjects.push_back(std::move(kaiten_run));*/
 
     return true; // 成功時はtrue
 }
