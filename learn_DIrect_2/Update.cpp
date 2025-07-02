@@ -60,30 +60,34 @@ void UpdateCamera(StateInfo* state) {
     float halfW = state->logicalWidth * 0.5f;
     float halfH = state->logicalHeight * 0.5f;
 
+    float PlayerCenterX = PlayerX + PlayerW * 0.5;
+    float PlayerCenterY = PlayerY + PlayerH * 0.5;
 
-   
-    
+    //dead zone
+    float deadZoneH = 300.0f;
+    float deadZoneTop = PlayerY - deadZoneH * 0.5;
+    float deadZoneBottom = PlayerY + deadZoneH * 0.5;
+
+    float targetCameraY = state->cameraY;
+
+    if (PlayerCenterY < deadZoneTop) {
+        targetCameraY -= (deadZoneTop - PlayerCenterY);
+    }
+    else if (PlayerCenterY > deadZoneBottom) {
+        targetCameraY += (PlayerCenterY - deadZoneBottom);
+    }
+
+
+   //
+    state->cameraY = (targetCameraY - state->cameraY) * 0.15f;
     
     
     state->cameraX = PlayerX + PlayerW * 0.5f - halfW;
-    state->cameraY = PlayerY + PlayerH * 0.5 - halfH;
-    //state->cameraY = 0.0f;
 
-    /*char buf[128];
-    sprintf_s(buf, "cameraX: %.2f, cameraY: %.2f\n", state->cameraX, state->cameraY);
-    OutputDebugStringA(buf);*/
 
     if (state->cameraX < 0.0f) state->cameraX = 0.0f;
     if (state->cameraY < 0.0f) state->cameraY = 0.0f;
-    
-
-
-   /* char buf[256];
-    sprintf_s(buf, "targetCameraY: %.2f, deadZoneTop: %.2f, deadZoneBottom: %.2f, PlayerCenterY: %.2f\n",
-        targetCameraY, deadZoneTop, deadZoneBottom, PlayerCenterY);
-    OutputDebugStringA(buf)*/;
-
-
+   
 
     state->view = DirectX::XMMatrixTranslation(-state->cameraX, -state->cameraY, 0.0f);
 }

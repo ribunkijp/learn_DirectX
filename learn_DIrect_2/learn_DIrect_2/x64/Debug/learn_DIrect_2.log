@@ -20,7 +20,12 @@ C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInf
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
   (ソース ファイル 'Update.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(69,46): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(63,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(64,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(68,23): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(69,26): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(61,11): warning C4189: 'halfH': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(63,11): warning C4189: 'PlayerCenterX': ローカル変数が初期化されましたが、参照されていません
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(44,1): warning C5045: /Qspectre スイッチが 
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(44,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(43) : 注: この行で比較を行ってインデックス '' の範囲を確認します
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(44,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(50) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
