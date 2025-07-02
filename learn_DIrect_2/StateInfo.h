@@ -65,14 +65,16 @@ struct StateInfo {
     // カメラ
     float cameraX = 0.0f;
     float cameraY = 0.0f;
-    // プレイヤー
-    float playerX = 200.0f;  // キャラクターの初期ワールド座標
-    float playerY = 900.0f;
-    float playerSpeed = 300.0f; // 移動速度、ピクセル/秒
-
-
     //
     std::unique_ptr<GameObject> Player;
+
+    //
+    float playerVelocityY = 0.0f;
+    bool isOnGround = true;
+    const float gravity = 2000.0f;         
+    const float jumpVelocity = -900.0f; 
+    const float groundY = 862.0f;
+
 };
 
 #endif

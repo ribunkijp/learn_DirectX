@@ -7,6 +7,7 @@
 **********************************************************************************/
 
 #include "Update.h"
+#include <Windows.h>
 
 void UpdateAllObjects(StateInfo* pState, float deltaTime) {
 
@@ -18,48 +19,69 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime) {
     }
 }
 
-void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed, bool topPressed, bool bottomPressed) {
+void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed, bool topPressed, bool bottomPressed, bool spacePressed) {
     if (!state || !state->Player) return;
 
-    float playerX = state->Player->GetPosX();
-    float playerY = state->Player->GetPosY();
+    float PlayerX = state->Player->GetPosX();
+    float PlayerY = state->Player->GetPosY();
+    float PlayerH = state->Player->GetH();
 
     float speed = state->Player->GetSpeed();
 
-    if (leftPressed)  playerX -= speed * deltaTime;
-    if (rightPressed) playerX += speed * deltaTime;
-    if (topPressed)  playerY -= speed * deltaTime;
-    if (bottomPressed) playerY += speed * deltaTime;
+    if (leftPressed)  PlayerX -= speed * deltaTime;
+    if (rightPressed) PlayerX += speed * deltaTime;
+    if (topPressed)  PlayerY -= speed * deltaTime;
+    if (bottomPressed) PlayerY += speed * deltaTime;
+    if (spacePressed && state->isOnGround) {
+        state->playerVelocityY = state->jumpVelocity;
+        state->isOnGround = false;
+    }
+    state->playerVelocityY += state->gravity * deltaTime;
+
+    PlayerY += state->playerVelocityY * deltaTime;
+
+    if ((PlayerY + PlayerH) > state->groundY) {
+        PlayerY = state->groundY - PlayerH;
+        state->playerVelocityY = 0.0;
+        state->isOnGround = true;
+    }
 
     // player 座標更新
-    state->Player->SetPos(playerX, playerY);
+    state->Player->SetPos(PlayerX, PlayerY);
+
 }
 
 void UpdateCamera(StateInfo* state) {
-    float playerX = state->Player->GetPosX();
-    float playerY = state->Player->GetPosY();
-    float playerW = state->Player->GetW();
-    float playerH = state->Player->GetH();
+    float PlayerX = state->Player->GetPosX();
+    float PlayerY = state->Player->GetPosY();
+    float PlayerW = state->Player->GetW();
+    float PlayerH = state->Player->GetH();
 
     float halfW = state->logicalWidth * 0.5f;
     float halfH = state->logicalHeight * 0.5f;
 
-    float deadZoneH = state->logicalHeight * 0.4;
-    float deadZoneTop = state->cameraY + halfH - deadZoneH * 0.5;
-    float deadZoneBottom = state->cameraY + halfH + deadZoneH * 0.5;
 
-    float playerCenterY = playerY + playerH * 0.5f;
-    if (playerCenterY < deadZoneTop) {
-        state->cameraY -= (deadZoneTop - playerCenterY);
-    }
-    else if (playerCenterY > deadZoneBottom) {
-        state->cameraY += (playerCenterY - deadZoneBottom);
-    }
+   
+    
+    
+    
+    state->cameraX = PlayerX + PlayerW * 0.5f - halfW;
+    state->cameraY = PlayerY + PlayerH * 0.5 - halfH;
+    //state->cameraY = 0.0f;
 
-    state->cameraX = playerX + playerW * 0.5f - halfW;
+    /*char buf[128];
+    sprintf_s(buf, "cameraX: %.2f, cameraY: %.2f\n", state->cameraX, state->cameraY);
+    OutputDebugStringA(buf);*/
+
     if (state->cameraX < 0.0f) state->cameraX = 0.0f;
     if (state->cameraY < 0.0f) state->cameraY = 0.0f;
+    
 
+
+   /* char buf[256];
+    sprintf_s(buf, "targetCameraY: %.2f, deadZoneTop: %.2f, deadZoneBottom: %.2f, PlayerCenterY: %.2f\n",
+        targetCameraY, deadZoneTop, deadZoneBottom, PlayerCenterY);
+    OutputDebugStringA(buf)*/;
 
 
 

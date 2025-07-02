@@ -158,15 +158,16 @@ int WINAPI wWinMain(
         bool rightPressed = (GetAsyncKeyState('D') & 0x8000) != 0;
         bool topPressed = (GetAsyncKeyState('W') & 0x8000) != 0;
         bool bottomPressed = (GetAsyncKeyState('S') & 0x8000) != 0;
+        bool spacePressed = (GetAsyncKeyState(VK_SPACE) & 0x8000) != 0;
 
         // 传给 UpdatePlayer
-        UpdatePlayer(pState, deltaTime, leftPressed, rightPressed, topPressed, bottomPressed);
+        UpdatePlayer(pState, deltaTime, leftPressed, rightPressed, topPressed, bottomPressed, spacePressed);
 
         // 全オブジェクトのアニメーション・定数バッファを更新
         UpdateAllObjects(pState, deltaTime);
 
         //
-        UpdateCamera(pState);
+        //UpdateCamera(pState);
 
 
         // メッセージがなければ、各フレームをレンダリング
