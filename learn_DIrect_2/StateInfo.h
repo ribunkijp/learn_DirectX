@@ -72,9 +72,17 @@ struct StateInfo {
     float playerVelocityY = 0.0f;
     bool isOnGround = true;
     const float gravity = 2000.0f;         
-    const float jumpVelocity = -900.0f; 
-    const float groundY = 862.0f;
+    const float jumpVelocity = -600.0f; 
+    const float groundY = 962.0f;
 
+    //
+    bool lastSpacePressed = false;
+    float jumpHoldTime = 0.0f;
+    const float maxJumpHoldTime = 0.3f;
+    bool isJumping = false;
+
+    //
+    float targetCameraY = 0.0f;
 };
 
 #endif

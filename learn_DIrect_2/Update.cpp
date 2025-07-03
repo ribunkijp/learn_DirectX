@@ -32,11 +32,31 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
     if (rightPressed) PlayerX += speed * deltaTime;
     if (topPressed)  PlayerY -= speed * deltaTime;
     if (bottomPressed) PlayerY += speed * deltaTime;
-    if (spacePressed && state->isOnGround) {
+    if (spacePressed && state->isOnGround && !state->lastSpacePressed) {
         state->playerVelocityY = state->jumpVelocity;
         state->isOnGround = false;
+        state->isJumping = true;
+        state->jumpHoldTime = 0.0f;
     }
-    state->playerVelocityY += state->gravity * deltaTime;
+    if (spacePressed && state->isJumping && state->jumpHoldTime < state->maxJumpHoldTime) {
+        state->playerVelocityY = state->jumpVelocity;
+        state->jumpHoldTime += deltaTime;
+    }
+    else {
+        state->isJumping = false;
+    }
+
+
+    if (!state->isOnGround) {
+
+        if (!spacePressed && state->playerVelocityY < 0) {
+            state->playerVelocityY += state->gravity * 2.5f * deltaTime;
+        }
+        else if (!state->isJumping) {
+            state->playerVelocityY += state->gravity * deltaTime;
+        }
+    }
+    
 
     PlayerY += state->playerVelocityY * deltaTime;
 
@@ -45,6 +65,8 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
         state->playerVelocityY = 0.0;
         state->isOnGround = true;
     }
+    //
+    state->lastSpacePressed = spacePressed;
 
     // player 座標更新
     state->Player->SetPos(PlayerX, PlayerY);
@@ -63,30 +85,34 @@ void UpdateCamera(StateInfo* state) {
     float PlayerCenterX = PlayerX + PlayerW * 0.5;
     float PlayerCenterY = PlayerY + PlayerH * 0.5;
 
-    //dead zone
-    float deadZoneH = 300.0f;
-    float deadZoneTop = PlayerY - deadZoneH * 0.5;
-    float deadZoneBottom = PlayerY + deadZoneH * 0.5;
+   
 
-    float targetCameraY = state->cameraY;
-
-    if (PlayerCenterY < deadZoneTop) {
-        targetCameraY -= (deadZoneTop - PlayerCenterY);
-    }
-    else if (PlayerCenterY > deadZoneBottom) {
-        targetCameraY += (PlayerCenterY - deadZoneBottom);
-    }
-
-
-   //
-    state->cameraY = (targetCameraY - state->cameraY) * 0.15f;
     
+
+    // 
+    if (PlayerY < halfH) {
+        state->targetCameraY = PlayerY - halfH;
+    }
+ 
+
+    // cameraY 平滑插值
+    state->cameraY += (state->targetCameraY - state->cameraY) * 0.15f;
     
     state->cameraX = PlayerX + PlayerW * 0.5f - halfW;
 
 
+
     if (state->cameraX < 0.0f) state->cameraX = 0.0f;
-    if (state->cameraY < 0.0f) state->cameraY = 0.0f;
+    if (state->cameraY > 0.0f) state->cameraY = 0.0f;
+
+
+    //// 构造输出字符串
+    char buf[256];
+    sprintf_s(buf, " targetCameraY= %.2f, cameraY = %.2f、　PlayerY = %.2f\n",
+        state->targetCameraY, state->cameraY, PlayerY);
+
+    //// 输出到调试窗口
+    OutputDebugStringA(buf);
    
 
     state->view = DirectX::XMMatrixTranslation(-state->cameraX, -state->cameraY, 0.0f);
