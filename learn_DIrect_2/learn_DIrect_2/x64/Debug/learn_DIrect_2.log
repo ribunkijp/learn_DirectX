@@ -1,17 +1,125 @@
-﻿  d3dApp.cpp
+﻿  BufferUtils.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(77,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(83,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(86,10): warning C4820: 'StateInfo': '7' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
+  (ソース ファイル 'BufferUtils.cpp' をコンパイルしています)
+  
+  GameObject.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(77,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(83,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(86,10): warning C4820: 'StateInfo': '7' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+C:\code\DirectXTex\DirectXTex\DirectXTex.h(434,21): warning C4820: 'DirectX::Image': '4' バイトのパディングを データ メンバー 'DirectX::Image::format' の後に追加しました。
+  (ソース ファイル 'GameObject.cpp' をコンパイルしています)
+  
+  Render.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(77,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(83,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(86,10): warning C4820: 'StateInfo': '7' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
+  (ソース ファイル 'Render.cpp' をコンパイルしています)
+  
+  Update.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(77,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(83,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(86,10): warning C4820: 'StateInfo': '7' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(108,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(109,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(109,11): warning C4189: 'PlayerCenterY': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(108,11): warning C4189: 'PlayerCenterX': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(151,11): warning C4189: 'playerTop': ローカル変数が初期化されましたが、参照されていません
+  d3dApp.cpp
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(73,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(77,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(79,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(83,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(82,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(86,10): warning C4820: 'StateInfo': '7' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
@@ -23,4 +131,37 @@ C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInf
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
+  main.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(77,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(83,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(86,10): warning C4820: 'StateInfo': '7' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(294,10): warning C4189: 'ret': ローカル変数が初期化されましたが、参照されていません
+  コードを生成中...
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(228,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(228,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(227) : 注: この行で比較を行ってインデックス 'height' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\main.cpp(228,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\main.cpp(228) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172,1): warning C5045: /Qspectre スイッチが 
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(163) : 注: この行で比較を行ってインデックス '' の範囲を確認します
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\GameObject.cpp(172) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

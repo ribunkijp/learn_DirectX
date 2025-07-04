@@ -65,6 +65,10 @@ struct StateInfo {
     // カメラ
     float cameraX = 0.0f;
     float cameraY = 0.0f;
+    float cameraVelocityX = 0.0f;
+    float cameraVelocityY = 0.0f;
+    float targetCameraX = 0.0f;
+    float targetCameraY = 0.0f;
     //
     std::unique_ptr<GameObject> Player;
 
@@ -81,8 +85,7 @@ struct StateInfo {
     const float maxJumpHoldTime = 0.3f;
     bool isJumping = false;
 
-    //
-    float targetCameraY = 0.0f;
+    
 };
 
 #endif

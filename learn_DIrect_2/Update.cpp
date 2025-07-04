@@ -10,6 +10,14 @@
 #include <Windows.h>
 #include <cmath>
 
+float SmoothDamp(
+    float current,
+    float target,
+    float& velocity,
+    float smoothTime,
+    float deltaTime
+);
+
 void UpdateAllObjects(StateInfo* pState, float deltaTime) {
 
     pState->Player->Update(deltaTime);
@@ -88,7 +96,7 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 
 }
 
-void UpdateCamera(StateInfo* state) {
+void UpdateCamera(StateInfo* state, float deltaTime) {
     float playerX = state->Player->GetPosX();
     float playerY = state->Player->GetPosY();
     float playerW = state->Player->GetW();
@@ -110,11 +118,23 @@ void UpdateCamera(StateInfo* state) {
     }
  
 
-    // cameraY 平滑插值
-    state->cameraY += (state->targetCameraY - state->cameraY) * 0.15f;
+    // 
+    state->cameraY = SmoothDamp(
+        state->cameraY,
+        state->targetCameraY,
+        state->cameraVelocityY,
+        0.25f,
+        deltaTime
+    );
     
-    state->cameraX = playerX + playerW * 0.5f - halfW;
-
+    state->targetCameraX =  playerX + playerW * 0.5f - halfW;
+    state->cameraX = SmoothDamp(
+        state->cameraX,
+        state->targetCameraX,
+        state->cameraVelocityX,
+        0.25f,
+        deltaTime
+    );
 
 
     if (state->cameraX < 0.0f) state->cameraX = 0.0f;
@@ -160,4 +180,24 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     return false;
 
 
+}
+
+
+
+float SmoothDamp(
+    float current,       
+    float target,       
+    float& velocity,     
+    float smoothTime,    
+    float deltaTime      
+) {
+    float omega = 2.0f / smoothTime;
+    float x = omega * deltaTime;
+    float exp = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+
+    float change = current - target;
+    float temp = (velocity + omega * change) * deltaTime;
+    velocity = (velocity - omega * temp) * exp;
+
+    return target + (change + temp) * exp;
 }

@@ -165,7 +165,7 @@ int WINAPI wWinMain(
         UpdateAllObjects(pState, deltaTime);
 
         //
-        UpdateCamera(pState);
+        UpdateCamera(pState, deltaTime);
 
 
         // メッセージがなければ、各フレームをレンダリング
