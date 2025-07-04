@@ -302,6 +302,21 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
+
+    auto ground = std::make_unique<GameObject>();
+    ground->SetPos(0.0f, 962.0f);
+    ground->Load(
+        state->device,
+        L"assets\\kaidan_01.dds",
+        4000.0f, 50.0f,
+        false,
+        1,
+        1,
+        1,
+        0.0f
+    );
+    state->sceneObjects.push_back(std::move(ground));
+
     auto kaidan_01 = std::make_unique<GameObject>();
     kaidan_01->SetPos(550.0f, 700.0f);
     kaidan_01->Load(

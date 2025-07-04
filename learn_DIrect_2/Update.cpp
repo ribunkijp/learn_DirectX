@@ -39,7 +39,7 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 
 
 
-    bool landed = checkPlatformCollision(state, playerY, playerX, playerH, playerW, deltaTime, state->playerVelocityY, state->isOnGround);
+    bool landed = checkPlatformCollision(state, playerY, playerX, playerH, playerW, deltaTime, state->playerVelocityY);
 
     if (landed) {
         state->isOnGround = true;
@@ -142,7 +142,7 @@ void UpdateCamera(StateInfo* state) {
     state->view = DirectX::XMMatrixTranslation(-state->cameraX, -state->cameraY, 0.0f);
 }
 
-bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, float playerH, float playerW, float deltaTime, float& playerVelocityY, bool& isOnGround) {
+bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, float playerH, float playerW, float deltaTime, float& playerVelocityY) {
     float nextPlayerY = playerY + playerVelocityY * deltaTime;
     float playerBottom = nextPlayerY + playerH;
     float playerTop = nextPlayerY;
@@ -154,10 +154,9 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
 
         bool aligned = playerX + playerW * 0.5 > platformX && playerX + playerW * 0.5 < platformX + platformW;
 
-        if (aligned && playerBottom >= platformY && playerY + playerH <= platformY + 4.0f && playerVelocityY > 0) {
+        if (aligned && playerBottom < platformY + 4.0f && nextPlayerY + playerH >= platformY && playerVelocityY > 0) {
             playerY = platformY - playerH;
             playerVelocityY = 0.0f;
-            isOnGround = true;
             return true;
         }
     }
