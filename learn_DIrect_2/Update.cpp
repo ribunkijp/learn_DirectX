@@ -146,9 +146,12 @@ void UpdateCamera(StateInfo* state, float deltaTime) {
 }
 
 bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, float playerH, float playerW, float deltaTime, float& playerVelocityY) {
+    float nextPlayerX = playerX;
     float nextPlayerY = playerY + playerVelocityY * deltaTime;
     float playerBottom = nextPlayerY + playerH;
     float playerTop = nextPlayerY;
+    float playerLeft = nextPlayerX;
+    float playerRight = nextPlayerX + playerW;
 
 
 
@@ -159,7 +162,7 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
 
         bool aligned = playerX + playerW * 0.8f  > platformX && playerX + playerW * 0.2f < platformX + platformW;
 
-        if (aligned && ((playerBottom < platformY + 4.0f && nextPlayerY + playerH >= platformY && playerVelocityY > 0) || (playerVelocityY == 0 && std::fabs((playerY + playerH) - platformY) < 0.1f))) {
+        if (aligned && ((playerBottom < platformY + 4.0f && nextPlayerY + playerH >= platformY && playerVelocityY > 0) || (playerVelocityY == 0 && (playerY + playerH) >= platformY))) {
             playerY = platformY - playerH;
             playerVelocityY = 0.0f;
             return true;
