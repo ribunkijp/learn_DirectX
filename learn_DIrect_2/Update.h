@@ -24,4 +24,6 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 //
 void UpdateCamera(StateInfo* state);
 
+//
+bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, float playerH, float playerW, float deltaTime, float& playerVelocityY, bool& isOnGround);
 #endif 

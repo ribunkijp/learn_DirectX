@@ -22,16 +22,40 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime) {
 void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed, bool topPressed, bool bottomPressed, bool spacePressed) {
     if (!state || !state->Player) return;
 
-    float PlayerX = state->Player->GetPosX();
-    float PlayerY = state->Player->GetPosY();
-    float PlayerH = state->Player->GetH();
+    float playerX = state->Player->GetPosX();
+    float playerY = state->Player->GetPosY();
+    float playerW = state->Player->GetW();
+    float playerH = state->Player->GetH();
 
     float speed = state->Player->GetSpeed();
 
-    if (leftPressed)  PlayerX -= speed * deltaTime;
-    if (rightPressed) PlayerX += speed * deltaTime;
-    if (topPressed)  PlayerY -= speed * deltaTime;
-    if (bottomPressed) PlayerY += speed * deltaTime;
+    if (leftPressed)  playerX -= speed * deltaTime;
+    if (rightPressed) playerX += speed * deltaTime;
+    //if (topPressed)  PlayerY -= speed * deltaTime;
+    //if (bottomPressed) PlayerY += speed * deltaTime;
+
+
+
+
+
+
+    bool landed = checkPlatformCollision(state, playerY, playerX, playerH, playerW, deltaTime, state->playerVelocityY, state->isOnGround);
+
+    if (landed) {
+        state->isOnGround = true;
+    }
+    else {
+        if ((playerY + playerH) > state->groundY) {
+            playerY = state->groundY - playerH;
+            state->playerVelocityY = 0.0;
+            state->isOnGround = true;
+        }
+    }
+    
+       
+    
+
+
     if (spacePressed && state->isOnGround && !state->lastSpacePressed) {
         state->playerVelocityY = state->jumpVelocity;
         state->isOnGround = false;
@@ -58,47 +82,47 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
     }
     
 
-    PlayerY += state->playerVelocityY * deltaTime;
+    playerY += state->playerVelocityY * deltaTime;
 
-    if ((PlayerY + PlayerH) > state->groundY) {
-        PlayerY = state->groundY - PlayerH;
-        state->playerVelocityY = 0.0;
-        state->isOnGround = true;
-    }
+
+
+
+
+
     //
     state->lastSpacePressed = spacePressed;
 
     // player 座標更新
-    state->Player->SetPos(PlayerX, PlayerY);
+    state->Player->SetPos(playerX, playerY);
 
 }
 
 void UpdateCamera(StateInfo* state) {
-    float PlayerX = state->Player->GetPosX();
-    float PlayerY = state->Player->GetPosY();
-    float PlayerW = state->Player->GetW();
-    float PlayerH = state->Player->GetH();
+    float playerX = state->Player->GetPosX();
+    float playerY = state->Player->GetPosY();
+    float playerW = state->Player->GetW();
+    float playerH = state->Player->GetH();
 
     float halfW = state->logicalWidth * 0.5f;
     float halfH = state->logicalHeight * 0.5f;
 
-    float PlayerCenterX = PlayerX + PlayerW * 0.5;
-    float PlayerCenterY = PlayerY + PlayerH * 0.5;
+    float PlayerCenterX = playerX + playerW * 0.5;
+    float PlayerCenterY = playerY + playerH * 0.5;
 
    
 
     
 
     // 
-    if (PlayerY < halfH) {
-        state->targetCameraY = PlayerY - halfH;
+    if (playerY < halfH) {
+        state->targetCameraY = playerY - halfH;
     }
  
 
     // cameraY 平滑插值
     state->cameraY += (state->targetCameraY - state->cameraY) * 0.15f;
     
-    state->cameraX = PlayerX + PlayerW * 0.5f - halfW;
+    state->cameraX = playerX + playerW * 0.5f - halfW;
 
 
 
@@ -107,13 +131,38 @@ void UpdateCamera(StateInfo* state) {
 
 
     //// 构造输出字符串
-    char buf[256];
-    sprintf_s(buf, " targetCameraY= %.2f, cameraY = %.2f、　PlayerY = %.2f\n",
-        state->targetCameraY, state->cameraY, PlayerY);
+    //char buf[256];
+    //sprintf_s(buf, " targetCameraY= %.2f, cameraY = %.2f、　PlayerY = %.2f\n",
+    //    state->targetCameraY, state->cameraY, playerY);
 
-    //// 输出到调试窗口
-    OutputDebugStringA(buf);
+    ////// 输出到调试窗口
+    //OutputDebugStringA(buf);
    
 
     state->view = DirectX::XMMatrixTranslation(-state->cameraX, -state->cameraY, 0.0f);
+}
+
+bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, float playerH, float playerW, float deltaTime, float& playerVelocityY, bool& isOnGround) {
+    float nextPlayerY = playerY + playerVelocityY * deltaTime;
+    float playerBottom = nextPlayerY + playerH;
+    float playerTop = nextPlayerY;
+
+    for (const auto& obj : state->sceneObjects) {
+        float platformW = obj->GetW();
+        float platformX = obj->GetPosX();
+        float platformY = obj->GetPosY();
+
+        bool aligned = playerX + playerW * 0.5 > platformX && playerX + playerW * 0.5 < platformX + platformW;
+
+        if (aligned && playerBottom >= platformY && playerY + playerH <= platformY + 4.0f && playerVelocityY > 0) {
+            playerY = platformY - playerH;
+            playerVelocityY = 0.0f;
+            isOnGround = true;
+            return true;
+        }
+    }
+
+    return false;
+
+
 }
