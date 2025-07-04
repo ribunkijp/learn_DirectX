@@ -8,6 +8,7 @@
 
 #include "Update.h"
 #include <Windows.h>
+#include <cmath>
 
 void UpdateAllObjects(StateInfo* pState, float deltaTime) {
 
@@ -19,7 +20,7 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime) {
     }
 }
 
-void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed, bool topPressed, bool bottomPressed, bool spacePressed) {
+void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed, bool spacePressed) {
     if (!state || !state->Player) return;
 
     float playerX = state->Player->GetPosX();
@@ -31,26 +32,16 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 
     if (leftPressed)  playerX -= speed * deltaTime;
     if (rightPressed) playerX += speed * deltaTime;
-    //if (topPressed)  PlayerY -= speed * deltaTime;
-    //if (bottomPressed) PlayerY += speed * deltaTime;
 
 
 
-
+  
 
 
     bool landed = checkPlatformCollision(state, playerY, playerX, playerH, playerW, deltaTime, state->playerVelocityY);
 
-    if (landed) {
-        state->isOnGround = true;
-    }
-    else {
-        if ((playerY + playerH) > state->groundY) {
-            playerY = state->groundY - playerH;
-            state->playerVelocityY = 0.0;
-            state->isOnGround = true;
-        }
-    }
+    
+    state->isOnGround = landed;
     
        
     
@@ -129,14 +120,6 @@ void UpdateCamera(StateInfo* state) {
     if (state->cameraX < 0.0f) state->cameraX = 0.0f;
     if (state->cameraY > 0.0f) state->cameraY = 0.0f;
 
-
-    //// 构造输出字符串
-    //char buf[256];
-    //sprintf_s(buf, " targetCameraY= %.2f, cameraY = %.2f、　PlayerY = %.2f\n",
-    //    state->targetCameraY, state->cameraY, playerY);
-
-    ////// 输出到调试窗口
-    //OutputDebugStringA(buf);
    
 
     state->view = DirectX::XMMatrixTranslation(-state->cameraX, -state->cameraY, 0.0f);
@@ -147,18 +130,31 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     float playerBottom = nextPlayerY + playerH;
     float playerTop = nextPlayerY;
 
+
+
     for (const auto& obj : state->sceneObjects) {
         float platformW = obj->GetW();
         float platformX = obj->GetPosX();
         float platformY = obj->GetPosY();
 
-        bool aligned = playerX + playerW * 0.5 > platformX && playerX + playerW * 0.5 < platformX + platformW;
+        bool aligned = playerX + playerW * 0.8f  > platformX && playerX + playerW * 0.2f < platformX + platformW;
 
-        if (aligned && playerBottom < platformY + 4.0f && nextPlayerY + playerH >= platformY && playerVelocityY > 0) {
+        if (aligned && ((playerBottom < platformY + 4.0f && nextPlayerY + playerH >= platformY && playerVelocityY > 0) || (playerVelocityY == 0 && std::fabs((playerY + playerH) - platformY) < 0.1f))) {
             playerY = platformY - playerH;
             playerVelocityY = 0.0f;
             return true;
         }
+
+        
+    }
+
+    if (
+        (playerVelocityY > 0 && (playerY + playerH) < state->groundY && (nextPlayerY + playerH) > state->groundY) ||
+        (playerVelocityY == 0 && (playerY + playerH) >= state->groundY)
+        ) {
+        playerY = state->groundY - playerH;
+        playerVelocityY = 0.0f;
+        return true;
     }
 
     return false;

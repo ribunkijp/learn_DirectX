@@ -307,7 +307,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     ground->SetPos(0.0f, 962.0f);
     ground->Load(
         state->device,
-        L"assets\\kaidan_01.dds",
+        L"assets\\kaidan.dds",
         4000.0f, 50.0f,
         false,
         1,
@@ -321,8 +321,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_01->SetPos(550.0f, 700.0f);
     kaidan_01->Load(
         state->device,
-        L"assets\\kaidan_01.dds",
-        272.0f, 84.0f,
+        L"assets\\kaidan.dds",
+        280.0f, 80.0f,
         false,
         1,
         1,
@@ -335,8 +335,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_02->SetPos(900.0f, 480.0f);
     kaidan_02->Load(
         state->device,
-        L"assets\\kaidan_01.dds",
-        272.0f, 84.0f,
+        L"assets\\kaidan.dds",
+        280.0f, 80.0f,
         false,
         1,
         1,
@@ -350,8 +350,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_03->SetPos(1300.0f, 450.0f);
     kaidan_03->Load(
         state->device,
-        L"assets\\kaidan_01.dds",
-        272.0f, 84.0f,
+        L"assets\\kaidan.dds",
+        280.0f, 80.0f,
         false,
         1,
         1,
@@ -365,8 +365,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_04->SetPos(1600.0f, 200.0f);
     kaidan_04->Load(
         state->device,
-        L"assets\\kaidan_01.dds",
-        272.0f, 84.0f,
+        L"assets\\kaidan.dds",
+        280.0f, 80.0f,
         false,
         1,
         1,
@@ -380,8 +380,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_05->SetPos(450.0f, 300.0f);
     kaidan_05->Load(
         state->device,
-        L"assets\\kaidan_01.dds",
-        272.0f, 84.0f,
+        L"assets\\kaidan.dds",
+        280.0f, 80.0f,
         false,
         1,
         1,
@@ -394,8 +394,8 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_06->SetPos(150.0f, 100.0f);
     kaidan_06->Load(
         state->device,
-        L"assets\\kaidan_01.dds",
-        272.0f, 84.0f,
+        L"assets\\kaidan.dds",
+        280.0f, 80.0f,
         false,
         1,
         1,
@@ -418,6 +418,20 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         1,
         24.0f
     );
+
+   /* state->Player = std::make_unique<GameObject>();
+    state->Player->SetSpeed(200.0f);
+    state->Player->SetPos(200.0f, 724.0f);
+    state->Player->Load(
+        state->device,
+        L"assets\\robot_walk.dds",
+        140.0f, 238.0f,
+        false,
+        0,
+        0,
+        0,
+        24.0f
+    );*/
    
 
 

@@ -49,6 +49,8 @@
     <Image Include="assets\yoko_run.dds" />
     <Image Include="assets\kaiten_run.dds" />
     <Image Include="assets\kaidan_01.dds" />
+    <Image Include="assets\robot_walk.dds" />
+    <Image Include="assets\kaidan.dds" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dApp.h">
