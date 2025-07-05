@@ -150,6 +150,7 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
 
     const float LANDING_TOLERANCE = 3.0f;
 
+    //x
     float nextPlayerX = playerX + playerVelocityX * deltaTime;
     for (const auto& obj : state->sceneObjects) {
         float platformW = obj->GetW();
@@ -175,6 +176,7 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     }
     playerX = nextPlayerX;
 
+    //y
     float nextPlayerY = playerY + playerVelocityY * deltaTime;
     bool landed = false;
     for (const auto& obj : state->sceneObjects) {
@@ -202,6 +204,7 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     }
     playerY = nextPlayerY;
 
+    //ground
     if (
         (playerVelocityY > 0 && (playerY + playerH) < state->groundY + LANDING_TOLERANCE && (nextPlayerY + playerH) > state->groundY - LANDING_TOLERANCE) ||
         (playerVelocityY == 0 && std::fabs(playerY + playerH - state->groundY) < LANDING_TOLERANCE)
