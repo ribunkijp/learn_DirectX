@@ -405,9 +405,9 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     state->sceneObjects.push_back(std::move(kaidan_06));
 
 
-    state->Player = std::make_unique<GameObject>();
+ /*   state->Player = std::make_unique<GameObject>();
     state->Player->SetSpeed(200.0f);
-    state->Player->SetPos(200.0f, 962.0f);
+    state->Player->SetPos(200.0f, 762.0f);
     state->Player->Load(
         state->device,
         L"assets\\robot_run.dds",
@@ -417,9 +417,9 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         9,
         1,
         24.0f
-    );
+    );*/
 
-   /* state->Player = std::make_unique<GameObject>();
+    state->Player = std::make_unique<GameObject>();
     state->Player->SetSpeed(200.0f);
     state->Player->SetPos(200.0f, 724.0f);
     state->Player->Load(
@@ -431,7 +431,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         0,
         0,
         24.0f
-    );*/
+    );
    
 
 

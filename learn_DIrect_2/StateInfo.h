@@ -73,6 +73,7 @@ struct StateInfo {
     std::unique_ptr<GameObject> Player;
 
     //
+    float playerVelocityX = 0.0f;
     float playerVelocityY = 0.0f;
     bool isOnGround = true;
     const float gravity = 2000.0f;         
