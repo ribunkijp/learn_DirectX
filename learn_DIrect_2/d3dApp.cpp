@@ -421,11 +421,11 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
 
     state->Player = std::make_unique<GameObject>();
     state->Player->SetSpeed(200.0f);
-    state->Player->SetPos(200.0f, 724.0f);
+    state->Player->SetPos(200.0f, 843.0f);
     state->Player->Load(
         state->device,
         L"assets\\robot_walk.dds",
-        140.0f, 238.0f,
+        70.0f, 119.0f,
         false,
         0,
         0,
