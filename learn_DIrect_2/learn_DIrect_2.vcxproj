@@ -154,10 +154,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\robot_run.dds" />
-    <Image Include="assets\robot_walk.dds" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="BufferUtils.h" />
     <ClInclude Include="d3dApp.h" />
     <ClInclude Include="GameObject.h" />

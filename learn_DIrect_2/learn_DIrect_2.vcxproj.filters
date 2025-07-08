@@ -44,10 +44,6 @@
     <Text Include="shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\robot_run.dds" />
-    <Image Include="assets\robot_walk.dds" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="d3dApp.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

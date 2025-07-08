@@ -307,7 +307,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     ground->SetPos(0.0f, 962.0f);
     ground->Load(
         state->device,
-        L"assets\\kaidan.dds",
+        L"assets\\kaidan.png",
         4000.0f, 50.0f,
         false,
         1,
@@ -321,7 +321,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_01->SetPos(550.0f, 700.0f);
     kaidan_01->Load(
         state->device,
-        L"assets\\kaidan.dds",
+        L"assets\\kaidan.png",
         280.0f, 80.0f,
         false,
         1,
@@ -335,7 +335,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_02->SetPos(900.0f, 480.0f);
     kaidan_02->Load(
         state->device,
-        L"assets\\kaidan.dds",
+        L"assets\\kaidan.png",
         280.0f, 80.0f,
         false,
         1,
@@ -350,7 +350,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_03->SetPos(1300.0f, 450.0f);
     kaidan_03->Load(
         state->device,
-        L"assets\\kaidan.dds",
+        L"assets\\kaidan.png",
         280.0f, 80.0f,
         false,
         1,
@@ -365,7 +365,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_04->SetPos(1600.0f, 200.0f);
     kaidan_04->Load(
         state->device,
-        L"assets\\kaidan.dds",
+        L"assets\\kaidan.png",
         280.0f, 80.0f,
         false,
         1,
@@ -380,7 +380,7 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     kaidan_05->SetPos(450.0f, 300.0f);
     kaidan_05->Load(
         state->device,
-        L"assets\\kaidan.dds",
+        L"assets\\kaidan.png",
         280.0f, 80.0f,
         false,
         1,
@@ -391,10 +391,10 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     state->sceneObjects.push_back(std::move(kaidan_05));
 
     auto kaidan_06 = std::make_unique<GameObject>();
-    kaidan_06->SetPos(150.0f, 100.0f);
+    kaidan_06->SetPos(150.0f, 60.0f);
     kaidan_06->Load(
         state->device,
-        L"assets\\kaidan.dds",
+        L"assets\\kaidan.png",
         280.0f, 80.0f,
         false,
         1,
@@ -405,33 +405,20 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     state->sceneObjects.push_back(std::move(kaidan_06));
 
 
- /*   state->Player = std::make_unique<GameObject>();
-    state->Player->SetSpeed(200.0f);
-    state->Player->SetPos(200.0f, 762.0f);
-    state->Player->Load(
-        state->device,
-        L"assets\\robot_run.dds",
-        200.0f, 200.0f,
-        true,
-        10,
-        9,
-        1,
-        24.0f
-    );*/
-
     state->Player = std::make_unique<GameObject>();
     state->Player->SetSpeed(200.0f);
-    state->Player->SetPos(200.0f, 843.0f);
+    state->Player->SetPos(200.0f, 828.0f);
     state->Player->Load(
         state->device,
-        L"assets\\robot_walk.dds",
-        70.0f, 119.0f,
+        L"assets\\idel_right.png",
+        88.0f, 134.0f,
         false,
-        0,
-        0,
-        0,
+        12,
+        6,
+        2,
         24.0f
     );
+
    
 
 

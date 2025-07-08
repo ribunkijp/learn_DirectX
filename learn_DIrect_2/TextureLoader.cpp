@@ -13,7 +13,9 @@ HRESULT LoadTextureAndCreateSRV(ID3D11Device* device, const wchar_t* filename, I
     HRESULT hr;
 
     // DDSファイルからテクスチャを読み込もうとする
-    hr = DirectX::LoadFromDDSFile(filename, DirectX::DDS_FLAGS_NONE, &metadata, scratchImage);
+    //hr = DirectX::LoadFromDDSFile(filename, DirectX::DDS_FLAGS_NONE, &metadata, scratchImage);
+    //png
+    hr = DirectX::LoadFromWICFile(filename, DirectX::WIC_FLAGS_NONE, &metadata, scratchImage);
 
     if (FAILED(hr)) {
         // 読み込みに失敗した場合、通常はファイルが存在しないか、フォーマットが正しくない
