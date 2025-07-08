@@ -17,7 +17,10 @@ GameObject::GameObject()
     : vertexBuffer(nullptr),
     indexBuffer(nullptr),
     constantBuffer(nullptr),
-    textureSRV(nullptr),
+    walkLeft_textureSRV(nullptr),
+    walkRight_textureSRV(nullptr),
+    idelLeft_textureSRV(nullptr),
+    idelRight_textureSRV(nullptr),
     texOffset{ 0.0f, 0.0f },
     texScale{ 1.0f, 1.0f },
     fps(8.0f),
@@ -42,7 +45,10 @@ void GameObject::Release() {
     if (vertexBuffer) { vertexBuffer->Release(); vertexBuffer = nullptr; }
     if (indexBuffer) { indexBuffer->Release(); indexBuffer = nullptr; }
     if (constantBuffer) { constantBuffer->Release(); constantBuffer = nullptr; }
-    if (textureSRV) { textureSRV->Release(); textureSRV = nullptr; }
+    if (walkLeft_textureSRV) { walkLeft_textureSRV->Release();  walkLeft_textureSRV = nullptr; }
+    if (walkRight_textureSRV) { walkRight_textureSRV->Release();  walkRight_textureSRV = nullptr; }
+    if (idelLeft_textureSRV) { idelLeft_textureSRV->Release();  idelLeft_textureSRV = nullptr; }
+    if (idelRight_textureSRV) { idelRight_textureSRV->Release();  idelRight_textureSRV = nullptr; }
 }
 
 bool GameObject::Load(
@@ -72,10 +78,36 @@ bool GameObject::Load(
     cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     device->CreateBuffer(&cbd, nullptr, &constantBuffer);
 
-    // テクスチャの読み込み
-    if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &textureSRV, &textureWidth, &textureHeight))) {
-        return false;
+
+    if (state == AnimationState::Idle) {
+        if (direction == Direction::Left) {
+            // テクスチャの読み込み
+            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &idelLeft_textureSRV, &textureWidth, &textureHeight))) {
+                return false;
+            }
+        } else if (direction == Direction::Right) {
+            // テクスチャの読み込み
+            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &idelRight_textureSRV, &textureWidth, &textureHeight))) {
+                return false;
+            }
+        }
+       
     }
+    else if (state == AnimationState::Walk) {
+        if (direction == Direction::Left) {
+            // テクスチャの読み込み
+            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &walkLeft_textureSRV, &textureWidth, &textureHeight))) {
+                return false;
+            }
+        }
+        else if (direction == Direction::Right) {
+            // テクスチャの読み込み
+            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &walkRight_textureSRV, &textureWidth, &textureHeight))) {
+                return false;
+            }
+        }
+    }
+ 
 
     // アニメーションでない場合はテクスチャのオフセット・スケールを設定
     if (!isAnimated) {
@@ -191,7 +223,23 @@ void GameObject::Render(ID3D11DeviceContext* context, const DirectX::XMMATRIX& v
     context->VSSetConstantBuffers(0, 1, &constantBuffer);
     // PSSetShaderResources（開始スロット、ビュー数、SRV配列ポインタ）
     // t0レジスタがスロット0に対応
-    context->PSSetShaderResources(0, 1, &textureSRV);
+    if (state == AnimationState::Idle) {
+        if (direction == Direction::Left) {
+            context->PSSetShaderResources(0, 1, &idelLeft_textureSRV);
+        }
+        else if (direction == Direction::Right) {
+            context->PSSetShaderResources(0, 1, &idelRight_textureSRV);
+        }
+
+    }
+    else if (state == AnimationState::Walk) {
+        if (direction == Direction::Left) {
+            context->PSSetShaderResources(0, 1, &walkLeft_textureSRV);
+        }
+        else if (direction == Direction::Right) {
+            context->PSSetShaderResources(0, 1, &walkRight_textureSRV);
+        }
+    }
     //
     context->DrawIndexed(indexCount, 0, 0);
 }

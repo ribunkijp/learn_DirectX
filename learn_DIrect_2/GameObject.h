@@ -12,7 +12,18 @@
 #include <DirectXMath.h>
 #include <string>
 
-//
+//state
+enum class AnimationState {
+    Idle,
+    Walk
+};
+//direction
+enum class Direction {
+    Left,
+    Right
+};
+
+
 // 頂点構造体
 struct Vertex {
     DirectX::XMFLOAT3 position;  // 位置
@@ -70,6 +81,8 @@ public:
 
     float GetSpeed() const;
     void SetSpeed(float speed_new);
+    AnimationState state = AnimationState::Idle;
+    Direction direction = Direction::Right;
 
 private:
     void InitVertexData(ID3D11Device* device, float width, float height);
@@ -78,7 +91,10 @@ private:
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
     ID3D11Buffer* constantBuffer;
-    ID3D11ShaderResourceView* textureSRV;
+    ID3D11ShaderResourceView* walkLeft_textureSRV;
+    ID3D11ShaderResourceView* walkRight_textureSRV;
+    ID3D11ShaderResourceView* idelLeft_textureSRV;
+    ID3D11ShaderResourceView* idelRight_textureSRV;
 
     // アニメーション制御
     float texOffset[2];
