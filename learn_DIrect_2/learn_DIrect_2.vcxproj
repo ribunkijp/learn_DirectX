@@ -165,8 +165,8 @@
     <ClInclude Include="Update.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\idel_left.png" />
-    <Image Include="assets\idel_right.png" />
+    <Image Include="assets\idle_left.png" />
+    <Image Include="assets\idle_right.png" />
     <Image Include="assets\kaidan.png" />
     <Image Include="assets\walk_left.png" />
     <Image Include="assets\walk_right.png" />

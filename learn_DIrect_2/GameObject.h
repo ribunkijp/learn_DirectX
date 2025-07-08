@@ -24,6 +24,14 @@ enum class Direction {
     Left,
     Right
 };
+//
+enum AnimationIndex {
+    IdleRight = 0,
+    IdleLeft,
+    WalkRight,
+    WalkLeft,
+    AnimationCount
+};
 
 
 // 頂点構造体
@@ -56,16 +64,6 @@ public:
         std::vector<AnimationData> & animationData
         );
 
-  /*  bool Load(
-        ID3D11Device* device,
-        const std::wstring& texturePath,
-        float width, float height,
-        bool animated,
-        int totalFrames,
-        int columns,
-        int rows,
-        float fps);*/
-
     void Update(float deltaTime);
     void UpdateConstantBuffer(ID3D11DeviceContext* context,
         const DirectX::XMMATRIX& view,
@@ -88,6 +86,12 @@ public:
 
     void SetPos(float x, float y);
 
+    void SetFrameIndex(int idx);
+
+    void ResetAnimationTimer();
+
+    void SetAnimationData(AnimationIndex index);
+
     float GetSpeed() const;
     void SetSpeed(float speed_new);
     bool isAnimated = false;
@@ -101,10 +105,6 @@ private:
     ID3D11Buffer* vertexBuffer;
     ID3D11Buffer* indexBuffer;
     ID3D11Buffer* constantBuffer;
-    ID3D11ShaderResourceView* walkLeft_textureSRV;
-    ID3D11ShaderResourceView* walkRight_textureSRV;
-    ID3D11ShaderResourceView* idelLeft_textureSRV;
-    ID3D11ShaderResourceView* idelRight_textureSRV;
 
     // アニメーション制御
     float texOffset[2];

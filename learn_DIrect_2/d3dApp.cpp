@@ -448,18 +448,18 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
   
 ;
     animationData.push_back({
-            L"assets\\idel_right.png",
+            L"assets\\idle_right.png",
             1,
             1,
             1,
-            24.0f
+            0.0f
     });
     animationData.push_back({
-        L"assets\\idel_left.png",
+        L"assets\\idle_left.png",
         1,
         1,
         1,
-        24.0f
+        0.0f
     });
     animationData.push_back({
           L"assets\\walk_right.png",

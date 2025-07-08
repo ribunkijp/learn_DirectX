@@ -8,6 +8,7 @@
 
 #include "Update.h"
 #include <cmath>
+#include "GameObject.h"
 
 float SmoothDamp(
     float current,
@@ -39,18 +40,46 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 
     if (leftPressed && !rightPressed )
     {
+        if (state->Player->state != AnimationState::Walk || state->Player->direction != Direction::Left) {
+            state->Player->SetFrameIndex(0);
+            state->Player->ResetAnimationTimer();
+            state->Player->SetAnimationData(WalkLeft);
+            state->Player->state = AnimationState::Walk;
+            state->Player->direction = Direction::Left;
+            state->Player->isAnimated = true;
+        }
         state->playerVelocityX = -speed;
-
     }
     else if (rightPressed && !leftPressed)
     {
+        if (state->Player->state != AnimationState::Walk || state->Player->direction != Direction::Right) {
+            state->Player->SetFrameIndex(0);
+            state->Player->ResetAnimationTimer();
+            state->Player->SetAnimationData(WalkRight);
+            state->Player->state = AnimationState::Walk;
+            state->Player->direction = Direction::Right;
+            state->Player->isAnimated = true;
+        }
         state->playerVelocityX = speed;
     }
     else {
         state->playerVelocityX = 0.0f;
+
+        if (state->Player->state != AnimationState::Idle) {
+            state->Player->isAnimated = false;
+            state->Player->SetFrameIndex(0);
+            state->Player->ResetAnimationTimer();
+            if (state->Player->direction == Direction::Left)
+                state->Player->SetAnimationData(IdleLeft);
+            else 
+                state->Player->SetAnimationData(IdleRight);
+            
+            state->Player->state = AnimationState::Idle;
+        }
     }
 
 
+    //
     if (spacePressed && state->isOnGround && !state->lastSpacePressed) {
         state->playerVelocityY = state->jumpVelocity;
         state->isOnGround = false;

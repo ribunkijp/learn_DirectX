@@ -12,13 +12,7 @@
 #include <DirectXMath.h>
 #include <Windows.h>
 
-enum AnimationIndex {
-    IdleRight = 0,
-    IdleLeft,
-    WalkRight,
-    WalkLeft,
-    AnimationCount
-};
+
 
 
 using namespace DirectX;
@@ -27,10 +21,6 @@ GameObject::GameObject()
     : vertexBuffer(nullptr),
     indexBuffer(nullptr),
     constantBuffer(nullptr),
-    walkLeft_textureSRV(nullptr),
-    walkRight_textureSRV(nullptr),
-    idelLeft_textureSRV(nullptr),
-    idelRight_textureSRV(nullptr),
     texOffset{ 0.0f, 0.0f },
     texScale{ 1.0f, 1.0f },
     fps(8.0f),
@@ -54,10 +44,14 @@ void GameObject::Release() {
     if (vertexBuffer) { vertexBuffer->Release(); vertexBuffer = nullptr; }
     if (indexBuffer) { indexBuffer->Release(); indexBuffer = nullptr; }
     if (constantBuffer) { constantBuffer->Release(); constantBuffer = nullptr; }
-    if (walkLeft_textureSRV) { walkLeft_textureSRV->Release();  walkLeft_textureSRV = nullptr; }
-    if (walkRight_textureSRV) { walkRight_textureSRV->Release();  walkRight_textureSRV = nullptr; }
-    if (idelLeft_textureSRV) { idelLeft_textureSRV->Release();  idelLeft_textureSRV = nullptr; }
-    if (idelRight_textureSRV) { idelRight_textureSRV->Release();  idelRight_textureSRV = nullptr; }
+    //
+    for (auto& srv : textureSrvs) {
+        if (srv) {
+            srv->Release();
+            srv = nullptr;
+        }
+    }
+    textureSrvs.clear();
 }
 
 bool GameObject::Load(
@@ -96,14 +90,6 @@ bool GameObject::Load(
         }
     }
 
-
-    //// 输出字符串到VS的调试窗口
-    OutputDebugString(L"Hello from OutputDebugString!\n");
-
-    //// 输出变量
-    wchar_t buf[256];
-    swprintf(buf, 256, L"idelRight_textureSRV: %p\n", textureSrvs[IdleRight]);
-    OutputDebugString(buf);
         
   
  
@@ -153,6 +139,34 @@ float GameObject::GetH() const {
 
 void GameObject::SetPos(float x, float y) {
     modelMatrix = DirectX::XMMatrixTranslation(x, y, 0.0f);
+}
+
+void GameObject::SetFrameIndex(int idx) { frameIndex = idx; }
+
+void GameObject::ResetAnimationTimer() {
+    animationTimer = 0.0f;
+}
+
+void GameObject::SetAnimationData(AnimationIndex index) {
+   
+    totalFrames = animationData[index].totalFrames;
+    columns = animationData[index].columns;
+    rows = animationData[index].rows;
+    fps = animationData[index].fps;
+
+    if (!isAnimated) {
+        texOffset[0] = 0.0f;
+        texOffset[1] = 0.0f;
+        texScale[0] = 1.0f;
+        texScale[1] = 1.0f;
+    }
+
+    wchar_t buf[256];
+    swprintf(buf, 256,
+        L"SetAnimationData: index=%d, totalFrames=%d, columns=%d, rows=%d, fps=%.2f, isAnimated=%d\n",
+        (int)index, totalFrames, columns, rows, fps, isAnimated ? 1 : 0);
+    OutputDebugString(buf);
+    
 }
 
 float GameObject::GetSpeed() const {

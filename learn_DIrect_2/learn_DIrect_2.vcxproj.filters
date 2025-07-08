@@ -73,10 +73,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\idel_left.png">
+    <Image Include="assets\idle_left.png">
       <Filter>リソース ファイル</Filter>
     </Image>
-    <Image Include="assets\idel_right.png">
+    <Image Include="assets\idle_right.png">
       <Filter>リソース ファイル</Filter>
     </Image>
     <Image Include="assets\kaidan.png">

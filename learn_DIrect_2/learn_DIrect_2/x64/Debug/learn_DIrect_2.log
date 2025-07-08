@@ -1,32 +1,38 @@
-﻿  d3dApp.cpp
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(93,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+﻿  Update.cpp
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(95,15): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::direction' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(99,15): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::direction' の後に追加しました。
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(120,11): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::objH' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(129,10): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(78,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(84,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::lastSpacePressed' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(87,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isJumping' の後に追加しました。
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4625: 'StateInfo': コピー コンストラクターは暗黙的に削除済みとして定義されました
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInfo': 代入演算子は暗黙的に削除済みとして定義されました
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
-  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  (ソース ファイル 'Update.cpp' をコンパイルしています)
   
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(136,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(137,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(137,11): warning C4189: 'PlayerCenterY': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(136,11): warning C4189: 'PlayerCenterX': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(192,19): warning C4189: 'overlapLeft': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(193,19): warning C4189: 'overlapRight': ローカル変数が初期化されましたが、参照されていません
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe
