@@ -475,6 +475,20 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
            2,
            24.0f
     });
+    animationData.push_back({
+         L"assets\\jump_right.png",
+         1,
+         1,
+         1,
+         0.0f
+    });
+    animationData.push_back({
+          L"assets\\jump_left.png",
+          1,
+          1,
+          1,
+          0.0f
+    });
 
 
     state->Player = std::make_unique<GameObject>();

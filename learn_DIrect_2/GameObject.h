@@ -17,7 +17,8 @@
 //state
 enum class AnimationState {
     Idle,
-    Walk
+    Walk,
+    Jump
 };
 //direction
 enum class Direction {
@@ -30,6 +31,8 @@ enum AnimationIndex {
     IdleLeft,
     WalkRight,
     WalkLeft,
+    JumpRight,
+    JumpLeft,
     AnimationCount
 };
 

@@ -88,5 +88,11 @@
     <Image Include="assets\walk_right.png">
       <Filter>リソース ファイル</Filter>
     </Image>
+    <Image Include="assets\jump_left.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="assets\jump_right.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>

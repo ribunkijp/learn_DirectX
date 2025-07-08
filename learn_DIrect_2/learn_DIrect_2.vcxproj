@@ -167,6 +167,8 @@
   <ItemGroup>
     <Image Include="assets\idle_left.png" />
     <Image Include="assets\idle_right.png" />
+    <Image Include="assets\jump_left.png" />
+    <Image Include="assets\jump_right.png" />
     <Image Include="assets\kaidan.png" />
     <Image Include="assets\walk_left.png" />
     <Image Include="assets\walk_right.png" />

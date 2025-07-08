@@ -253,6 +253,14 @@ void GameObject::Render(ID3D11DeviceContext* context, const DirectX::XMMATRIX& v
             context->PSSetShaderResources(0, 1, &textureSrvs[WalkRight]);
         }
     }
+    else if (state == AnimationState::Jump) {
+        if (direction == Direction::Left) {
+            context->PSSetShaderResources(0, 1, &textureSrvs[JumpLeft]);
+        }
+        else if (direction == Direction::Right) {
+            context->PSSetShaderResources(0, 1, &textureSrvs[JumpRight]);
+        }
+    }
     //
     context->DrawIndexed(indexCount, 0, 0);
 }
