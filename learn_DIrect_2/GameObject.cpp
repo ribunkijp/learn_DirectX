@@ -10,6 +10,16 @@
 #include "BufferUtils.h"
 #include "TextureLoader.h"
 #include <DirectXMath.h>
+#include <Windows.h>
+
+enum AnimationIndex {
+    IdleRight = 0,
+    IdleLeft,
+    WalkRight,
+    WalkLeft,
+    AnimationCount
+};
+
 
 using namespace DirectX;
 
@@ -29,7 +39,6 @@ GameObject::GameObject()
     totalFrames(1),
     columns(1),
     rows(1),
-    isAnimated(false),
     indexCount(0),
     modelMatrix(XMMatrixIdentity())
 {
@@ -53,22 +62,19 @@ void GameObject::Release() {
 
 bool GameObject::Load(
     ID3D11Device* device,
-    const std::wstring& texturePath,
-    float width, float height,
-    bool animated,
-    int totalFrames_,
-    int columns_,
-    int rows_,
-    float fps_
+    float width, 
+    float height,
+    std::vector<AnimationData>& animationData
 ) {
+    this->animationData = animationData;
 
     InitVertexData(device, width ,height);
 
-    isAnimated = animated;
-    totalFrames = totalFrames_;
-    columns = columns_;
-    rows = rows_;
-    fps = fps_;
+
+    totalFrames = animationData[0].totalFrames;
+    columns = animationData[0].columns;
+    rows = animationData[0].rows;
+    fps = animationData[0].fps;
 
     // 定数バッファを作成
     D3D11_BUFFER_DESC cbd = {};
@@ -79,34 +85,27 @@ bool GameObject::Load(
     device->CreateBuffer(&cbd, nullptr, &constantBuffer);
 
 
-    if (state == AnimationState::Idle) {
-        if (direction == Direction::Left) {
-            // テクスチャの読み込み
-            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &idelLeft_textureSRV, &textureWidth, &textureHeight))) {
-                return false;
-            }
-        } else if (direction == Direction::Right) {
-            // テクスチャの読み込み
-            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &idelRight_textureSRV, &textureWidth, &textureHeight))) {
-                return false;
-            }
-        }
-       
-    }
-    else if (state == AnimationState::Walk) {
-        if (direction == Direction::Left) {
-            // テクスチャの読み込み
-            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &walkLeft_textureSRV, &textureWidth, &textureHeight))) {
-                return false;
-            }
-        }
-        else if (direction == Direction::Right) {
-            // テクスチャの読み込み
-            if (FAILED(LoadTextureAndCreateSRV(device, texturePath.c_str(), &walkRight_textureSRV, &textureWidth, &textureHeight))) {
-                return false;
-            }
+    
+    textureSrvs.resize(AnimationCount);
+   
+
+    for (size_t i = 0; i < animationData.size(); i++) {
+        // テクスチャの読み込み
+        if (FAILED(LoadTextureAndCreateSRV(device, animationData[i].texturePath.c_str(), &textureSrvs[i], &textureWidth, &textureHeight))) {
+            return false;
         }
     }
+
+
+    //// 输出字符串到VS的调试窗口
+    OutputDebugString(L"Hello from OutputDebugString!\n");
+
+    //// 输出变量
+    wchar_t buf[256];
+    swprintf(buf, 256, L"idelRight_textureSRV: %p\n", textureSrvs[IdleRight]);
+    OutputDebugString(buf);
+        
+  
  
 
     // アニメーションでない場合はテクスチャのオフセット・スケールを設定
@@ -225,19 +224,19 @@ void GameObject::Render(ID3D11DeviceContext* context, const DirectX::XMMATRIX& v
     // t0レジスタがスロット0に対応
     if (state == AnimationState::Idle) {
         if (direction == Direction::Left) {
-            context->PSSetShaderResources(0, 1, &idelLeft_textureSRV);
+            context->PSSetShaderResources(0, 1, &textureSrvs[IdleLeft]);
         }
         else if (direction == Direction::Right) {
-            context->PSSetShaderResources(0, 1, &idelRight_textureSRV);
+            context->PSSetShaderResources(0, 1, &textureSrvs[IdleRight]);
         }
 
     }
     else if (state == AnimationState::Walk) {
         if (direction == Direction::Left) {
-            context->PSSetShaderResources(0, 1, &walkLeft_textureSRV);
+            context->PSSetShaderResources(0, 1, &textureSrvs[WalkLeft]);
         }
         else if (direction == Direction::Right) {
-            context->PSSetShaderResources(0, 1, &walkRight_textureSRV);
+            context->PSSetShaderResources(0, 1, &textureSrvs[WalkRight]);
         }
     }
     //

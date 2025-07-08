@@ -68,5 +68,25 @@
     <ClInclude Include="GameObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationData.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\idel_left.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="assets\idel_right.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="assets\kaidan.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="assets\walk_left.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="assets\walk_right.png">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>

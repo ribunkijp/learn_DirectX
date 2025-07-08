@@ -154,6 +154,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationData.h" />
     <ClInclude Include="BufferUtils.h" />
     <ClInclude Include="d3dApp.h" />
     <ClInclude Include="GameObject.h" />
@@ -162,6 +163,13 @@
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Update.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\idel_left.png" />
+    <Image Include="assets\idel_right.png" />
+    <Image Include="assets\kaidan.png" />
+    <Image Include="assets\walk_left.png" />
+    <Image Include="assets\walk_right.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

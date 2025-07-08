@@ -1,8 +1,14 @@
 ﻿  d3dApp.cpp
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(92,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(93,10): warning C4820: 'GameObject': '3' バイトのパディングを データ メンバー 'GameObject::isAnimated' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(97,10): warning C4820: 'GameObject': '12' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(95,15): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::direction' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(120,11): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::objH' の後に追加しました。
+  (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
+  
+C:\code\learn_DirectX\learn_DIrect_2\GameObject.h(129,10): warning C4820: 'GameObject': '4' バイトのパディングを データ メンバー 'GameObject::indexCount' の後に追加しました。
   (ソース ファイル 'd3dApp.cpp' をコンパイルしています)
   
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(78,10): warning C4820: 'StateInfo': '3' バイトのパディングを データ メンバー 'StateInfo::isOnGround' の後に追加しました。

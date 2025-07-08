@@ -7,7 +7,6 @@
 **********************************************************************************/
 
 #include "Update.h"
-#include <Windows.h>
 #include <cmath>
 
 float SmoothDamp(

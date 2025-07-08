@@ -9,6 +9,7 @@
 #include "d3dApp.h"
 #include "StateInfo.h"
 #include "GameObject.h"
+#include "AnimationData.h"
 
 
 
@@ -302,107 +303,178 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
         return false;
     }
 
+    std::vector<AnimationData> animationData;
+
+    animationData.push_back({
+        L"assets\\kaidan.png",
+            1,
+            1,
+            1,
+            0.0f
+    });
 
     auto ground = std::make_unique<GameObject>();
     ground->SetPos(0.0f, 962.0f);
     ground->Load(
         state->device,
-        L"assets\\kaidan.png",
-        4000.0f, 50.0f,
-        false,
-        1,
-        1,
-        1,
-        0.0f
+        4000.0f, 
+        50.0f,
+        animationData
+        
     );
     state->sceneObjects.push_back(std::move(ground));
 
+
+    animationData.clear();
+    animationData.push_back({
+       L"assets\\kaidan.png",
+           1,
+           1,
+           1,
+           0.0f
+    });
     auto kaidan_01 = std::make_unique<GameObject>();
     kaidan_01->SetPos(550.0f, 700.0f);
     kaidan_01->Load(
         state->device,
-        L"assets\\kaidan.png",
-        280.0f, 80.0f,
-        false,
-        1,
-        1,
-        1,
-        0.0f
+        280.0f, 
+        80.0f,
+        animationData
+       
     );
     state->sceneObjects.push_back(std::move(kaidan_01));
 
+
+    animationData.clear();
+    animationData.push_back({
+       L"assets\\kaidan.png",
+           1,
+           1,
+           1,
+           0.0f
+        });
     auto kaidan_02 = std::make_unique<GameObject>();
     kaidan_02->SetPos(900.0f, 480.0f);
     kaidan_02->Load(
         state->device,
-        L"assets\\kaidan.png",
-        280.0f, 80.0f,
-        false,
-        1,
-        1,
-        1,
-        0.0f
+        280.0f, 
+        80.0f,
+        animationData
     );
     state->sceneObjects.push_back(std::move(kaidan_02));
 
 
+
+
+    animationData.clear();
+    animationData.push_back({
+       L"assets\\kaidan.png",
+           1,
+           1,
+           1,
+           0.0f
+        });
     auto kaidan_03 = std::make_unique<GameObject>();
     kaidan_03->SetPos(1300.0f, 450.0f);
     kaidan_03->Load(
         state->device,
-        L"assets\\kaidan.png",
-        280.0f, 80.0f,
-        false,
-        1,
-        1,
-        1,
-        0.0f
+        280.0f, 
+        80.0f,
+        animationData
     );
     state->sceneObjects.push_back(std::move(kaidan_03));
 
 
+
+
+    animationData.clear();
+    animationData.push_back({
+       L"assets\\kaidan.png",
+           1,
+           1,
+           1,
+           0.0f
+        });
     auto kaidan_04 = std::make_unique<GameObject>();
     kaidan_04->SetPos(1600.0f, 200.0f);
     kaidan_04->Load(
         state->device,
-        L"assets\\kaidan.png",
-        280.0f, 80.0f,
-        false,
-        1,
-        1,
-        1,
-        0.0f
+        280.0f, 
+        80.0f,
+        animationData
     );
     state->sceneObjects.push_back(std::move(kaidan_04));
 
 
+    animationData.clear();
+    animationData.push_back({
+       L"assets\\kaidan.png",
+           1,
+           1,
+           1,
+           0.0f
+        });
     auto kaidan_05 = std::make_unique<GameObject>();
     kaidan_05->SetPos(450.0f, 300.0f);
     kaidan_05->Load(
         state->device,
-        L"assets\\kaidan.png",
-        280.0f, 80.0f,
-        false,
-        1,
-        1,
-        1,
-        0.0f
+        280.0f, 
+        80.0f,
+        animationData
     );
     state->sceneObjects.push_back(std::move(kaidan_05));
 
+
+
+    animationData.clear();
+    animationData.push_back({
+       L"assets\\kaidan.png",
+           1,
+           1,
+           1,
+           0.0f
+        });
     auto kaidan_06 = std::make_unique<GameObject>();
     kaidan_06->SetPos(150.0f, 60.0f);
     kaidan_06->Load(
         state->device,
-        L"assets\\kaidan.png",
-        280.0f, 80.0f,
-        false,
-        1,
-        1,
-        1,
-        0.0f
+        280.0f, 
+        80.0f,
+        animationData
     );
     state->sceneObjects.push_back(std::move(kaidan_06));
+
+    animationData.clear();
+  
+;
+    animationData.push_back({
+            L"assets\\idel_right.png",
+            1,
+            1,
+            1,
+            24.0f
+    });
+    animationData.push_back({
+        L"assets\\idel_left.png",
+        1,
+        1,
+        1,
+        24.0f
+    });
+    animationData.push_back({
+          L"assets\\walk_right.png",
+          12,
+          6,
+          2,
+          24.0f
+    });
+    animationData.push_back({
+           L"assets\\walk_left.png",
+           12,
+           6,
+           2,
+           24.0f
+    });
 
 
     state->Player = std::make_unique<GameObject>();
@@ -410,13 +482,9 @@ bool InitD3D(HWND hwnd, StateInfo* state, float clientWidth, float clientHeight)
     state->Player->SetPos(200.0f, 828.0f);
     state->Player->Load(
         state->device,
-        L"assets\\idel_right.png",
-        88.0f, 134.0f,
-        false,
-        12,
-        6,
-        2,
-        24.0f
+        88.0f, 
+        134.0f,
+        animationData
     );
 
    

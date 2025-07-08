@@ -11,6 +11,8 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <string>
+#include "AnimationData.h"
+#include <vector>
 
 //state
 enum class AnimationState {
@@ -49,13 +51,20 @@ public:
 
     bool Load(
         ID3D11Device* device,
+        float width, 
+        float height,
+        std::vector<AnimationData> & animationData
+        );
+
+  /*  bool Load(
+        ID3D11Device* device,
         const std::wstring& texturePath,
         float width, float height,
         bool animated,
         int totalFrames,
         int columns,
         int rows,
-        float fps);
+        float fps);*/
 
     void Update(float deltaTime);
     void UpdateConstantBuffer(ID3D11DeviceContext* context,
@@ -81,6 +90,7 @@ public:
 
     float GetSpeed() const;
     void SetSpeed(float speed_new);
+    bool isAnimated = false;
     AnimationState state = AnimationState::Idle;
     Direction direction = Direction::Right;
 
@@ -105,10 +115,16 @@ private:
     int totalFrames;
     int columns;
     int rows;
-    bool isAnimated;
     float speed = 0.0f;
     float objW = 0.0f;
     float objH = 0.0f;
+
+    //
+    std::vector<AnimationData> animationData;
+
+    //
+    std::vector<ID3D11ShaderResourceView*> textureSrvs;
+
     // 描画
     UINT indexCount;
 
