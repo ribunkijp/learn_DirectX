@@ -33,6 +33,6 @@ C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(189,25): warning C4244: '初期�
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(190,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(190,11): warning C4189: 'PlayerCenterY': ローカル変数が初期化されましたが、参照されていません
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(189,11): warning C4189: 'PlayerCenterX': ローカル変数が初期化されましたが、参照されていません
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(245,19): warning C4189: 'overlapLeft': ローカル変数が初期化されましたが、参照されていません
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(246,19): warning C4189: 'overlapRight': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(246,19): warning C4189: 'overlapLeft': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(247,19): warning C4189: 'overlapRight': ローカル変数が初期化されましたが、参照されていません
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

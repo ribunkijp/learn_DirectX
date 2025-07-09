@@ -230,6 +230,7 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     
 
     const float LANDING_TOLERANCE = 1.0f;
+    const float LANDING_TOLERANCE_1 = 2.0f;
 
     //x
     float nextPlayerX = playerX + playerVelocityX * deltaTime;
@@ -259,8 +260,8 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     //y
     bool onPlatform = false;
     float footY = playerY + playerH;
-    float leftFootX = playerX + playerW * 0.29f;
-    float rightFootX = playerX + playerW * 0.76f;
+    float leftFootX = playerX + playerW * 0.2f;
+    float rightFootX = playerX + playerW * 0.8f;
 
     float nextPlayerY = playerY + playerVelocityY * deltaTime;
 
@@ -294,15 +295,25 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
         }
     }
     playerY = nextPlayerY;
+
+
+    if (playerVelocityY > 0 && (playerY + playerH) <= state->groundY + LANDING_TOLERANCE && (nextPlayerY + playerH) >= state->groundY - LANDING_TOLERANCE) {
+        OutputDebugStringA("Hit ground: player landed!\n");
+    }
+    if (footY >= state->groundY - LANDING_TOLERANCE && footY <= state->groundY + LANDING_TOLERANCE) {
+        OutputDebugStringA("脚底法命中：player landed!\n");
+    }
+
     //
     if (
-        (playerVelocityY > 0 && (playerY + playerH) < state->groundY + LANDING_TOLERANCE && (nextPlayerY + playerH) >= state->groundY - LANDING_TOLERANCE) ||
-        (playerVelocityY == 0 && std::fabs(playerY + playerH - state->groundY) < LANDING_TOLERANCE)
+        ((playerVelocityY > 0 && footY >= state->groundY - LANDING_TOLERANCE_1 && footY <= state->groundY + LANDING_TOLERANCE_1)) ||
+        (playerVelocityY == 0 && std::fabs(playerY + playerH - state->groundY) < LANDING_TOLERANCE_1)
         ) {
         playerY = state->groundY - playerH;
         playerVelocityY = 0.0f;
         onPlatform = true;
     }
+
 
     return onPlatform;
 }
