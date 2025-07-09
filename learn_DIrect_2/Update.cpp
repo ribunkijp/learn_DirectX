@@ -31,6 +31,7 @@ void UpdateAllObjects(StateInfo* pState, float deltaTime) {
 void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool rightPressed, bool spacePressed) {
     if (!state || !state->Player) return;
 
+
     float playerX = state->Player->GetPosX();
     float playerY = state->Player->GetPosY();
     float playerW = state->Player->GetW();
@@ -40,7 +41,7 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 
     if (leftPressed && !rightPressed )
     {
-        if (state->Player->state != AnimationState::Walk || state->Player->direction != Direction::Left) {
+        if ( state->isOnGround && (state->Player->state != AnimationState::Walk || state->Player->direction != Direction::Left)) {
             state->Player->SetFrameIndex(0);
             state->Player->ResetAnimationTimer();
             state->Player->SetAnimationData(WalkLeft);
@@ -52,7 +53,7 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
     }
     else if (rightPressed && !leftPressed)
     {
-        if (state->Player->state != AnimationState::Walk || state->Player->direction != Direction::Right) {
+        if (state->isOnGround && (state->Player->state != AnimationState::Walk || state->Player->direction != Direction::Right)) {
             state->Player->SetFrameIndex(0);
             state->Player->ResetAnimationTimer();
             state->Player->SetAnimationData(WalkRight);
@@ -65,7 +66,7 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
     else {
         state->playerVelocityX = 0.0f;
 
-        if (state->Player->state != AnimationState::Idle) {
+        if (state->isOnGround && state->Player->state != AnimationState::Idle) {
             state->Player->isAnimated = false;
             state->Player->SetFrameIndex(0);
             state->Player->ResetAnimationTimer();
@@ -85,6 +86,16 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
         state->isOnGround = false;
         state->isJumping = true;
         state->jumpHoldTime = 0.0f;
+
+        state->Player->isAnimated = false;
+        state->Player->SetFrameIndex(0);
+        state->Player->ResetAnimationTimer();
+        if (state->Player->direction == Direction::Left)
+            state->Player->SetAnimationData(JumpLeft);
+        else
+            state->Player->SetAnimationData(JumpRight);
+
+        state->Player->state = AnimationState::Jump;
     }
     if (spacePressed && state->isJumping && state->jumpHoldTime < state->maxJumpHoldTime) {
         state->playerVelocityY = state->jumpVelocity;
@@ -103,6 +114,45 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
         else if (!state->isJumping) {
             state->playerVelocityY += state->gravity * deltaTime;
         }
+
+        if (leftPressed && state->Player->direction != Direction::Left) {
+            state->Player->SetFrameIndex(0);
+            state->Player->ResetAnimationTimer();
+            state->Player->SetAnimationData(JumpLeft);
+            state->Player->direction = Direction::Left;
+            state->Player->state = AnimationState::Jump;
+        }
+        else if (rightPressed && state->Player->direction != Direction::Right) {
+            state->Player->SetFrameIndex(0);
+            state->Player->ResetAnimationTimer();
+            state->Player->SetAnimationData(JumpRight);
+            state->Player->direction = Direction::Right;
+            state->Player->state = AnimationState::Jump;
+        }
+    }
+    //
+    if (!state->isOnGround && state->wasOnGround) {
+        state->Player->isAnimated = false;
+        state->Player->SetFrameIndex(0);
+        state->Player->ResetAnimationTimer();
+        if (state->Player->direction == Direction::Left)
+            state->Player->SetAnimationData(JumpLeft);
+        else
+            state->Player->SetAnimationData(JumpRight);
+
+        state->Player->state = AnimationState::Jump;
+    }
+    //
+    if (!state->wasOnGround && state->isOnGround) {
+        state->Player->isAnimated = false;
+        state->Player->SetFrameIndex(0);
+        state->Player->ResetAnimationTimer();
+        if (state->Player->direction == Direction::Left)
+            state->Player->SetAnimationData(IdleLeft);
+        else
+            state->Player->SetAnimationData(IdleRight);
+
+        state->Player->state = AnimationState::Idle;
     }
     
 
@@ -121,6 +171,9 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 
     // player 座標更新
     state->Player->SetPos(playerX, playerY);
+
+
+    state->wasOnGround = state->isOnGround;
 
 }
 
@@ -176,7 +229,7 @@ void UpdateCamera(StateInfo* state, float deltaTime) {
 bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, float playerH, float playerW, float deltaTime, float& playerVelocityY, float& playerVelocityX) {
     
 
-    const float LANDING_TOLERANCE = 3.0f;
+    const float LANDING_TOLERANCE = 1.0f;
 
     //x
     float nextPlayerX = playerX + playerVelocityX * deltaTime;
@@ -195,8 +248,7 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
             nextPlayerX = platformX - playerW;
             playerVelocityX = 0;
         }
-        else if (overlapY && playerVelocityX < 0 &&
-            (playerX >= platformX + platformW) && (nextPlayerX < platformX + platformW)) {
+        else if (overlapY && playerVelocityX < 0 && (playerX >= platformX + platformW) && (nextPlayerX < platformX + platformW)) {
             
             nextPlayerX = platformX + platformW;
             playerVelocityX = 0;
@@ -205,8 +257,13 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     playerX = nextPlayerX;
 
     //y
+    bool onPlatform = false;
+    float footY = playerY + playerH;
+    float leftFootX = playerX + playerW * 0.29f;
+    float rightFootX = playerX + playerW * 0.76f;
+
     float nextPlayerY = playerY + playerVelocityY * deltaTime;
-    bool landed = false;
+
     for (const auto& obj : state->sceneObjects) {
         float platformW = obj->GetW();
         float platformH = obj->GetH();
@@ -216,14 +273,20 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
         bool overlapX = ((playerX + playerW) > platformX) && (playerX < (platformX + platformW));
 
         if (overlapX && playerVelocityY > 0 && (playerY + playerH <= platformY + LANDING_TOLERANCE) && (nextPlayerY + playerH >= platformY - LANDING_TOLERANCE)) {
-            nextPlayerY = platformY - playerH;
-            playerVelocityY = 0;
-            landed = true;
+            
+            if (
+                (footY >= platformY - LANDING_TOLERANCE && footY <= platformY + LANDING_TOLERANCE) &&
+                ((leftFootX >= platformX && leftFootX <= platformX + platformW) || (rightFootX >= platformX && rightFootX <= platformX + platformW))
+               ) {
+                nextPlayerY = platformY - playerH;
+                playerVelocityY = 0;
+                onPlatform = true;
+            }
         }
         else if (overlapX && playerVelocityY == 0 &&
             std::fabs(playerY + playerH - platformY) < LANDING_TOLERANCE) {
             playerY = platformY - playerH;
-            landed = true;
+            onPlatform = true;
         }
         else if (overlapX && playerVelocityY < 0 && (playerY >= platformY + platformH) && (nextPlayerY <= platformY + platformH)) {
             nextPlayerY = platformY + platformH;
@@ -231,20 +294,17 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
         }
     }
     playerY = nextPlayerY;
-
-    //ground
+    //
     if (
-        (playerVelocityY > 0 && (playerY + playerH) < state->groundY + LANDING_TOLERANCE && (nextPlayerY + playerH) > state->groundY - LANDING_TOLERANCE) ||
+        (playerVelocityY > 0 && (playerY + playerH) < state->groundY + LANDING_TOLERANCE && (nextPlayerY + playerH) >= state->groundY - LANDING_TOLERANCE) ||
         (playerVelocityY == 0 && std::fabs(playerY + playerH - state->groundY) < LANDING_TOLERANCE)
         ) {
         playerY = state->groundY - playerH;
         playerVelocityY = 0.0f;
-        landed = true;
+        onPlatform = true;
     }
 
-    return landed;
-
-
+    return onPlatform;
 }
 
 

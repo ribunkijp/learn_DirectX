@@ -75,6 +75,7 @@ struct StateInfo {
     //
     float playerVelocityX = 0.0f;
     float playerVelocityY = 0.0f;
+    bool wasOnGround = true;
     bool isOnGround = true;
     const float gravity = 2000.0f;         
     const float jumpVelocity = -600.0f; 
