@@ -29,10 +29,11 @@ C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C4626: 'StateInf
 C:\code\learn_DirectX\learn_DIrect_2\StateInfo.h(19,8): warning C5027: 'StateInfo': 移動代入演算子が暗黙的に削除済みとして定義されました
   (ソース ファイル 'Update.cpp' をコンパイルしています)
   
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(189,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(190,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(190,11): warning C4189: 'PlayerCenterY': ローカル変数が初期化されましたが、参照されていません
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(189,11): warning C4189: 'PlayerCenterX': ローカル変数が初期化されましたが、参照されていません
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(246,19): warning C4189: 'overlapLeft': ローカル変数が初期化されましたが、参照されていません
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(247,19): warning C4189: 'overlapRight': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(183,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(184,25): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(184,11): warning C4189: 'PlayerCenterY': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(183,11): warning C4189: 'PlayerCenterX': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(259,15): warning C4189: 'rightFootX': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(257,15): warning C4189: 'footY': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(258,15): warning C4189: 'leftFootX': ローカル変数が初期化されましたが、参照されていません
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe

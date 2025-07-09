@@ -115,32 +115,26 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
             state->playerVelocityY += state->gravity * deltaTime;
         }
 
-        if (leftPressed && state->Player->direction != Direction::Left) {
-            state->Player->SetFrameIndex(0);
-            state->Player->ResetAnimationTimer();
-            state->Player->SetAnimationData(JumpLeft);
+        if (leftPressed && !rightPressed && state->Player->direction != Direction::Left) {
             state->Player->direction = Direction::Left;
-            state->Player->state = AnimationState::Jump;
         }
-        else if (rightPressed && state->Player->direction != Direction::Right) {
-            state->Player->SetFrameIndex(0);
-            state->Player->ResetAnimationTimer();
-            state->Player->SetAnimationData(JumpRight);
+        else if (rightPressed && !leftPressed && state->Player->direction != Direction::Right) {
             state->Player->direction = Direction::Right;
-            state->Player->state = AnimationState::Jump;
         }
     }
     //
     if (!state->isOnGround && state->wasOnGround) {
-        state->Player->isAnimated = false;
-        state->Player->SetFrameIndex(0);
-        state->Player->ResetAnimationTimer();
-        if (state->Player->direction == Direction::Left)
-            state->Player->SetAnimationData(JumpLeft);
-        else
-            state->Player->SetAnimationData(JumpRight);
+        if (state->Player->state != AnimationState::Jump) {
+            state->Player->isAnimated = false;
+            state->Player->SetFrameIndex(0);
+            state->Player->ResetAnimationTimer();
+            if (state->Player->direction == Direction::Left)
+                state->Player->SetAnimationData(JumpLeft);
+            else
+                state->Player->SetAnimationData(JumpRight);
 
-        state->Player->state = AnimationState::Jump;
+            state->Player->state = AnimationState::Jump;
+        }
     }
     //
     if (!state->wasOnGround && state->isOnGround) {
@@ -158,10 +152,10 @@ void UpdatePlayer(StateInfo* state, float deltaTime, bool leftPressed, bool righ
 
 
 
-    bool landed = checkPlatformCollision(state, playerY, playerX, playerH, playerW, deltaTime, state->playerVelocityY, state->playerVelocityX);
+    bool onPlatform = checkPlatformCollision(state, playerY, playerX, playerH, playerW, deltaTime, state->playerVelocityY, state->playerVelocityX);
 
 
-    state->isOnGround = landed;
+    state->isOnGround = onPlatform;
 
 
 
@@ -229,92 +223,86 @@ void UpdateCamera(StateInfo* state, float deltaTime) {
 bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, float playerH, float playerW, float deltaTime, float& playerVelocityY, float& playerVelocityX) {
     
 
-    const float LANDING_TOLERANCE = 1.0f;
-    const float LANDING_TOLERANCE_1 = 2.0f;
+    const int subSteps = 4;
+    float subDelta = deltaTime / static_cast<float>(subSteps);
 
-    //x
-    float nextPlayerX = playerX + playerVelocityX * deltaTime;
-    for (const auto& obj : state->sceneObjects) {
-        float platformW = obj->GetW();
-        float platformH = obj->GetH();
-        float platformX = obj->GetPosX();
-        float platformY = obj->GetPosY();
-
-        bool overlapY = ((playerY + playerH) > platformY) && (playerY < (platformY + platformH));
-
-        if (overlapY && playerVelocityX > 0 && (playerX + playerW <= platformX) && (nextPlayerX + playerW > platformX)) {
-            float overlapLeft = nextPlayerX + playerW - platformX;
-            float overlapRight = platformX + platformW - nextPlayerX;
-            
-            nextPlayerX = platformX - playerW;
-            playerVelocityX = 0;
-        }
-        else if (overlapY && playerVelocityX < 0 && (playerX >= platformX + platformW) && (nextPlayerX < platformX + platformW)) {
-            
-            nextPlayerX = platformX + platformW;
-            playerVelocityX = 0;
-        }
-    }
-    playerX = nextPlayerX;
-
-    //y
+    const float LANDING_TOLERANCE = 2.0f;//トレランス 許容誤差
     bool onPlatform = false;
-    float footY = playerY + playerH;
-    float leftFootX = playerX + playerW * 0.2f;
-    float rightFootX = playerX + playerW * 0.8f;
 
-    float nextPlayerY = playerY + playerVelocityY * deltaTime;
+    //
+    for (int step = 0; step < subSteps; step++) {
+        //x
+        float nextPlayerX = playerX + playerVelocityX * subDelta;
+        for (const auto& obj : state->sceneObjects) {
+            float platformW = obj->GetW();
+            float platformH = obj->GetH();
+            float platformX = obj->GetPosX();
+            float platformY = obj->GetPosY();
 
-    for (const auto& obj : state->sceneObjects) {
-        float platformW = obj->GetW();
-        float platformH = obj->GetH();
-        float platformX = obj->GetPosX();
-        float platformY = obj->GetPosY();
+            bool overlapY = ((playerY + playerH) > platformY) && (playerY < (platformY + platformH));
 
-        bool overlapX = ((playerX + playerW) > platformX) && (playerX < (platformX + platformW));
+            if (overlapY && playerVelocityX > 0 && (playerX + playerW <= platformX) && (nextPlayerX + playerW > platformX)) {
+                nextPlayerX = platformX - playerW;
+                playerVelocityX = 0;
+            }
+            else if (overlapY && playerVelocityX < 0 && (playerX >= platformX + platformW) && (nextPlayerX < platformX + platformW)) {
 
-        if (overlapX && playerVelocityY > 0 && (playerY + playerH <= platformY + LANDING_TOLERANCE) && (nextPlayerY + playerH >= platformY - LANDING_TOLERANCE)) {
-            
-            if (
-                (footY >= platformY - LANDING_TOLERANCE && footY <= platformY + LANDING_TOLERANCE) &&
-                ((leftFootX >= platformX && leftFootX <= platformX + platformW) || (rightFootX >= platformX && rightFootX <= platformX + platformW))
-               ) {
-                nextPlayerY = platformY - playerH;
+                nextPlayerX = platformX + platformW;
+                playerVelocityX = 0;
+            }
+        }
+        playerX = nextPlayerX;
+        //y
+        float nextPlayerY = playerY + playerVelocityY * subDelta;
+        float footY = playerY + playerH;
+        float leftFootX = playerX + playerW * 0.2f;
+        float rightFootX = playerX + playerW * 0.8f;
+        for (const auto& obj : state->sceneObjects) {
+            float platformW = obj->GetW();
+            float platformH = obj->GetH();
+            float platformX = obj->GetPosX();
+            float platformY = obj->GetPosY();
+
+            bool overlapX = ((playerX + playerW) > platformX) && (playerX < (platformX + platformW));
+
+            if (overlapX && playerVelocityY > 0 && (playerY + playerH <= platformY) && (nextPlayerY + playerH >= platformY)) {
+
+                /*if (
+                    (footY >= platformY && footY <= platformY) &&
+                    ((leftFootX >= platformX && leftFootX <= platformX + platformW) || (rightFootX >= platformX && rightFootX <= platformX + platformW))
+                    ) {*/
+                    nextPlayerY = platformY - playerH;
+                    playerVelocityY = 0;
+                    onPlatform = true;
+                //}
+            }
+            else if (overlapX && playerVelocityY < 0 && (playerY >= platformY + platformH) && (nextPlayerY <= platformY + platformH)) {
+                nextPlayerY = platformY + platformH;
                 playerVelocityY = 0;
+            }
+            else if (overlapX && playerVelocityY == 0 && std::fabs(playerY + playerH - platformY) < LANDING_TOLERANCE) {
+                playerY = platformY - playerH;
                 onPlatform = true;
             }
         }
-        else if (overlapX && playerVelocityY == 0 &&
-            std::fabs(playerY + playerH - platformY) < LANDING_TOLERANCE) {
-            playerY = platformY - playerH;
+        //ground
+        if ( playerVelocityY > 0 && (playerY + playerH <= state->groundY) && (nextPlayerY + playerH >= state->groundY) ) {
+            playerY = state->groundY - playerH;
+            playerVelocityY = 0.0f;
             onPlatform = true;
         }
-        else if (overlapX && playerVelocityY < 0 && (playerY >= platformY + platformH) && (nextPlayerY <= platformY + platformH)) {
-            nextPlayerY = platformY + platformH;
-            playerVelocityY = 0;
-        }
-    }
-    playerY = nextPlayerY;
 
+        playerY = nextPlayerY;
 
-    if (playerVelocityY > 0 && (playerY + playerH) <= state->groundY + LANDING_TOLERANCE && (nextPlayerY + playerH) >= state->groundY - LANDING_TOLERANCE) {
-        OutputDebugStringA("Hit ground: player landed!\n");
-    }
-    if (footY >= state->groundY - LANDING_TOLERANCE && footY <= state->groundY + LANDING_TOLERANCE) {
-        OutputDebugStringA("脚底法命中：player landed!\n");
     }
 
     //
-    if (
-        ((playerVelocityY > 0 && footY >= state->groundY - LANDING_TOLERANCE_1 && footY <= state->groundY + LANDING_TOLERANCE_1)) ||
-        (playerVelocityY == 0 && std::fabs(playerY + playerH - state->groundY) < LANDING_TOLERANCE_1)
-        ) {
+    if (playerVelocityY == 0 && std::fabs(playerY + playerH - state->groundY) < LANDING_TOLERANCE) {
         playerY = state->groundY - playerH;
-        playerVelocityY = 0.0f;
         onPlatform = true;
     }
 
-
+    
     return onPlatform;
 }
 
