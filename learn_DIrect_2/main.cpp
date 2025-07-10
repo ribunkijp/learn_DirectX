@@ -200,9 +200,9 @@ LRESULT CALLBACK WindowProc(
 
     switch (uMsg) {
     case WM_CLOSE:
-        if (MessageBox(hwnd, L"really quit？", L"cancel", MB_OKCANCEL) == IDOK) {
+        //if (MessageBox(hwnd, L"really quit？", L"cancel", MB_OKCANCEL) == IDOK) {
             DestroyWindow(hwnd);
-        }
+        //}
         return 0;
 
     case WM_DESTROY:

@@ -230,60 +230,89 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
     bool onPlatform = false;
 
     //
+    const float hitboxOffsetX = 26.0f;
+    const float hitboxW = 42.0f;
+
+    //
     for (int step = 0; step < subSteps; step++) {
-        //x
+        // x
         float nextPlayerX = playerX + playerVelocityX * subDelta;
+        float pX = playerX + hitboxOffsetX;
+        float pW = hitboxW;
+        float next_pX = nextPlayerX + hitboxOffsetX;
+        //
+        float nextPlayerY = playerY + playerVelocityY * subDelta;
+
         for (const auto& obj : state->sceneObjects) {
             float platformW = obj->GetW();
             float platformH = obj->GetH();
             float platformX = obj->GetPosX();
             float platformY = obj->GetPosY();
 
-            bool overlapY = ((playerY + playerH) > platformY) && (playerY < (platformY + platformH));
-
-            if (overlapY && playerVelocityX > 0 && (playerX + playerW <= platformX) && (nextPlayerX + playerW > platformX)) {
-                nextPlayerX = platformX - playerW;
+            // 右へ
+            float yMin = (playerY < nextPlayerY) ? playerY : nextPlayerY;
+            float yMax = ((playerY + playerH) > (nextPlayerY + playerH)) ? (playerY + playerH) : (nextPlayerY + playerH);
+            bool overlapY = (yMax > platformY) && (yMin < (platformY + platformH));
+            float right0 = pX + pW;
+            float right1 = next_pX + pW;
+            bool crossXRight = (right0 <= platformX && right1 > platformX) || (right1 <= platformX && right0 > platformX);
+            if (overlapY && playerVelocityX > 0 && crossXRight) {
+                nextPlayerX = platformX - pW - hitboxOffsetX;
                 playerVelocityX = 0;
+                break;
             }
-            else if (overlapY && playerVelocityX < 0 && (playerX >= platformX + platformW) && (nextPlayerX < platformX + platformW)) {
-
-                nextPlayerX = platformX + platformW;
+            //左へ
+            float platformRight = platformX + platformW;
+            bool crossXLeft = (pX >= platformRight && next_pX < platformRight) || (next_pX >= platformRight && pX < platformRight);
+            if (overlapY && playerVelocityX < 0 && crossXLeft) {
+                nextPlayerX = platformRight - hitboxOffsetX;
                 playerVelocityX = 0;
+                break;
             }
         }
         playerX = nextPlayerX;
         //y
-        float nextPlayerY = playerY + playerVelocityY * subDelta;
-        float footY = playerY + playerH;
-        float leftFootX = playerX + playerW * 0.2f;
-        float rightFootX = playerX + playerW * 0.8f;
+        pX = playerX + hitboxOffsetX;
+        next_pX = pX + playerVelocityX * subDelta + hitboxOffsetX;
         for (const auto& obj : state->sceneObjects) {
             float platformW = obj->GetW();
             float platformH = obj->GetH();
             float platformX = obj->GetPosX();
             float platformY = obj->GetPosY();
+            
+            
+            float xMin = pX < next_pX ? pX : next_pX;
+            float xMax = ((pX + pW) > (next_pX + pW)) ? (pX + pW) : (next_pX + pW);
+            float platformRight = platformX + platformW;
 
-            bool overlapX = ((playerX + playerW) > platformX) && (playerX < (platformX + platformW));
+            //下へ
+            float foot0 = playerY + playerH;
+            float foot1 = nextPlayerY + playerH;
 
-            if (overlapX && playerVelocityY > 0 && (playerY + playerH <= platformY) && (nextPlayerY + playerH >= platformY)) {
-
-                /*if (
-                    (footY >= platformY && footY <= platformY) &&
-                    ((leftFootX >= platformX && leftFootX <= platformX + platformW) || (rightFootX >= platformX && rightFootX <= platformX + platformW))
-                    ) {*/
-                    nextPlayerY = platformY - playerH;
-                    playerVelocityY = 0;
-                    onPlatform = true;
-                //}
+            bool overlapX = (xMax > platformX) && (xMin < platformRight);
+            bool crossY = (foot0 <= platformY && foot1 > platformY) || (foot1 <= platformY && foot0 > platformY);
+            if (overlapX && crossY && playerVelocityY > 0) {
+                nextPlayerY = platformY - playerH;
+                playerVelocityY = 0;
+                onPlatform = true;
+                break;
             }
-            else if (overlapX && playerVelocityY < 0 && (playerY >= platformY + platformH) && (nextPlayerY <= platformY + platformH)) {
+            //上へ
+            float platformBottom = platformY + platformH;
+            bool crossYTop = (playerY >= platformBottom && nextPlayerY < platformBottom) || (nextPlayerY >= platformBottom && playerY < platformBottom);
+            if (overlapX && crossYTop && playerVelocityY < 0) {
                 nextPlayerY = platformY + platformH;
                 playerVelocityY = 0;
+                break;
             }
-            else if (overlapX && playerVelocityY == 0 && std::fabs(playerY + playerH - platformY) < LANDING_TOLERANCE) {
+            //
+            if (overlapX && playerVelocityY == 0 &&
+                ((playerY + playerH - platformY) < LANDING_TOLERANCE && (playerY + playerH - platformY) > -LANDING_TOLERANCE)) {
                 playerY = platformY - playerH;
                 onPlatform = true;
+                break;
             }
+
         }
         //ground
         if ( playerVelocityY > 0 && (playerY + playerH <= state->groundY) && (nextPlayerY + playerH >= state->groundY) ) {
