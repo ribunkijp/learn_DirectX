@@ -34,7 +34,6 @@ C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(184,25): warning C4244: '初期�
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(184,11): warning C4189: 'PlayerCenterY': ローカル変数が初期化されましたが、参照されていません
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(183,11): warning C4189: 'PlayerCenterX': ローカル変数が初期化されましたが、参照されていません
 C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(223,100): warning C4100: 'playerW': 参照されないパラメーター
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(313,1): warning C5045: /Qspectre スイッチが 
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(313,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(310) : 注: この行で比較を行ってインデックス '' の範囲を確認します
-C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(313,1): warning C5045: C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(313) : 注: この行に呼び出しを入力します に指定されている場合、コンパイラはメモリの読み込みに Spectre の軽減策を挿入します
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(285,19): warning C4189: 'xMax': ローカル変数が初期化されましたが、参照されていません
+C:\code\learn_DirectX\learn_DIrect_2\Update.cpp(284,19): warning C4189: 'xMin': ローカル変数が初期化されましたが、参照されていません
   learn_DIrect_2.vcxproj -> C:\code\learn_DirectX\learn_DIrect_2\x64\Debug\learn_DIrect_2.exe
