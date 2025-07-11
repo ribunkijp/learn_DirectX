@@ -289,7 +289,8 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
             float foot0 = playerY + playerH;
             float foot1 = nextPlayerY + playerH;
 
-            bool overlapX = (xMax > platformX) && (xMin < platformRight);
+            //bool overlapX = (xMax > platformX) && (xMin < platformRight);
+            bool overlapX = (pX + pW > platformX) && (pX < platformRight);
             bool crossY = (foot0 <= platformY && foot1 > platformY) || (foot1 <= platformY && foot0 > platformY);
             if (overlapX && crossY && playerVelocityY > 0) {
                 nextPlayerY = platformY - playerH;
@@ -306,7 +307,7 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
                 break;
             }
             //
-            if (overlapX && playerVelocityY == 0 &&
+            if (((pX + pW > platformX) && (pX < platformRight)) && playerVelocityY == 0 &&
                 ((playerY + playerH - platformY) < LANDING_TOLERANCE && (playerY + playerH - platformY) > -LANDING_TOLERANCE)) {
                 playerY = platformY - playerH;
                 onPlatform = true;
@@ -323,7 +324,12 @@ bool checkPlatformCollision(StateInfo* state, float& playerY, float& playerX, fl
 
         playerY = nextPlayerY;
 
+
+
     }
+
+
+
 
     //
     if (playerVelocityY == 0 && std::fabs(playerY + playerH - state->groundY) < LANDING_TOLERANCE) {
